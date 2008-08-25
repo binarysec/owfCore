@@ -23,62 +23,31 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class core_html extends wf_agg {
-	var $constants = array();
+	var $tpl;
 	
 	public function loader($wf, $position) {
 		$this->wf = $wf;
+		$this->tpl = new core_tpl($this->wf);
+	}
+
+	public function set($name, $value=null) {
+		$this->tpl->set($name, $value);
+	}
+
+	public function append($name, $value=null) {
+		$this->tpl->apend($name, $value);
+	}
+
+	public function get($name) {
+		return($this->tpl->get($name));
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Ajoute une donnée de rendement par rapport à la constance
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function set($constant, $data) {
-		$this->constants[$constant] = $data;
-		return(TRUE);
-	}
-	
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 *
-	 * Prend une donnée de rendement
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function get($constant) {
-		return($this->constants[$constant]);
-	}
-	
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 *
 	 * Lance le systeme de rendu et retourne les données
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function rendering($tpl) {
-// 		if(!file_exists($file)) {
-// 			throw new wf_exception(
-// 				$this,
-// 				WF_EXC_PRIVATE,
-// 				array(
-// 					"Template $file doesn't exists"
-// 				)
-// 			);
-// 		}
-// 
-// 		/* preparation des patterns & remplacements */
-// 		$patterns = array();
-// 		$replacements = array();
-// 		foreach($this->constants as $key => $value) {
-// 			$patterns[] = "/%$key%/";
-// 			$replacements[] = $value;
-// 		}
-// 		$patterns[] = "/%[A-Za-z_0-9]+%/";
-// 		
-// 		/* prend le contenu du fichier */
-// 		$data = file_get_contents($file);
-// 		
-// 		/* remplace les données */
-// 		$ret = preg_replace($patterns, $replacements, $data);
-// 		
-// 		return($ret);
-		echo "rendering $tpl";
-		exit(0);
+	public function rendering($tpl_name) {
+		echo $this->tpl->fetch($tpl_name);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -86,7 +55,17 @@ class core_html extends wf_agg {
 	 * Permet d'ajouter un managed body avec un template
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function add_managed_tpl($title, $core_tpl) {
-	
+		$data = null;
+		if(file_exists($core_tpl->tpl_file))
+			$data = file_get_contents($core_tpl->tpl_file);
+
+		$tpl = new core_tpl($this->wf);
+		$tpl->set('data', $data);
+		$tpl->set('title', $title);
+		$tpl->set('path', $core_tpl->tpl_file);
+		$tpl->set('vars', $core_tpl->vars);
+
+		echo $tpl->fetch('core_managed_body', TRUE);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -94,7 +73,7 @@ class core_html extends wf_agg {
 	 * Permet d'ajouter un managed body avec un buffer
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function add_managed_buffer($title, $buffer) {
-	
+		//
 	}
 	
 	
