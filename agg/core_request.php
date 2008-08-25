@@ -59,10 +59,10 @@ class core_request extends wf_agg {
 			}
 
 			$this->a_core_html->set(
-				"message", 
+				"message",
 				"Page not found"
 			);
-			$this->a_core_html->rendering("core_error_404");
+			$this->a_core_html->rendering("core_html_error_404");
 		}
 	
 		/* vérification si c'est une tentative de login */
