@@ -81,5 +81,21 @@ class core_html extends wf_agg {
 		exit(0);
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Permet d'ajouter un managed body avec un template
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function add_managed_tpl($title, $core_tpl) {
+	
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Permet d'ajouter un managed body avec un buffer
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function add_managed_buffer($title, $buffer) {
+	
+	}
+	
 	
 }
