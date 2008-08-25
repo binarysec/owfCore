@@ -61,10 +61,10 @@ class core_route extends wf_agg {
 
 	public function scan() {
 		/* cherche s'il y a des informations dans le cache */
-// 		if(($c = $this->a_core_cacher->get("wfa_core_route")) != NULL) {
-// 			$this->routes = $c;
-// 			return(TRUE);
-// 		}
+		if(($c = $this->a_core_cacher->get("wfa_core_route")) != NULL) {
+			$this->routes = $c;
+			return(TRUE);
+		}
 
 		/* parcourt les modules dans le sens initié */
 		foreach($this->wf->modules as $info) {
