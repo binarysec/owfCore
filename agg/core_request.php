@@ -59,10 +59,10 @@ class core_request extends wf_agg {
 			}
 
 			$this->a_core_html->set(
-				"MESSAGE", 
+				"message", 
 				"Page not found"
 			);
-			$this->a_core_html->rendering("html_error_404");
+			$this->a_core_html->rendering("core_error_404");
 		}
 	
 		/* vérification si c'est une tentative de login */
@@ -72,18 +72,18 @@ class core_request extends wf_agg {
 		$ret = $this->a_core_session->check_session();
 		if($ret != WF_SESSION_VALID) {
 			$this->a_core_html->set(
-				"LOGIN_MESSAGE", 
+				"message", 
 				"Session destroyed"
 			);
 			$this->a_core_html->set(
-				"BACK_URL", 
+				"back_url", 
 				base64_encode($_SERVER["REQUEST_URI"])
 			);
 			$this->a_core_html->set(
-				"LOGIN_URL", 
+				"login_url", 
 				$this->linker("/session/login")
 			);
-			$this->a_core_html->rendering("html_login");
+			$this->a_core_html->rendering("core_login");
 			exit(0);
 		}
 		
@@ -131,18 +131,18 @@ class core_request extends wf_agg {
 		foreach($need as $value) {
 			if(!$this->permissions[$value]) {
 				$this->a_core_html->set(
-					"LOGIN_MESSAGE", 
+					"message", 
 					"You don't have enought of permissions"
 				);
 				$this->a_core_html->set(
-					"BACK_URL", 
+					"back_url", 
 					base64_encode($_SERVER["REQUEST_URI"])
 				);
 				$this->a_core_html->set(
-					"LOGIN_URL", 
+					"login_url", 
 					$this->linker("/session/login")
 				);
-				$this->a_core_html->rendering("html_login");
+				$this->a_core_html->rendering("core_login");
 				exit(0);
 			}
 		}
