@@ -24,6 +24,22 @@ class wfr_wf_core extends wf_route_info {
 				"Login",
 				WF_ROUTE_HIDE,
 				array("session:anon")
+			),
+			"/img" => array(
+				WF_ROUTE_ACTION,
+				"img",
+				"show_img",
+				"Img",
+				WF_ROUTE_HIDE,
+				array("session:anon")
+			),
+			"/css" => array(
+				WF_ROUTE_ACTION,
+				"css",
+				"show_css",
+				"Css",
+				WF_ROUTE_HIDE,
+				array("session:anon")
 			)
 		));
 	}
