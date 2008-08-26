@@ -2,13 +2,13 @@
  
 /* (c) mykii#@! */
 
-define("CORE_FORM_TEXT",     100);
-define("CORE_FORM_INPUT",    101);
-define("CORE_FORM_PASS",     102);
-define("CORE_FORM_SELECT",   103);
-define("CORE_FORM_HIDDEN",   104);
-define("CORE_FORM_CHECKBOX", 105);
-define("CORE_FORM_FILE",     106);
+define("WF_FORM_TEXT",     100);
+define("WF_FORM_INPUT",    101);
+define("WF_FORM_PASS",     102);
+define("WF_FORM_SELECT",   103);
+define("WF_FORM_HIDDEN",   104);
+define("WF_FORM_CHECKBOX", 105);
+define("WF_FORM_FILE",     106);
 
 class core_form {
 	var $wf;
@@ -34,6 +34,76 @@ class core_form {
 
 	var $division = 0;
 	var $printable_data = 0;
+
+	public function add_text(
+		$key,
+		$text,
+		$default=NULL,
+		$value=NULL,
+		$size=30
+		) {
+		return($this->add_element($key, WF_FORM_TEXT, $text, $default, $value, $size));
+	}
+
+	public function add_input(
+		$key,
+		$text,
+		$default=NULL,
+		$value=NULL,
+		$size=30
+		) {
+		return($this->add_element($key, WF_FORM_INPUT, $text, $default, $value, $size));
+	}
+
+	public function add_pass(
+		$key,
+		$text,
+		$default=NULL,
+		$value=NULL,
+		$size=30
+		) {
+		return($this->add_element($key, WF_FORM_PASS, $text, $default, $value, $size));
+	}
+
+	public function add_select(
+		$key,
+		$text,
+		$default=NULL,
+		$value=NULL,
+		$size=30
+		) {
+		return($this->add_element($key, WF_FORM_SELECT, $text, $default, $value, $size));
+	}
+
+	public function add_hidden(
+		$key,
+		$text,
+		$default=NULL,
+		$value=NULL,
+		$size=30
+		) {
+		return($this->add_element($key, WF_FORM_HIDDEN, $text, $default, $value, $size));
+	}
+
+	public function add_checkbox(
+		$key,
+		$text,
+		$default=NULL,
+		$value=NULL,
+		$size=30
+		) {
+		return($this->add_element($key, WF_FORM_CHECKBOX, $text, $default, $value, $size));
+	}
+
+	public function add_file(
+		$key,
+		$text,
+		$default=NULL,
+		$value=NULL,
+		$size=30
+		) {
+		return($this->add_element($key, WF_FORM_FILE, $text, $default, $value, $size));
+	}
 	
 	public function add_element(
 			$key,
@@ -44,10 +114,10 @@ class core_form {
 			$size=30
 		) {
 	
-		if($type != CORE_FORM_HIDDEN)
+		if($type != WF_FORM_HIDDEN)
 			$this->printable_data++;
 		
-		if($type == CORE_FORM_FILE)
+		if($type == WF_FORM_FILE)
 			$this->is_multipart = TRUE;
 			
 		$insert = array(
@@ -76,7 +146,7 @@ class core_form {
 			
 			/* si l'input est de type select on 
 			   vérifie les elements :) */
-			if($v["TYPE"] == CORE_FORM_SELECT) {
+			if($v["TYPE"] == WF_FORM_SELECT) {
 				if(!isset($v["VAL"][$ret[$k]])) {
 // 					return(array());
 				}
@@ -115,8 +185,8 @@ class core_form {
 	}
 	
 	public function renderer() {
-		
-		$tab = $this->wf->a_core_form_table();
+
+		$tab = new core_form_table($this->wf);
 		
 		/* construit le header */
 		$hdr = NULL;
@@ -169,11 +239,11 @@ class core_form {
 			$v["DFT"] = htmlspecialchars($v["DFT"]);
 			
 			switch($v["TYPE"]) {
-				case CORE_FORM_TEXT:
+				case WF_FORM_TEXT:
 					
 					$tab->add_field(
 						$text,
-						CORE_TAB_HALIGN_RIGHT,
+						WF_TAB_HALIGN_RIGHT,
 						FALSE
 					);
 					
@@ -181,11 +251,11 @@ class core_form {
 				
 					$tab->add_field(
 						$text,
-						CORE_TAB_HALIGN_LEFT
+						WF_TAB_HALIGN_LEFT
 					);
 					break;
 					
-				case CORE_FORM_INPUT:
+				case WF_FORM_INPUT:
 					if($v["SIZE"] != NULL) {
 						$size = ' size="'.
 							$v["SIZE"].
@@ -202,16 +272,16 @@ class core_form {
 					
 					$tab->add_field(
 						$text,
-						CORE_TAB_HALIGN_RIGHT,
+						WF_TAB_HALIGN_RIGHT,
 						FALSE
 					);
 					$tab->add_field(
 						$i,
-						CORE_TAB_HALIGN_LEFT
+						WF_TAB_HALIGN_LEFT
 					);
 					break;
 					
-				case CORE_FORM_PASS:
+				case WF_FORM_PASS:
 					if($v["SIZE"] != NULL) {
 						$size = ' size="'.
 							$v["SIZE"].
@@ -226,20 +296,19 @@ class core_form {
 					
 					$tab->add_field(
 						$text,
-						CORE_TAB_HALIGN_RIGHT,
+						WF_TAB_HALIGN_RIGHT,
 						FALSE
 					);
 					$tab->add_field(
 						$i,
-						CORE_TAB_HALIGN_LEFT
+						WF_TAB_HALIGN_LEFT
 					);
 					
 					break;
 				
-				case CORE_FORM_SELECT:
+				case WF_FORM_SELECT:
 					$i = '<select '.
 						' name="'.$k.'">'."\n";
-					
 					reset($v["VAL"]);
 					foreach($v["VAL"] as $vk => $vv) {
 						if($vk == $v["DFT"])
@@ -261,16 +330,16 @@ class core_form {
 
 					$tab->add_field(
 						$text,
-						CORE_TAB_HALIGN_RIGHT,
+						WF_TAB_HALIGN_RIGHT,
 						FALSE
 					);
 					$tab->add_field(
 						$i,
-						CORE_TAB_HALIGN_LEFT
+						WF_TAB_HALIGN_LEFT
 					);
 					break;
 					
-				case CORE_FORM_HIDDEN:
+				case WF_FORM_HIDDEN:
 					$i = '<input type="hidden" name="'.
 						$k.
 						'" value="'.
@@ -280,7 +349,7 @@ class core_form {
 					$tab_r .= $i;
 					break;
 
-				case CORE_FORM_CHECKBOX:
+				case WF_FORM_CHECKBOX:
 					if($v["DFT"] == TRUE)
 						$checked = " checked";
 					else
@@ -296,17 +365,17 @@ class core_form {
 					
 					$tab->add_field(
 						$text,
-						CORE_TAB_HALIGN_RIGHT,
+						WF_TAB_HALIGN_RIGHT,
 						FALSE
 					);
 					$tab->add_field(
 						$i,
-						CORE_TAB_HALIGN_LEFT
+						WF_TAB_HALIGN_LEFT
 					);
 					
 					break;
 
-				case CORE_FORM_FILE:
+				case WF_FORM_FILE:
 					if($v["SIZE"] != NULL) {
 						$size = ' size="'.
 							$v["SIZE"].
@@ -323,12 +392,12 @@ class core_form {
 					
 					$tab->add_field(
 						$text,
-						CORE_TAB_HALIGN_RIGHT,
+						WF_TAB_HALIGN_RIGHT,
 						FALSE
 					);
 					$tab->add_field(
 						$i,
-						CORE_TAB_HALIGN_LEFT
+						WF_TAB_HALIGN_LEFT
 					);
 					break;
 					
@@ -340,11 +409,11 @@ class core_form {
 			$buf = '<div class="interact_form_footer">';
 			if($this->b_submit) {
 				$b_submit = ' value="'.$this->b_submit.'"';
-				$buf .= '<input class="CORE_form_submit" type="submit"'.$b_submit.'>';
+				$buf .= '<input class="core_form_submit" type="submit"'.$b_submit.'>';
 			}
 			if($this->b_reset) {
 				$b_reset = ' value="'.$this->b_reset.'"';
-				$buf .= '<input class="CORE_form_submit" type="reset"'.$b_reset.'> ';
+				$buf .= '<input class="core_form_submit" type="reset"'.$b_reset.'> ';
 			}
 			$buf .= '</div>';
 		}
