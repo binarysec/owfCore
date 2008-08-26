@@ -157,8 +157,9 @@ class core_request extends wf_agg {
 	
 	private function execute_route($channel) {
 		/* execution du callback final */
+
 		call_user_func(array(
-			$channel[CORE_ROUTE_REQUEST], 
+			$channel[_CORE_ROUTE_REQUEST], 
 			$this->channel[CORE_ROUTE_MOD][2])
 		);
 	}
