@@ -32,9 +32,9 @@ class core_lang extends wf_agg {
 		$this->wf = $wf;
 		
 		/** \todo SYSTEME DE CACHE */
-		
 		/* prend le fichier ini */
-		$file = realpath("../var/lang.ini");
+		$file = dirname(dirname(__FILE__))."/var/lang.ini";
+
 		$this->ini = parse_ini_file($file, TRUE);
 		
 		/* charge les langues disponible */
@@ -80,6 +80,7 @@ class core_lang extends wf_agg {
 	public function set($lang) {
 		/* vérification si les données sont bonnes */
 		$this->current = $this->resolv($lang);
+
 		if(!$this->current)
 			return(FALSE);
 	
@@ -88,19 +89,19 @@ class core_lang extends wf_agg {
 			return(FALSE);
 		
 		/* passage des informations de contenu et d'encodage */
-		$doc = $this->wf->core_doc();
-		$doc->set_meta_http_equiv(
-			"Content-Language",
-			array(
-				"Content" => $this->current["code"]
-			)
-		);
-		$doc->set_meta_http_equiv(
-			"Content-Type",
-			array(
-				"Content" => "text/html charset=".$this->current["encoding"]
-			)
-		);
+// 		$doc = $this->wf->core_doc();
+// 		$doc->set_meta_http_equiv(
+// 			"Content-Language",
+// 			array(
+// 				"Content" => $this->current["code"]
+// 			)
+// 		);
+// 		$doc->set_meta_http_equiv(
+// 			"Content-Type",
+// 			array(
+// 				"Content" => "text/html charset=".$this->current["encoding"]
+// 			)
+// 		);
 		
 		/* set les elements par default */
 		$request = $this->wf->core_request();

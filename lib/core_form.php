@@ -1,5 +1,5 @@
 <?php
-
+ 
 /* (c) mykii#@! */
 
 define("CORE_FORM_TEXT",     100);
@@ -23,7 +23,6 @@ class core_form {
 
 	public function __construct($wf) {
 		$this->wf = $wf;
-		$web->module->css()->add_file(dirname(__FILE__)."/form.css");
 	}
 	
 	public function load($link, $title=NULL, $submit=NULL, $reset=NULL) {

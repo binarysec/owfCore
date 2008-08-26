@@ -28,7 +28,7 @@
 	<h1>Login required</h1>
 	<p class="message"><?php echo $t->vars['message']; ?></p>
 	<form action="<?php echo $t->vars['login_url']; ?>" method="post">
-		<input type="hidden" name="url" value="L2luZGV4LnBocC9hZG1pbi91c2VyL2xpc3Q=" />
+		<input type="hidden" name="url" value="<?php echo $t->vars['login_url']; ?>" />
 		<table width="100%">
 			<tr>
 				<td>User (mail):</td>
