@@ -140,5 +140,5 @@ class core_form_table {
 
 	}	
 }
-
+ 
 ?>

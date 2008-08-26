@@ -22,16 +22,16 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-define("SESSION_VALID",        1);
-define("SESSION_TIMEOUT",      2);
-define("SESSION_USER_UNKNOWN", 3);
-define("SESSION_AUTH_FAILED",  4);
+define("WF_SESSION_VALID",        1);
+define("WF_SESSION_TIMEOUT",      2);
+define("WF_SESSION_USER_UNKNOWN", 3);
+define("WF_SESSION_AUTH_FAILED",  4);
 
-define("USER_GOD",     "session:god");
-define("USER_ADMIN",   "session:admin");
-define("USER_SIMPLE",  "session:simple");
-define("USER_SERVICE", "session:service");
-define("USER_ANON",    "session:anon");
+define("WF_USER_GOD",     "session:god");
+define("WF_USER_ADMIN",   "session:admin");
+define("WF_USER_SIMPLE",  "session:simple");
+define("WF_USER_SERVICE", "session:service");
+define("WF_USER_ANON",    "session:anon");
 
 class core_session extends wf_agg {
 	/** TODO: PARAMETRER */
@@ -45,18 +45,18 @@ class core_session extends wf_agg {
 		$this->wf = $wf;
 		
 		$struct = array(
-			"id" => PRI,
-			"email" => VARCHAR,
-			"password" => VARCHAR,
-			"name" => VARCHAR,
-			"create_time" => INT,
-			"session_id" => VARCHAR,
-			"session_time_auth" => INT,
-			"session_time" => INT,
-			"session_data" => DATA,
-			"remote_address" => VARCHAR,
-			"permissions" => DATA,
-			"data" => DATA
+			"id" => WF_PRI,
+			"email" => WF_VARCHAR,
+			"password" => WF_VARCHAR,
+			"name" => WF_VARCHAR,
+			"create_time" => WF_INT,
+			"session_id" => WF_VARCHAR,
+			"session_time_auth" => WF_INT,
+			"session_time" => WF_INT,
+			"session_data" => WF_DATA,
+			"remote_address" => WF_VARCHAR,
+			"permissions" => WF_DATA,
+			"data" => WF_DATA
 		);
 		$this->wf->db->register_zone(
 			"core_session", 
@@ -135,6 +135,7 @@ class core_session extends wf_agg {
 		$where = array(
 			"session_id" => $session
 		);
+
 		$q->where($where);
 		$this->wf->db->query($q);
 		$res = $q->get_result();
@@ -145,19 +146,19 @@ class core_session extends wf_agg {
 				$this->me = array(
 					"id" => -1,
 					"remote_address" => $_SERVER["REMOTE_ADDR"],
-					"permissions" => serialize(array(USER_ANON))
+					"permissions" => serialize(array(WF_USER_ANON))
 				);
-				return(SESSION_VALID);
+				return(WF_SESSION_VALID);
 			}
 			else {
-				return(SESSION_TIMEOUT);
+				return(WF_SESSION_TIMEOUT);
 			}
 		}
 		$this->me = $res[0];
-		
+
 		/* vérfication du timeout */
 		if(time()-$this->me["session_time"] > $this->sess_timeout) {
-			return(SESSION_TIMEOUT);
+			return(WF_SESSION_TIMEOUT);
 		}
 			
 		/* modification de l'adresse en base + time update */
@@ -178,7 +179,7 @@ class core_session extends wf_agg {
 		if(!$this->data)
 			$this->data = array();
 
-		return(SESSION_VALID);
+		return(WF_SESSION_VALID);
 	}
 	
 	private function generate_session_id() {
@@ -205,7 +206,7 @@ class core_session extends wf_agg {
 			return(FALSE);
 		}
 		$this->me = $res[0];
-		
+
 		/* update les informations dans la bdd */
 		$q = new core_db_update("core_session");
 		$where = array(
