@@ -89,19 +89,20 @@ class core_lang extends wf_agg {
 			return(FALSE);
 		
 		/* passage des informations de contenu et d'encodage */
-// 		$doc = $this->wf->core_doc();
-// 		$doc->set_meta_http_equiv(
-// 			"Content-Language",
-// 			array(
-// 				"Content" => $this->current["code"]
-// 			)
-// 		);
-// 		$doc->set_meta_http_equiv(
-// 			"Content-Type",
-// 			array(
-// 				"Content" => "text/html charset=".$this->current["encoding"]
-// 			)
-// 		);
+		$html = $this->wf->core_html();
+		$html->set_meta_http_equiv(
+			"Content-Language",
+			array(
+				"Content" => $this->current["code"]
+			)
+		);
+		$html->set_meta_http_equiv(
+			"Content-Type",
+			array(
+				"Content" => "text/html charset=".
+					$this->current["encoding"]
+			)
+		);
 		
 		/* set les elements par default */
 		$request = $this->wf->core_request();
@@ -115,7 +116,7 @@ class core_lang extends wf_agg {
 	 *
 	 * Fonction de translation
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function tf() {
+	public function tf($text) {
 	
 	}
 	

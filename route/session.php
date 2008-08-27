@@ -33,19 +33,20 @@ class wfr_core_session extends wf_route_request {
 		);
 		/* mot de passe ou mail incorrect */
 		if($ret == FALSE) {
-			$this->a_core_html->set(
+			$tpl = new core_tpl($this->wf);
+			$tpl->set(
 				"message", 
 				"Wrong email or password"
 			);
-			$this->a_core_html->set(
+			$tpl->set(
 				"back_url", 
-				base64_encode($url)
+				base64_encode($_SERVER["REQUEST_URI"])
 			);
-			$this->a_core_html->set(
+			$tpl->set(
 				"login_url", 
-				$this->a_core_request->linker("/session/login")
+				$this->wf->linker("/session/login")
 			);
-			$this->a_core_html->rendering('core_login');
+			echo $tpl->fetch("core_login");
 			exit(0);
 		}
 		/* bon login */

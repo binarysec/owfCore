@@ -24,7 +24,7 @@
 class core_css extends wf_agg {
 	var $used = array(); /* données non cachées */
 	var $index_cache = array();
-	
+	var $wf;
 	var $a_core_cacher;
 	var $a_core_request;
 	var $a_core_html;
@@ -119,12 +119,10 @@ class core_css extends wf_agg {
 		$request = $this->wf->core_request();
 		$final = NULL;
 
-		$request = $this->wf->core_request();
-
 		$key  = $data['key'];
 		$rand = $data['rand'];
 
-		$link = $request->linker('/css/'.$rand);
+		$link = $this->wf->linker('/css/'.$rand);
 		$final = '<link '.
 		         'rel="stylesheet" '.
 		         'type="text/css" '.
