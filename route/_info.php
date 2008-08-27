@@ -40,6 +40,14 @@ class wfr_wf_core extends wf_route_info {
 				"Css",
 				WF_ROUTE_HIDE,
 				array("session:anon")
+			),
+			"/js" => array(
+				WF_ROUTE_ACTION,
+				"js",
+				"show_js",
+				"Js",
+				WF_ROUTE_HIDE,
+				array("session:anon")
 			)
 		));
 	}
