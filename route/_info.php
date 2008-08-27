@@ -1,6 +1,6 @@
 <?php
  
-class wfr_core extends wf_route_info {
+class _wfr_core extends wf_route_info {
 
 	public function __construct($wf) {
 		$this->wf = $wf;
