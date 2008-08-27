@@ -20,9 +20,9 @@
  *  engineer, decompile or disassemble this software     *
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
- 
-class core_css extends wf_agg {
-	var $used = array(); /* données non cachées */
+
+class core_js extends wf_agg {
+	var $used = array(); /* not cached data */
 	var $index_cache = array();
 	
 	var $a_core_cacher;
@@ -40,8 +40,8 @@ class core_css extends wf_agg {
 			"file" => WF_VARCHAR
 		);
 		$this->wf->db->register_zone(
-			"core_css", 
-			"Core CSS table", 
+			"core_js", 
+			"Core JS table", 
 			$struct
 		);
 		
@@ -49,14 +49,14 @@ class core_css extends wf_agg {
 		$this->a_core_request = $this->wf->core_request();
 		$this->a_core_html = $this->wf->core_html();
 		
-		/* loading cache */
-		if(($c = $this->a_core_cacher->get("core_css")) != NULL)
+		/* cache loading */
+		if(($c = $this->a_core_cacher->get("core_js")) != NULL)
 			$this->index_cache = $c;
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Add a css key
+	 * Add a JS key
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function add($mod, $key) {
 		$mod = $this->load($key, $mod);
@@ -100,36 +100,32 @@ class core_css extends wf_agg {
 			);
 	
 			/* store in database */
-			$q = new core_db_insert("core_css", $data);
+			$q = new core_db_insert("core_js", $data);
 			$this->wf->db->query($q);
 		}
 
 		return($data);
 	}
-
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Used for rendering css into html code
+	 * Used for rendering js into html code
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function get_css() {
+	public function get_js() {
 		$data = $this->merge_requests();
 		if(!$data)	
 			return;
-
-		$request = $this->wf->core_request();
-		$final = NULL;
 
 		$request = $this->wf->core_request();
 
 		$key  = $data['key'];
 		$rand = $data['rand'];
 
-		$link = $request->linker('/css/'.$rand);
-		$final = '<link '.
-		         'rel="stylesheet" '.
-		         'type="text/css" '.
-		         'href="'.$link.'"/>'."\n";
-		$this->is_modifiable($k);
+		$link = $request->linker('/js/'.$rand);
+		$final = '<script '.
+				'type="text/javascript" '.
+				'src="'.$link.'"></script>'."\n";
+		$this->is_modifiable($key);
 
 		return($final);
 	}
@@ -141,7 +137,7 @@ class core_css extends wf_agg {
 	private function is_modifiable($key) {
 		/* edition if god */
 		if($this->a_core_request->permissions[WF_USER_GOD]) {
-			// $this->a_core_html->add_managed_god_body("Modification");
+			//$this->a_core_html->add_managed_god_body("Modification");
 		}
 
 	}
@@ -149,6 +145,7 @@ class core_css extends wf_agg {
 	public function is_cache_outdated($mod) {
 		/* test if the cache is outdated */
 		$cachemtime = $mod["mtime"];
+
 		$files = $this->unbundle($mod['file']);
 		foreach($files as $file){
 			if ($cachemtime < filemtime($file))
@@ -171,8 +168,8 @@ class core_css extends wf_agg {
 
 		/* fecth the file path */
 		$done = FALSE;
-		if(isset($this->wf->modules[$mod])) {
-			$file = $this->wf->modules[$mod][0].'/var/css/'.$key.'.css';
+		if(isset($this->wf->modules[$mod])){
+			$file = $this->wf->modules[$mod][0]."/var/js/$key.js";
 			$done = file_exists($file);
 		}
 		
@@ -185,7 +182,7 @@ class core_css extends wf_agg {
 				$file.
 				" n'existe pas"
 			);
-			/* generate the creation */
+			/* generer la création ??? */
 			$this->is_modifiable($key);
 			return(NULL);
 		}
@@ -198,7 +195,7 @@ class core_css extends wf_agg {
 		);
 		
 		/* search CSS in database */
-		$q = new core_db_select("core_css");
+		$q = new core_db_select("core_js");
 		$where = array(
 			"key" => $key
 		);
@@ -209,12 +206,12 @@ class core_css extends wf_agg {
 		/* unknown CSS stored in database */
 		if(!$res[0]) {
 			$data["rand"] = $this->get_rand();
-			$q = new core_db_insert("core_css", $data);
+			$q = new core_db_insert("core_js", $data);
 			$this->wf->db->query($q);
 		}
 		/* known CSS updatating */
 		else {
-			$q = new core_db_update("core_css");
+			$q = new core_db_update("core_js");
 			$q->where($where);
 			$q->insert($data);
 			$this->wf->db->query($q);
@@ -225,7 +222,7 @@ class core_css extends wf_agg {
 		$this->index_cache[$key] = $data;
 
 		/* cache data */
-		$this->a_core_cacher->store("core_css", $this->index_cache);
+		$this->a_core_cacher->store("core_js", $this->index_cache);
 		
 		return($data);
 	}
@@ -241,8 +238,8 @@ class core_css extends wf_agg {
 			return($this->index_cache[$key]);
 		}
 		
-		/* check CSS in database */
-		$q = new core_db_select("core_css");
+		/* check JS in database */
+		$q = new core_db_select("core_js");
 		$where = array();
 		
 		if(!$by_key)
@@ -298,14 +295,6 @@ class core_css extends wf_agg {
 
 		return($min_mtime);
 	}
-
-	public function minify($data) {
-		/* remove comments */
-		$data = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $data);
-		/* remove tabs, spaces, newlines, etc. */
-		$data = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $data);
-		return $data;
-	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
@@ -317,7 +306,7 @@ class core_css extends wf_agg {
 			return(FALSE);
 		}
 
-		$c = $this->a_core_cacher->get("core_css_$key");
+		$c = $this->a_core_cacher->get("core_js_$key");
 		if($c != NULL && !$this->is_cache_outdated($mod)) {
 			$data = $c;
 		}
@@ -333,11 +322,11 @@ class core_css extends wf_agg {
 				}
 				else {
 					/* cache content */
-					$data .= $this->minify(file_get_contents($file));
+					$data .= file_get_contents($file);
 				}
 			}
 
-			$this->a_core_cacher->store("core_css_$key", $data);
+			$this->a_core_cacher->store("core_js_$key", $data);
 
 			/* if we have to update the cache */
 			if ($this->is_cache_outdated($mod)) {
@@ -347,13 +336,13 @@ class core_css extends wf_agg {
 				$this->index_cache[$k]["mtime"] = $this->group_mtime($mod["file"]);
 
 				/* store in database */
-				$q = new core_db_update("core_css");
+				$q = new core_db_update("core_js");
 				$q->where(array("key" => $k));
 				$q->insert($this->index_cache[$k]);
 				$this->wf->db->query($q);
 
 				/* ...and in cache */
-				$this->a_core_cacher->store("core_css", $this->index_cache);
+				$this->a_core_cacher->store("core_js", $this->index_cache);
 			}
 		}
 
@@ -386,7 +375,7 @@ class core_css extends wf_agg {
 			$h = rand(1, 25);
 			$r .= chr($h+$pos);
 		}
-		return($r.".css");
+		return($r.".js");
 	}
 	
 }

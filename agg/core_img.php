@@ -30,7 +30,13 @@ class core_img extends wf_agg {
 	public function construct_path($mod, $file) {
 		/* if module doesn't exist return null */
 		if(!isset($this->wf->modules[$mod])) {
-			//~ trigger_error('le module <<'.$this->wf->modules[$mod].'>> n\'existe pas', WF_E_WARNING);
+			throw new wf_exception(
+				$this->wf,
+				CORE_EXC_PRIVATE,
+				"Le module ".
+				$this->wf->modules[$mod].
+				" n'existe pas"
+			);
 			return NULL;
 		}
 
@@ -40,13 +46,23 @@ class core_img extends wf_agg {
 
 		/* if file doesn't exist return null */
 		if(!file_exists($path)) {
-			//~ trigger_error('le fichier <<'.$path.'>> n\'existe pas', WF_E_WARNING);
+			throw new wf_exception(
+				$this->wf,
+				CORE_EXC_PRIVATE,
+				"Le fichier ".
+				$path.
+				" n'existe pas"
+			);
 			return NULL;
 		}
 
 		/* directory transversal detection */
 		if(substr($path, 0, strlen($base)) != $base) {
-			//~ trigger_error('tentative de directory traversal détectée', WF_E_ERROR);
+			throw new wf_exception(
+				$this->wf,
+				CORE_EXC_PRIVATE,
+				"Tentative de directory traversal détectée"
+			);
 			return NULL;
 		}
 
