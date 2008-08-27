@@ -28,7 +28,9 @@
 	<h1>Login required</h1>
 	<p class="message">{$message}</p>
 	<form action="{$login_url}" method="post">
-		<input type="hidden" name="url" value="{$login_url}" />
+		{if $back_url }
+		<input type="hidden" name="back_url" value="{$back_url}" />
+		{/if}
 		<table width="100%">
 			<tr>
 				<td>User (mail):</td>
