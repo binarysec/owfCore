@@ -12,7 +12,9 @@
 				<?php foreach($t->vars['vars'] as $t->vars['name'] => $t->vars['value']):?>
 					<li>
 						{$<?php echo $t->vars['name'];  ?>}<br />
+						<?php if(is_string($t->vars['value'])):?>
 						<em>ex: <?php echo $t->vars['value']; ?></em>
+						<?php endif;?>
 					</li>
 				<?php endforeach;?>
 				</ul>

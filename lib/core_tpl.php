@@ -105,7 +105,7 @@ class core_tpl {
 		}
 
 		if(!$no_manage)
-			$this->a_core_html->add_managed_tpl($tpl_name, $this);
+			$this->a_core_html->add_managed_tpl($tpl_name, &$this);
 
 		if(!$this->tpl_file)
 			return;
