@@ -1,6 +1,6 @@
 <?php
  
-class wf_core extends wf_module {
+class core extends wf_module {
 	public function __construct($wf) {
 		$this->wf = $wf;
 	}

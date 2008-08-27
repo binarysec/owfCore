@@ -1,6 +1,6 @@
 <?php
 
-class wfr_wf_core_img extends wf_route_request {
+class wfr_core_img extends wf_route_request {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *

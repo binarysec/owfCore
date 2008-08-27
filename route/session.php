@@ -1,6 +1,6 @@
 <?php
 
-class wfr_wf_core_session extends wf_route_request {
+class wfr_core_session extends wf_route_request {
 
 	var $a_core_session;
 	var $a_core_html;
