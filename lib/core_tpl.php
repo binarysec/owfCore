@@ -45,35 +45,26 @@ class core_tpl {
 	}
 
 	public function set($name, $value=null) {
-		if(is_array($name))
-			foreach ($name as $key => $val)
-				$this->vars[$key] = $val;
-		else
-			$this->vars[$name] = $value;
+		$this->vars[$name] = $value;
 	}
 
 	public function append($name, $value=null) {
-		if(is_array($name)) {
-			foreach($name as $key => $val) {
-				if(isset($this->vars[$key]))
-					$this->vars[$key] .= $val;
-				else
-					$this->vars[$key] = $val;
-			}
+		$this->vars[$name];
+		
+		if(is_array($this->vars[$name])) {
+			$this->vars[$name] = array_merge(
+				$this->vars[$name],
+				$value
+			);
 		}
-		else {
-			if(isset($this->vars[$name]))
-				$this->vars[$name] .= $value;
-			else
-				$this->vars[$name] = $value;
-		}
+		else
+			$this->vars[$name] .= $value;
 	}
 
 	public function get($name) {
 		if(isset($this->vars[$name]))
 			return($this->vars[$name]);
-		else
-			return(null);
+		return(null);
 	}
 
 	public function get_vars() {
@@ -84,13 +75,19 @@ class core_tpl {
 		$this->vars = $vars;
 	}
 
+	public function merge_vars($vars) {
+		$this->vars = array_merge($this->vars, $vars);
+	}
+	
 	public function locate($tpl_name) {
 		$modrev = array_reverse($this->wf->modules);
 		foreach($modrev as $mod => $mod_infos) {
-			$tmp = $this->wf->modules[$mod][0].'/var/tpl/'.$tpl_name.'.tpl';
+			$tmp = $this->wf->modules[$mod][0].
+				'/var/tpl/'.$tpl_name.'.tpl';
 			if(file_exists($tmp)) {
 				$this->tpl_file = $tmp;
-				$this->cache_file = $this->wf->modules[$mod][0].'/var/tpl_cache/'.$tpl_name.'.tpl';
+				$this->cache_file = $this->wf->modules[$mod][0].
+					'/var/tpl_cache/'.$tpl_name.'.tpl';
 				return(true);
 			}
 		}
