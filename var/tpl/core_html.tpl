@@ -11,5 +11,8 @@
 
 {$html_body}
 
+{if $html_managed_body}
+{$html_managed_body}
+{/if}
 </body>
 </html>

@@ -12,7 +12,9 @@
 				{foreach $vars as $name => $value}
 					<li>
 						{literal}{{/literal}${$name}{literal}}{/literal}<br />
+						{if is_string($value)}
 						<em>ex: {$value}</em>
+						{/if}
 					</li>
 				{/foreach}
 				</ul>

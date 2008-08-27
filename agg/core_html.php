@@ -130,7 +130,8 @@ class core_html extends wf_agg {
 		$tpl->merge_vars(array(
 			'html_body' => $body,
 			'html_title' => $this->title,
-			'html_meta' => $this->get_meta()
+			'html_meta' => $this->get_meta(),
+			"html_managed_body" => $this->get_managed()
 		));
 		
 		echo $tpl->fetch('core_html');
@@ -140,18 +141,12 @@ class core_html extends wf_agg {
 	 *
 	 * Permet d'ajouter un managed body avec un template
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var $managed_list = array();
 	public function add_managed_tpl($title, $core_tpl) {
-// 		$data = null;
-// 		if(file_exists($core_tpl->tpl_file))
-// 			$data = file_get_contents($core_tpl->tpl_file);
-// 
-// 		$tpl = new core_tpl($this->wf);
-// 		$tpl->set('data', $data);
-// 		$tpl->set('title', $title);
-// 		$tpl->set('path', $core_tpl->tpl_file);
-// 		$tpl->set('vars', $core_tpl->vars);
-// 
-// 		echo $tpl->fetch('core_managed_body', TRUE);
+		$this->managed_list[] = array(
+			$title,
+			&$core_tpl
+		);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -160,6 +155,30 @@ class core_html extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function add_managed_buffer($title, $buffer) {
 		//
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Permet de recuperer le contenu managé
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_managed() {
+		if($this->_core_request->permissions["session:god"]) {
+			$buf = NULL;
+			foreach($this->managed_list as $val) {
+				$data = null;
+				if(file_exists($val[1]->tpl_file))
+					$data = file_get_contents($val[1]->tpl_file);
+		
+				$tpl = new core_tpl($this->wf);
+				$tpl->set('data', $data);
+				$tpl->set('title', $val[0]);
+				$tpl->set('path', $val[1]->tpl_file);
+				$tpl->set('vars', $val[1]->vars);
+	
+				$buf .= $tpl->fetch('core_managed_body', TRUE);
+			}
+		}
+		return($buf);
 	}
 	
 	
