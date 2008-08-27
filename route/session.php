@@ -24,7 +24,7 @@ class wfr_core_session extends wf_route_request {
 		/* prend les inputs */
 		$user = $_POST["user"];
 		$pass = $_POST["pass"];
-		$url = base64_decode($_POST["url"]);
+		$url = base64_decode($_POST["back_url"]);
 		
 		/* vérification de l'utilisateur */
 		$ret = $this->a_core_session->identify(
@@ -40,7 +40,7 @@ class wfr_core_session extends wf_route_request {
 			);
 			$tpl->set(
 				"back_url", 
-				base64_encode($_SERVER["REQUEST_URI"])
+				base64_encode($url)
 			);
 			$tpl->set(
 				"login_url", 
