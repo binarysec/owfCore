@@ -70,7 +70,7 @@ class core_request extends wf_agg {
 		
 		/* vérification de la session */
 		$ret = $this->a_core_session->check_session();
-		if($ret != WF_SESSION_VALID) {
+		if($ret != CORE_SESSION_VALID) {
 			$this->a_core_html->set(
 				"message", 
 				"Session destroyed"

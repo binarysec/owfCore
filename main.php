@@ -26,10 +26,11 @@ define("WF_T_INTEGER", 1);
 define("WF_T_DOUBLE",  2);
 define("WF_T_STRING",  6);
 
-define("WF_RENDER_LOGIN", 1);
-define("WF_RENDER_SHOW",  2);
-define("WF_RENDER_SHOW",  2);
-define("WF_RENDER_ERROR", 3);
+define("WF_USER_GOD",     "session:god");
+define("WF_USER_ADMIN",   "session:admin");
+define("WF_USER_SIMPLE",  "session:simple");
+define("WF_USER_SERVICE", "session:service");
+define("WF_USER_ANON",    "session:anon");
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

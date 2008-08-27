@@ -22,16 +22,10 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-define("WF_SESSION_VALID",        1);
-define("WF_SESSION_TIMEOUT",      2);
-define("WF_SESSION_USER_UNKNOWN", 3);
-define("WF_SESSION_AUTH_FAILED",  4);
-
-define("WF_USER_GOD",     "session:god");
-define("WF_USER_ADMIN",   "session:admin");
-define("WF_USER_SIMPLE",  "session:simple");
-define("WF_USER_SERVICE", "session:service");
-define("WF_USER_ANON",    "session:anon");
+define("CORE_SESSION_VALID",        1);
+define("CORE_SESSION_TIMEOUT",      2);
+define("CORE_SESSION_USER_UNKNOWN", 3);
+define("CORE_SESSION_AUTH_FAILED",  4);
 
 class core_session extends wf_agg {
 	/** TODO: PARAMETRER */
@@ -148,17 +142,17 @@ class core_session extends wf_agg {
 					"remote_address" => $_SERVER["REMOTE_ADDR"],
 					"permissions" => serialize(array(WF_USER_ANON))
 				);
-				return(WF_SESSION_VALID);
+				return(CORE_SESSION_VALID);
 			}
 			else {
-				return(WF_SESSION_TIMEOUT);
+				return(CORE_SESSION_TIMEOUT);
 			}
 		}
 		$this->me = $res[0];
 
 		/* vérfication du timeout */
 		if(time()-$this->me["session_time"] > $this->sess_timeout) {
-			return(WF_SESSION_TIMEOUT);
+			return(CORE_SESSION_TIMEOUT);
 		}
 			
 		/* modification de l'adresse en base + time update */
@@ -179,7 +173,7 @@ class core_session extends wf_agg {
 		if(!$this->data)
 			$this->data = array();
 
-		return(WF_SESSION_VALID);
+		return(CORE_SESSION_VALID);
 	}
 	
 	private function generate_session_id() {
