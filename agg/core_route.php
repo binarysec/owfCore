@@ -90,7 +90,7 @@ class core_route extends wf_agg {
 		require($file);
 		
 		/* defini le nom de l'objet */
-		$objectname = "wfr_".$mod;
+		$objectname = "_wfr_".$mod;
 		
 		/* charge l'objet */
 		$obj = new ${objectname}($this->wf);
