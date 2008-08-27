@@ -116,12 +116,10 @@ class core_js extends wf_agg {
 		if(!$data)	
 			return;
 
-		$request = $this->wf->core_request();
-
 		$key  = $data['key'];
 		$rand = $data['rand'];
 
-		$link = $request->linker('/js/'.$rand);
+		$link = $this->wf->linker('/js/'.$rand);
 		$final = '<script '.
 				'type="text/javascript" '.
 				'src="'.$link.'"></script>'."\n";

@@ -40,7 +40,7 @@ define("_CORE_ROUTE_UNKNOWN", 2);
 
 class core_route extends wf_agg {
 	var $routes = array();
-	
+	var $wf;
 	var $a_core_cacher;
 	var $a_core_request;
 	
@@ -168,7 +168,7 @@ class core_route extends wf_agg {
 			if($result[_CORE_ROUTE_MOD][0] == CORE_ROUTE_REDIRECT) {
 				header(
 					"Location: ".
-					$this->a_core_request->linker(
+					$this->wf->linker(
 						$result[_CORE_ROUTE_MOD][1]
 					)
 				);

@@ -36,7 +36,7 @@ class core_tpl {
 	var $tpl_file;
 	var $cache_file;
 	var $compiler;
-	var $vars;
+	var $vars = array();
 
 	public function __construct($wf) {
 		$this->wf = $wf;

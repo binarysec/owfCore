@@ -376,6 +376,16 @@ class web_framework {
 		return($obj);
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Use to link
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function linker($route, $filter=NULL) {
+		if(!$filter) {
+			return("/index.php".$route);
+		}
+
+	}
 	
 }
 

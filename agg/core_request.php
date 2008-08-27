@@ -54,15 +54,20 @@ class core_request extends wf_agg {
 		/* vérification du canal */
 		if(!is_object($this->channel[1])) {
 			if(count($this->channel[CORE_ROUTE_REQUEST]) == 0) {
-				header("Location: ".$this->linker("/index"));
+				header("Location: ".$this->wf->linker("/index"));
 				exit(0);
 			}
 
-			$this->a_core_html->set(
+			$tpl = new core_tpl($this->wf);
+			
+			$tpl->set(
 				"message",
 				"Page not found"
 			);
-			$this->a_core_html->rendering("core_html_error_404");
+
+			echo $tpl->fetch("core_html_error");
+			exit(0);
+			
 		}
 	
 		/* vérification si c'est une tentative de login */
@@ -71,19 +76,21 @@ class core_request extends wf_agg {
 		/* vérification de la session */
 		$ret = $this->a_core_session->check_session();
 		if($ret != CORE_SESSION_VALID) {
-			$this->a_core_html->set(
+			$tpl = new core_tpl($this->wf);
+			
+			$tpl->set(
 				"message", 
 				"Session destroyed"
 			);
-			$this->a_core_html->set(
+			$tpl->set(
 				"back_url", 
 				base64_encode($_SERVER["REQUEST_URI"])
 			);
-			$this->a_core_html->set(
+			$tpl->set(
 				"login_url", 
-				$this->linker("/session/login")
+				$this->wf->linker("/session/login")
 			);
-			$this->a_core_html->rendering("core_login");
+			echo $tpl->fetch("core_login");
 			exit(0);
 		}
 		
@@ -130,20 +137,23 @@ class core_request extends wf_agg {
 	private function check_all_permissions($need) {
 		foreach($need as $value) {
 			if(!$this->permissions[$value]) {
-				$this->a_core_html->set(
+				$tpl = new core_tpl($this->wf);
+				
+				$tpl->set(
 					"message", 
 					"You don't have enought of permissions"
 				);
-				$this->a_core_html->set(
+				$tpl->set(
 					"back_url", 
 					base64_encode($_SERVER["REQUEST_URI"])
 				);
-				$this->a_core_html->set(
+				$tpl->set(
 					"login_url", 
-					$this->linker("/session/login")
+					$this->wf->linker("/session/login")
 				);
-				$this->a_core_html->rendering("core_login");
+				echo $tpl->fetch("core_login");
 				exit(0);
+				
 			}
 		}
 		return(TRUE);
@@ -163,18 +173,7 @@ class core_request extends wf_agg {
 			$this->channel[CORE_ROUTE_MOD][2])
 		);
 	}
-	
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 *
-	 * Use to link
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function linker($route, $filter=NULL) {
-		if(!$filter) {
-			return("/index.php".$route);
-		}
 
-	}
-	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Use to get input filter array
