@@ -133,7 +133,9 @@ class core_html extends wf_agg {
 			'html_meta' => $this->get_meta(),
 			"html_managed_body" => $this->get_managed()
 		));
-		
+		$tpl->set('html_css', $this->css);
+		$tpl->set('html_js', $this->js);
+				
 		echo $tpl->fetch('core_html');
 	}
 	
@@ -159,6 +161,24 @@ class core_html extends wf_agg {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Gestion des javascript
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var $js = array();
+	public function add_js($token, $link) {
+		$this->js[] = array($token, $link);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Gestion des CSS
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var $css = array();
+	public function add_css($token, $link) {
+		$this->css[] = array($token, $link);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Permet de recuperer le contenu managé
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_managed() {
@@ -174,8 +194,8 @@ class core_html extends wf_agg {
 				$tpl->set('title', $val[0]);
 				$tpl->set('path', $val[1]->tpl_file);
 				$tpl->set('vars', $val[1]->vars);
-	
-				$buf .= $tpl->fetch('core_managed_body', TRUE);
+				
+				$buf .= $tpl->fetch('core_html_managed_body', TRUE);
 			}
 		}
 		return($buf);

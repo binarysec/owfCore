@@ -2,7 +2,16 @@
 <html>
 <head>
 <title><?php echo $t->vars['html_title']; ?></title>
-<?php echo $t->vars['html_meta'];  echo $t->vars['css'];  echo $t->vars['javascript']; ?>
+<?php echo $t->vars['html_meta']; ?>
+
+<?php if($t->vars['html_css']): foreach($t->vars['html_css'] as $t->vars['k'] => $t->vars['v']):?> 
+<link rel="stylesheet" type="text/css" href="<?php echo $t->vars['v'][1]; ?>"/>
+<?php endforeach;?>
+
+<?php endif; if($t->vars['html_js']): foreach($t->vars['html_js'] as $t->vars['k'] => $t->vars['v']):?> 
+<script type="text/javascript" src="<?php echo $t->vars['v'][1]; ?>"></script>
+<?php endforeach; endif;?>
+
 </head>
 
 <body<?php echo $t->vars['body_attribs']; ?>>

@@ -24,7 +24,11 @@ class wfr_core_session extends wf_route_request {
 		/* prend les inputs */
 		$user = $_POST["user"];
 		$pass = $_POST["pass"];
+
 		$url = base64_decode($_POST["back_url"]);
+		
+		if(!$url)
+			$this->wf->display_login();
 		
 		/* vérification de l'utilisateur */
 		$ret = $this->a_core_session->identify(
@@ -33,21 +37,9 @@ class wfr_core_session extends wf_route_request {
 		);
 		/* mot de passe ou mail incorrect */
 		if($ret == FALSE) {
-			$tpl = new core_tpl($this->wf);
-			$tpl->set(
-				"message", 
+			$this->wf->display_login(
 				"Wrong email or password"
 			);
-			$tpl->set(
-				"back_url", 
-				base64_encode($url)
-			);
-			$tpl->set(
-				"login_url", 
-				$this->wf->linker("/session/login")
-			);
-			echo $tpl->fetch("core_login");
-			exit(0);
 		}
 		/* bon login */
 		else {

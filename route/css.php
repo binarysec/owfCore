@@ -17,42 +17,46 @@ class wfr_core_css extends wf_route_request {
 	 * function to display css
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function show_css() {
-		/* prend les données du fichiers */
+		$file = $this->a_core_request->get_ghost();
 		
-		$file = $this->a_core_request->get_argv(0);
-		$data = $this->a_core_css->get_content($file);
-
-		/* check le tout */
-		if(!$data) {
+		/* prend et vérifie le last modified */
+		$lastmod = $this->a_core_css->get_last_modified($file);
+		if(!$lastmod) {
 			header("Location: ".$this->wf->linker("/"));
 			exit(0);
 		}
 		
 		/* cache local */
 		$requested_time = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
-		$cache_time = $this->a_core_css->get_last_modified($file);
+		$cache_time = $lastmod[1];
 
 		if($cache_time == $requested_time) {
 			$this->a_core_request->set_header(
-				$_SERVER['SERVER_PROTOCOL']." 304 Not Modified", 
+				$_SERVER['SERVER_PROTOCOL'].
+				" 304 Not Modified", 
 				$cache_time
 			);
 			$this->a_core_request->send_headers();
 			exit(0);
 		}
 
-		/* tout est ok on set le header et on envoi les données */
+		/* set the header and send data */
 		$this->a_core_request->set_header(
-			"Last-modified", $cache_time
+			"Last-modified", 
+			$cache_time
 		);
 		$this->a_core_request->set_header(
-			"Content-type", "text/css"
+			"Content-type",
+			"text/css"
 		);
 		$this->a_core_request->set_header(
-			"Content-length", strlen($data)
+			"Content-length", 
+			$this->a_core_css->get_size($file)
 		);
 		$this->a_core_request->send_headers();
-		echo $data;
+
+		/* output */
+		$this->a_core_css->show_css($file);
 		exit(0);
 	}
 

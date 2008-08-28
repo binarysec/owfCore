@@ -57,17 +57,10 @@ class core_request extends wf_agg {
 				exit(0);
 			}
 			
-			$tpl = new core_tpl($this->wf);
-			$tpl->set(
-				"message",
+			$this->wf->display_error(
+				404,
 				"Page not found"
 			);
-			$tpl->set(
-				"http_number",
-				"404"
-			);
-			echo $tpl->fetch("core_html_error");
-			exit(0);
 		}
 	
 		/* vérification si c'est une tentative de login */
@@ -76,22 +69,9 @@ class core_request extends wf_agg {
 		/* vérification de la session */
 		$ret = $this->a_core_session->check_session();
 		if($ret != CORE_SESSION_VALID) {
-			$tpl = new core_tpl($this->wf);
-			
-			$tpl->set(
-				"message", 
+			$this->wf->display_login(
 				"Session destroyed"
 			);
-			$tpl->set(
-				"back_url", 
-				base64_encode($_SERVER["REQUEST_URI"])
-			);
-			$tpl->set(
-				"login_url", 
-				$this->wf->linker("/session/login")
-			);
-			echo $tpl->fetch("core_login");
-			exit(0);
 		}
 		
 		/* chargement du canal et des filtres */
@@ -101,6 +81,10 @@ class core_request extends wf_agg {
 		$perm = unserialize($this->a_core_session->me["permissions"]);
 		$need = $this->channel[0][7];
 		
+		/* vérification si c'est pas une redirection */
+		if($this->channel[0][2] == WF_ROUTE_REDIRECT)
+			$this->a_core_route->execute_route(&$this->channel);
+			
 		/* chargement des permissions */
 		$this->load_user_permissions(&$perm, &$need);
 		
@@ -122,7 +106,7 @@ class core_request extends wf_agg {
 		/* terminaison */
 		$this->a_core_route->execute_route(&$this->channel);
 	}
-	
+
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Check if session authentification form is required
@@ -141,7 +125,7 @@ class core_request extends wf_agg {
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Allow to get a request argument
+	 * Allow to get a request arguments
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_argv($pos) {
 		return($this->channel[1][$pos]);
@@ -157,28 +141,22 @@ class core_request extends wf_agg {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Allow to get a request ghost argument
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_ghost() {
+		return($this->channel[4]);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Function that checking all permission
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function check_all_permissions($need) {
 		foreach($need as $value) {
 			if(!$this->permissions[$value]) {
-				$tpl = new core_tpl($this->wf);
-				
-				$tpl->set(
-					"message", 
+				$this->wf->display_login(
 					"You don't have enought of permissions"
 				);
-				$tpl->set(
-					"back_url", 
-					base64_encode($_SERVER["REQUEST_URI"])
-				);
-				$tpl->set(
-					"login_url", 
-					$this->wf->linker("/session/login")
-				);
-				echo $tpl->fetch("core_login");
-				exit(0);
-				
 			}
 		}
 		return(TRUE);
