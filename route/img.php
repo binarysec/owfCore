@@ -19,10 +19,11 @@ class wfr_core_img extends wf_route_request {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function show_img() {
 		/* fetch data */
-		$chan = $this->a_core_request->channel[_CORE_ROUTE_UNKNOWN];
+		$chan = $this->a_core_request->get_args();
 		$mod = $chan[0];
 		$chan[0] = NULL;
 		$file = substr(implode('/', $chan), 1);
+		echo $file;
 		$path = $this->a_core_img->construct_path($mod, $file);
 
 		/* doesn't exist */

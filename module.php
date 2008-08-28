@@ -11,6 +11,43 @@ class core extends wf_module {
 	public function get_version() { return("1.0"); }
 	public function get_authors() { return("Michael VERGOZ"); }
 	public function get_depends() { return(NULL); }
+	
+	public function get_actions() {
+		return(array(
+			"/session/login" => array(
+				WF_ROUTE_ACTION,
+				"session",
+				"login",
+				"Login",
+				WF_ROUTE_HIDE,
+				array("session:anon")
+			),
+			"/img" => array(
+				WF_ROUTE_ACTION,
+				"img",
+				"show_img",
+				"Img",
+				WF_ROUTE_HIDE,
+				array("session:anon")
+			),
+			"/css" => array(
+				WF_ROUTE_ACTION,
+				"css",
+				"show_css",
+				"Css",
+				WF_ROUTE_HIDE,
+				array("session:anon")
+			),
+			"/js" => array(
+				WF_ROUTE_ACTION,
+				"js",
+				"show_js",
+				"Js",
+				WF_ROUTE_HIDE,
+				array("session:anon")
+			)
+		));
+	}
 }
 
 ?>
