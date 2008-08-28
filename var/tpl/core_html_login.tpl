@@ -2,7 +2,7 @@
 <head>
 <title>Login</title>
 <style>
-
+{literal}
 body { 
 	font-family: Tahoma, Verdana, Arial, sans-serif; 
 }
@@ -38,7 +38,7 @@ a, a:hover {
 	text-decoration: none; 
 }
 
-
+{/literal}
 </style>
 </head>
 
@@ -48,15 +48,15 @@ a, a:hover {
 <tr>
 <td align="center" valign="middle">
 
-<img src="<?php echo $t->vars['logo_url']; ?>"/></br>
+<img src="{$logo_url}"/></br>
 
 <h1>Login required</h1>
-<h2><?php echo $t->vars['message']; ?></h2>
+<h2>{$message}</h2>
 
-<form action="<?php echo $t->vars['login_url']; ?>" method="post">
-	<?php if($t->vars['back_url'] ):?>
-	<input type="hidden" name="back_url" value="<?php echo $t->vars['back_url']; ?>" />
-	<?php endif;?>
+<form action="{$login_url}" method="post">
+	{if $back_url }
+	<input type="hidden" name="back_url" value="{$back_url}" />
+	{/if}
 	<table width="300px">
 		<tr>
 			<td><h3>User (mail):</h3></td>

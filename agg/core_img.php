@@ -29,83 +29,84 @@ class core_img extends wf_agg {
 		$this->_core_file = $this->wf->core_file();
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Create a link image
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function linker($link) {
-	
+		$link = $this->_core_file->linker(
+			'img',
+			$link
+		);
+		return($link);
 	}
 	
-	public function get_last_modification($token) {
-	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get last image modification
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_last_modified($token) {
+		return(
+			$this->_core_file->get_last_modified(
+				'img',
+				$token
+			)
+		);
 	}
 	
-	public function get_data($token) {
-	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function to show the image
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function show_image($token) {
+		return($this->_core_file->echo_data(
+			'img',
+			$token
+		));
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function to put the image into a buffer
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_image($token) {
+		return($this->_core_file->get_data(
+			'img',
+			$token
+		));
+	}
 	
-	public function construct_path($mod, $file) {
-		/* if module doesn't exist return null */
-		if(!isset($this->wf->modules[$mod])) {
-			throw new wf_exception(
-				$this->wf,
-				CORE_EXC_PRIVATE,
-				"Le module ".
-				$this->wf->modules[$mod].
-				" n'existe pas"
-			);
-			return NULL;
-		}
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function to get the type of image file
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_mime_type($token) {
+		$filename = $this->_core_file->get_filename(
+			'img',
+			$token
+		);
+		if(!$filename)
+			return(NULL);
+			
+		/* détermine le type de l'image */
+		$image_type = exif_imagetype($filename);
 
-		/* build file path and base directory path */
-		$base = realpath($this->wf->modules[$mod][0].'/var/img/');
-		$path = realpath($this->wf->modules[$mod][0].'/var/img/'.$file);
-
-		/* if file doesn't exist return null */
-		if(!file_exists($path)) {
-			throw new wf_exception(
-				$this->wf,
-				CORE_EXC_PRIVATE,
-				"Le fichier ".
-				$path.
-				" n'existe pas"
-			);
-			return NULL;
-		}
-
-		/* directory transversal detection */
-		if(substr($path, 0, strlen($base)) != $base) {
-			throw new wf_exception(
-				$this->wf,
-				CORE_EXC_PRIVATE,
-				"Tentative de directory traversal détectée"
-			);
-			return NULL;
-		}
-
-		return $path;
-	}
-
-	public function get_last_modified($path) {
-		/* last modification date of the file */
-		$mtime = filemtime($path);
-
-		/* format the date */
-		$lastmod = date("D, d M Y H:i:s \G\M\T", $mtime);
-
-		return($lastmod);
-	}
-
-	public function get_mime_type($path) {
-		/* image type detection */
-		$image_type = exif_imagetype($path);
-
-		/* Mime type to use in the HTTP header Content-type */
+		/* détermine le type Mime à utiliser 
+		   dans l'en-tête HTTP Content-type */
 		$mime_type = image_type_to_mime_type($image_type);
 
 		return($mime_type);
 	}
-
-	public function get_content($path) {
-		return(file_get_contents($path));
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function to get the file size
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_size($token) {
+		return($this->_core_file->get_file_size(
+			'img',
+			$token
+		));
 	}
 	
 }

@@ -41,7 +41,7 @@ class core_route extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function scan() {
 		/* cherche s'il y a des informations dans le cache */
-		if(($c = $this->a_core_cacher->get("wfa_core_route")) != NULL) {
+		if(($c = $this->a_core_cacher->get("core_route"))) {
 			$this->routes = $c;
 			return(TRUE);
 		}
@@ -62,7 +62,10 @@ class core_route extends wf_agg {
 		}
 	
 		/* cache les données */
-		$this->a_core_cacher->store("wfa_core_route", $this->routes);
+		$this->a_core_cacher->store(
+			"core_route", 
+			$this->routes
+		);
 
 		return(TRUE);
 	}
@@ -178,14 +181,17 @@ class core_route extends wf_agg {
 				$stop = TRUE;
 			
 			
-			if($stop == TRUE)
+			if($stop == TRUE) {
 				$result[1][] = $dir[$i];
+				$result[4] .= "/$dir[$i]";
+			}
 			else
 				$result[0] = &$nav[1];
 			
 			$result[2][] = $dir[$i];
 		}
 		$result[3] = $link;
+		
 		return($result);
 	}
 	
