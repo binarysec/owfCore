@@ -28,7 +28,7 @@ class core_request extends wf_agg {
 	var $a_core_html;
 	var $a_core_request;
 	
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
 
 		$this->a_core_session = $this->wf->core_session();

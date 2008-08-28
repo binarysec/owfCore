@@ -28,7 +28,7 @@ class core_lang extends wf_agg {
 	var $current = NULL;
 	var $available = NULL;
 	
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
 		
 		/** \todo SYSTEME DE CACHE */

@@ -31,7 +31,7 @@ class core_css extends wf_agg {
 
 	var $group_delimiter = ',';
 	
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
 		$struct = array(
 			"key" => WF_VARCHAR,

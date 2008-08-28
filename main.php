@@ -54,7 +54,7 @@ abstract class wf_route_request {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 abstract class wf_agg {
 	var $wf = NULL;
-	abstract public function loader($wf, $position);
+	abstract public function loader($wf);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -351,7 +351,7 @@ class web_framework {
 		$this->aggregator_cached[$funcname] = $obj;
 		
 		/* execute le chargeur */
-		$obj->loader($this, 0);
+		$obj->loader($this);
 		
 		return($obj);
 	}
@@ -365,6 +365,14 @@ class web_framework {
 			return("/index.php".$route);
 		}
 
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function use to create directories recursively
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function create_dir($filename) {
+	
 	}
 	
 }

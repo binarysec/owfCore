@@ -74,7 +74,7 @@ class core_tpl_compiler extends wf_agg {
 	private $current_tag;
 	private $tpl_file;
 
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
 
 		$this->allowed_in_var  = array_merge($this->vartype, $this->op);
