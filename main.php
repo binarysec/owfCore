@@ -32,69 +32,11 @@ define("WF_USER_SIMPLE",  "session:simple");
 define("WF_USER_SERVICE", "session:service");
 define("WF_USER_ANON",    "session:anon");
 
+define("WF_ROUTE_ACTION",   1);
+define("WF_ROUTE_REDIRECT", 2);
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * To define information in relation with the route.
- * Permissions and menus are defined here.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-abstract class wf_route_info {
-	var $wf = NULL;
-	abstract public function __construct($wf);
-	
-	/* 
-	 * data structure must be returned by get_info()
-	 * array(
-	 * 	// nom du module
-	 * 	"MODULE_NAME",
-	 * 	// description du module
-	 * 	"MODULE_DESCRIPTION",
-	 * 	// personne/societe supportant le module
-	 * 	"MODULE_SUPPORT",
-	 * 	// url du supporter
-	 * 	"MODULE_SUPPORT_URL"
-	 * )
-	 */
-	abstract public function get_info();
-	
-	/* 
-	 * data structure must be returned by get_actions()
-	 * si TYPE = WF_ROUTE_ACTION alors :
-	 * array(
-	 * 	"/link/name" => array(
-	 * 		// type of the route
-	 * 		"TYPE",
-	 * 		// name of the function which will be 
-	 * 		// used to execute the function
-	 * 		"MODULE_NAME", 
-	 * 		// name of the function which will be 
-	 * 		// executed for the link
-	 * 		"FUNCTION_NAME", 
-	 * 		// text printed, will be translated
-	 * 		"TF_TEXT", 
-	 *		// route is hidden or not ? WF_ROUTE_SHOW, WF_ROUTE_HIDE
-	 *		"ROUTE_VIEW"
-	 * 		// serial privileges WF_USER_GOD, *_ADMIN, *_SIMPLE, *_ANON
-	 * 		"SERIAL,PRIVILEGE,ASSIGNED" 
-	 * 	)
-	 * )
-	 * si TYPE = WF_ROUTE_REDIRECT alors :
-	 * array(
-	 * 	"/link/name" => array(
-	 * 		// type of the route
-	 * 		"TYPE",
-	 * 		// link to redirect
-	 * 		"LINK_NAME", 
-	 * 		// text printed, will be translated
-	 * 		"TF_TEXT", 
-	 *		// route is hidden or not ? WF_ROUTE_SHOW, WF_ROUTE_HIDE
-	 *		"ROUTE_VIEW"
-	 * 	)
-	 * )
-	 */
-	abstract public function get_actions();
-
-}
+define("WF_ROUTE_SHOW", 1); // visible pour l'utilisateur
+define("WF_ROUTE_HIDE", 2); // insivible pour l'utilisateur
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -134,6 +76,43 @@ abstract class wf_module {
 	
 	/* return an array corresponding to the list of available modules */
 	abstract public function get_depends();
+	
+	/* 
+	 * data structure must be returned by get_actions()
+	 * si TYPE = WF_ROUTE_ACTION alors :
+	 * array(
+	 * 	"/link/name" => array(
+	 * 		// type of the route
+	 * 		"TYPE",
+	 * 		// name of the function which will be 
+	 * 		// used to execute the function
+	 * 		"MODULE_NAME", 
+	 * 		// name of the function which will be 
+	 * 		// executed for the link
+	 * 		"FUNCTION_NAME", 
+	 * 		// text printed, will be translated
+	 * 		"TF_TEXT", 
+	 *		// route is hidden or not ? WF_ROUTE_SHOW, WF_ROUTE_HIDE
+	 *		"ROUTE_VIEW"
+	 * 		// serial privileges WF_USER_GOD, *_ADMIN, *_SIMPLE, *_ANON
+	 * 		"SERIAL,PRIVILEGE,ASSIGNED" 
+	 * 	)
+	 * )
+	 * si TYPE = WF_ROUTE_REDIRECT alors :
+	 * array(
+	 * 	"/link/name" => array(
+	 * 		// type of the route
+	 * 		"TYPE",
+	 * 		// link to redirect
+	 * 		"LINK_NAME", 
+	 * 		// text printed, will be translated
+	 * 		"TF_TEXT", 
+	 *		// route is hidden or not ? WF_ROUTE_SHOW, WF_ROUTE_HIDE
+	 *		"ROUTE_VIEW"
+	 * 	)
+	 * )
+	 */
+	abstract public function get_actions();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -285,7 +264,8 @@ class web_framework {
 				$obj->get_banner(),
 				$obj->get_version(),
 				$obj->get_authors(),
-				$obj->get_depends()
+				$obj->get_depends(),
+				&$obj
 			);
 		}
 	}

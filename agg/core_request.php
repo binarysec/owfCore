@@ -34,7 +34,6 @@ class core_request extends wf_agg {
 		$this->a_core_session = $this->wf->core_session();
 		$this->a_core_route = $this->wf->core_route();
 		$this->a_core_html = $this->wf->core_html();
-	
 	}
 
 	var $channel;
@@ -52,22 +51,23 @@ class core_request extends wf_agg {
 		);
 
 		/* vérification du canal */
-		if(!is_object($this->channel[1])) {
-			if(count($this->channel[CORE_ROUTE_REQUEST]) == 0) {
-				header("Location: ".$this->wf->linker("/index"));
+		if(!$this->channel[0]) {
+			if(!$this->channel[3]) {
+				header("Location: ".$this->wf->linker("/"));
 				exit(0);
 			}
-
-			$tpl = new core_tpl($this->wf);
 			
+			$tpl = new core_tpl($this->wf);
 			$tpl->set(
 				"message",
 				"Page not found"
 			);
-
+			$tpl->set(
+				"http_number",
+				"404"
+			);
 			echo $tpl->fetch("core_html_error");
 			exit(0);
-			
 		}
 	
 		/* vérification si c'est une tentative de login */
@@ -99,8 +99,8 @@ class core_request extends wf_agg {
 		
 		/* vérification des permissions necessaires du canal */
 		$perm = unserialize($this->a_core_session->me["permissions"]);
-		$need = $this->channel[CORE_ROUTE_MOD][5];
-
+		$need = $this->channel[0][7];
+		
 		/* chargement des permissions */
 		$this->load_user_permissions(&$perm, &$need);
 		
@@ -120,20 +120,45 @@ class core_request extends wf_agg {
 		$this->wf->core_lang()->check_lang_request();
 		
 		/* terminaison */
-		$this->execute_route(&$this->channel);
+		$this->a_core_route->execute_route(&$this->channel);
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Check if session authentification form is required
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function check_for_login() {
 		/* si la route correspond au login */
 		if(
-			$this->channel[CORE_ROUTE_MOD][1] == "session" &&
-			$this->channel[CORE_ROUTE_MOD][2] == "login"
+			$this->channel[2][0] == "session" &&
+			$this->channel[2][1] == "login"
 			) {
-			$this->execute_route(&$this->channel);
-			exit(0);
+			$this->a_core_route->execute_route(
+				&$this->channel
+			);
 		}
 	}
 
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Allow to get a request argument
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_argv($pos) {
+		return($this->channel[1][$pos]);
+	}
+	
+	public function get_argc() {
+		return(count($this->channel[1]));
+	}
+	
+	public function get_args() {
+		return($this->channel[1]);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function that checking all permission
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function check_all_permissions($need) {
 		foreach($need as $value) {
 			if(!$this->permissions[$value]) {
@@ -163,15 +188,6 @@ class core_request extends wf_agg {
 		foreach($perm as $value)
 			$this->permissions[$value] = TRUE;
 		return(TRUE);
-	}
-	
-	private function execute_route($channel) {
-		/* execution du callback final */
-
-		call_user_func(array(
-			$channel[_CORE_ROUTE_REQUEST], 
-			$this->channel[CORE_ROUTE_MOD][2])
-		);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

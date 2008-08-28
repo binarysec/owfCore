@@ -20,12 +20,15 @@
  *  engineer, decompile or disassemble this software     *
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
- 
+
+/** \todo c du travaille de cochon. On refait ca. */
+
 class core_img extends wf_agg {
 	
 	public function loader($wf, $position) {
 		$this->wf = $wf;
 	}
+	
 	
 	public function construct_path($mod, $file) {
 		/* if module doesn't exist return null */
