@@ -14,3 +14,13 @@
 		<?php endforeach;?>
 	</table>
 </form>
+
+<?php if($t->vars['form_is_submitted']):?>
+	<?php if($t->vars['form_is_valid']):?>
+		VALIDE
+	<?php else:?>
+		<h1>Erreurs&nbsp;:</h1>
+		<ul>
+			<li>Erreur 1</li>
+		</ul>
+	<?php endif; endif;?>
