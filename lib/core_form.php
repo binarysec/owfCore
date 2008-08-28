@@ -25,10 +25,11 @@
 class core_form {
 
 	private $wf              = null;
+	private $tpl             = null;
 	private $attribs         = array();
 	private $elements        = array();
 	private $hidden_elements = array();
-	private $tpl             = null;
+	private $errors          = array();
 
 
 	// Constructor
@@ -123,6 +124,17 @@ class core_form {
 
 	public function reset() {
 		/** TODO **/
+	}
+
+
+	// Errors
+
+	public function add_error($error) {
+		$this->errors[] = $error;
+	}
+
+	public function get_errors() {
+		return($this->errors);
 	}
 
 }
