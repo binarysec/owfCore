@@ -14,14 +14,3 @@
 		{/foreach}
 	</table>
 </form>
-
-{if $form_is_submitted}
-	{if $form_is_valid}
-		VALIDE
-	{else}
-		<h1>Erreurs&nbsp;:</h1>
-		<ul>
-			<li>Erreur 1</li>
-		</ul>
-	{/if}
-{/if}
