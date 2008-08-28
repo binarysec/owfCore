@@ -21,12 +21,24 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/** \todo c du travaille de cochon. On refait ca. */
-
 class core_img extends wf_agg {
+	var $_core_file;
 	
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
+		$this->_core_file = $this->wf->core_file();
+	}
+	
+	public function linker($link) {
+	
+	}
+	
+	public function get_last_modification($token) {
+	
+	}
+	
+	public function get_data($token) {
+	
 	}
 	
 	

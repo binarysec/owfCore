@@ -35,7 +35,7 @@ class core_session extends wf_agg {
 	var $me = NULL;
 	var $data = NULL;
 	
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
 		
 		$struct = array(

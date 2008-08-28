@@ -27,7 +27,7 @@ class core_route extends wf_agg {
 	var $wf;
 	var $a_core_cacher;
 	
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
 		
 		/* chargement du module de cache */

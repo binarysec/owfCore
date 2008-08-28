@@ -27,7 +27,7 @@ class core_html extends wf_agg {
 	
 	var $_core_request;
 	
-	public function loader($wf, $position) {
+	public function loader($wf) {
 		$this->wf = $wf;
 		$this->_core_request = $this->wf->core_request();
 		$this->set_title("Core module default HTML title");
