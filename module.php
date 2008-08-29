@@ -45,6 +45,14 @@ class core extends wf_module {
 				"Js",
 				WF_ROUTE_HIDE,
 				array("session:anon")
+			),
+			"/data" => array(
+				WF_ROUTE_ACTION,
+				"data",
+				"show_data",
+				"Data",
+				WF_ROUTE_SHOW,
+				array("session:anon")
 			)
 		));
 	}
