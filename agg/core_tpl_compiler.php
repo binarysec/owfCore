@@ -44,6 +44,20 @@ class core_tpl_compiler extends wf_agg {
 		T_ARRAY
 	);
 
+	private $assign_op = array(
+		T_AND_EQUAL,
+		T_DIV_EQUAL,
+		T_MINUS_EQUAL,
+		T_MOD_EQUAL,
+		T_MUL_EQUAL,
+		T_OR_EQUAL,
+		T_PLUS_EQUAL,
+		T_PLUS_EQUAL,
+		T_SL_EQUAL,
+		T_SR_EQUAL,
+		T_XOR_EQUAL
+	);
+
 	private $op = array(
 		T_BOOLEAN_AND,
 		T_BOOLEAN_OR,
@@ -67,9 +81,11 @@ class core_tpl_compiler extends wf_agg {
 	private $allowed_in_var;
 	private $allowed_in_expr;
 	private $allowed_in_foreach;
+	private $allowed_assign;
 
 	private $block_stack = array();
 	private $literals = array();
+	private $plugins = array();
 
 	private $current_tag;
 	private $tpl_file;
@@ -80,6 +96,7 @@ class core_tpl_compiler extends wf_agg {
 		$this->allowed_in_var  = array_merge($this->vartype, $this->op);
 		$this->allowed_in_expr = array_merge($this->vartype, $this->op);
 		$this->allowed_in_foreach = array_merge($this->vartype, array(T_AS, T_DOUBLE_ARROW));
+		$this->alowed_assign = array_merge($this->vartype, $this->assign_op, $this->op);
 	}
 
 	public function compile($tpl_file, $tpl_cache) {
@@ -97,6 +114,13 @@ class core_tpl_compiler extends wf_agg {
 		$res = preg_replace("!{literal}(.*?){/literal}!s", '{literal}', $res);
 		$res = preg_replace_callback("/{((.).*?)}/s", array($this, 'parse'), $res);
 
+		$header = '<?php '."\n";
+		foreach($this->plugins as $plugin => $flag) {
+			$method = 'func_'.$plugin;
+			$header .= 'function tpl_func_'.$plugin.$this->$method()."\n";
+		}
+		$header .= "\n".'?>'."\n";
+
 		if(count($this->block_stack)) {
 			throw new wf_exception(
 				$this,
@@ -107,7 +131,7 @@ class core_tpl_compiler extends wf_agg {
 			return(false);
 		}
 
-
+		$res = $header.$res;
 		$res = preg_replace('/\?>\n?<\?php/', '', $res);
 		$res = preg_replace('/<\?php\s*\?>/', '', $res);
 
@@ -178,7 +202,7 @@ class core_tpl_compiler extends wf_agg {
 		$res = '';
 		switch($name) {
 			case 'if':
-				$res = 'if('.$this->parse_finale($args, $this->allowed_in_expr).'):';
+				$res = 'if('.$this->parse_final($args, $this->allowed_in_expr).'):';
 				array_push($this->block_stack, 'if');
 				break;
 			case 'else':
@@ -201,18 +225,18 @@ class core_tpl_compiler extends wf_agg {
 						.' in <strong>'.$this->source_file.'</strong>.'
 					);
 				else
-					$res = 'elseif('.$this->parse_finale($args, $this->allowed_in_expr).'):';
+					$res = 'elseif('.$this->parse_final($args, $this->allowed_in_expr).'):';
 				break;
 			case 'foreach':
-				$res = 'foreach('.$this->parse_finale($args, $this->allowed_in_foreach, array(';', '!')).'):';
+				$res = 'foreach('.$this->parse_final($args, $this->allowed_in_foreach, array(';', '!')).'):';
 				array_push($this->block_stack, 'foreach');
 				break;
 			case 'while':
-				$res = 'while('.$this->parse_finale($args, $this->allowed_in_expr).'):';
+				$res = 'while('.$this->parse_final($args, $this->allowed_in_expr).'):';
 				array_push($this->block_stack, 'while');
 				break;
 			case 'for':
-				$res = 'for('. $this->parse_finale($args, $this->allowed_in_expr, array()) .'):';
+				$res = 'for('. $this->parse_final($args, $this->allowed_in_expr, array()) .'):';
 				array_push($this->block_stack, 'for');
 				break;
 			case '/foreach':
@@ -252,22 +276,29 @@ class core_tpl_compiler extends wf_agg {
 				);
 				break;
 			default:
-				throw new wf_exception(
-					$this,
-					WF_EXC_PRIVATE,
-					'Unknown tag <strong>'.$name.'</strong>'
-					.' in <strong>'.$this->source_file.'</strong>.'
-				);
+				if (method_exists($this, 'func_'.$name)) {
+					$argfct = $this->parse_final($args, $this->alowed_assign);
+					$res = 'tpl_func_'.$name.'($t'.((trim($argfct) != '') ? ', '.$argfct : '').'); ';
+					$this->plugins[$name] = true;
+				}
+				else {
+					throw new wf_exception(
+						$this,
+						WF_EXC_PRIVATE,
+						'Unknown tag <strong>'.$name.'</strong>'
+						.' in <strong>'.$this->source_file.'</strong>.'
+					);
+				}
 		}
-		return $res;
-	}
-
-	private function parse_var($expr) {
-		$res = $this->parse_finale($expr, $this->allowed_in_var);
 		return($res);
 	}
 
-	private function parse_finale($string, $allowed=array()) {
+	private function parse_var($expr) {
+		$res = $this->parse_final($expr, $this->allowed_in_var);
+		return($res);
+	}
+
+	private function parse_final($string, $allowed=array()) {
 		$result = '';
 		$bracketcount = 0;
 		$sqbracketcount = 0;
@@ -322,6 +353,33 @@ class core_tpl_compiler extends wf_agg {
 			);
 
 		return($result);
+	}
+
+
+	// Plugin functions
+
+	public function func_js() {
+		return('($t, $file) { echo $t->wf->core_js()->linker($file); }');
+	}
+
+	public function func_css() {
+		return('($t, $file) { echo $t->wf->core_css()->linker($file); }');
+	}
+
+	public function func_img() {
+		return('($t, $file) { echo $t->wf->core_img()->linker($file); }');
+	}
+
+	public function func_p_js() {
+		return('($t, $file) { echo $t->wf->core_js()->pass_linker($file); }');
+	}
+
+	public function func_p_css() {
+		return('($t, $file) { echo $t->wf->core_css()->pass_linker($file); }');
+	}
+
+	public function func_p_img() {
+		return('($t, $file) { echo $t->wf->core_img()->pass_linker($file); }');
 	}
 
 }

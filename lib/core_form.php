@@ -21,7 +21,7 @@
  *  engineer, decompile or disassemble this software     *
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+ 
 class core_form {
 
 	private $wf              = null;

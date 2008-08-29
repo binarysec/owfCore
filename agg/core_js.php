@@ -48,8 +48,15 @@ class core_js extends wf_agg {
 	 *
 	 * Create a link pass trought mode
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function pass_linker($link) {
-	
+	public function pass_linker($token) {
+		$link = $this->_core_file->linker(
+			'data/js',
+			$token
+		);
+		
+		$this->wf->core_html()->add_js($token, $link);
+		
+		return($link);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *

@@ -14,3 +14,15 @@
 		{/foreach}
 	</table>
 </form>
+
+Linker JS : {js "/file.js"}
+<br />
+Linker CSS : {css "/file.css"}
+<br />
+Linker IMG : {img "/file.png"}
+<br />
+Linker PASS JS : {p_js "/file.js"}
+<br />
+Linker PASS CSS : {p_css "/file.css"}
+<br />
+Linker PASS IMG : {p_img "/file.png"}

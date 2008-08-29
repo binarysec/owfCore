@@ -33,10 +33,10 @@ class core_img extends wf_agg {
 	 *
 	 * Create a link image
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function linker($link) {
+	public function linker($token) {
 		$link = $this->_core_file->linker(
 			'img',
-			$link
+			$token
 		);
 		return($link);
 	}
@@ -45,8 +45,15 @@ class core_img extends wf_agg {
 	 *
 	 * Create a link image pass trought mode
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function pass_linker($link) {
-	
+	public function pass_linker($token) {
+		$link = $this->_core_file->linker(
+			'data/img',
+			$token
+		);
+		
+		$this->wf->core_html()->add_js($token, $link);
+		
+		return($link);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
