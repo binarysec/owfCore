@@ -43,6 +43,14 @@ class core_img extends wf_agg {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Create a link image pass trought mode
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function pass_linker($link) {
+	
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Get last image modification
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_last_modified($token) {

@@ -31,7 +31,7 @@ class core_js extends wf_agg {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Create a link image
+	 * Create a link
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function linker($token) {
 		$link = $this->_core_file->linker(
@@ -42,6 +42,14 @@ class core_js extends wf_agg {
 		$this->wf->core_html()->add_js($token, $link);
 		
 		return($link);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Create a link pass trought mode
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function pass_linker($link) {
+	
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
