@@ -131,10 +131,10 @@ class core_html extends wf_agg {
 			'html_body' => $body,
 			'html_title' => $this->title,
 			'html_meta' => $this->get_meta(),
-			"html_managed_body" => $this->get_managed()
+			"html_managed_body" => $this->get_managed(),
+			'html_css' => $this->css,
+			'html_js' => $this->js
 		));
-		$tpl->set('html_css', $this->css);
-		$tpl->set('html_js', $this->js);
 				
 		echo $tpl->fetch('core_html');
 	}
