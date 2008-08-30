@@ -388,10 +388,6 @@ class web_framework {
 			"code",
 			$code
 		);
-		$tpl->set(
-			"logo_url",
-			$this->core_img()->linker("/logo.png")
-		);
 		echo $tpl->fetch("core_html_error");
 		exit(0);
 	}
@@ -410,18 +406,19 @@ class web_framework {
 			);
 		}
 		
-		$tpl->set(
-			"back_url", 
-			base64_encode($_SERVER["REQUEST_URI"])
-		);
-		$tpl->set(
-			"login_url", 
-			$this->linker("/session/login")
-		);
-		$tpl->set(
-			"logo_url",
-			$this->core_img()->linker("/logo.png")
-		);
+		if($_SERVER["REQUEST_URI"] == $this->linker("/session/login")) {
+			$tpl->set(
+				"back_url", 
+				base64_encode("/")
+			);
+		}
+		else {
+			$tpl->set(
+				"back_url", 
+				base64_encode($_SERVER["REQUEST_URI"])
+			);
+		}
+		
 		echo $tpl->fetch("core_html_login");
 		exit(0);
 	}

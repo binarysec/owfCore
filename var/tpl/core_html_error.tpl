@@ -37,7 +37,7 @@ a, a:hover {
 <table width="100%" height="100%">
 <tr>
 <td align="center" valign="middle">
-<img src="{$logo_url}"/></br>
+<img src="{link '/data/logo.png'}"/></br>
 <h1>Sorry your request could not be delivered</h1>
 
 {if $code == 404}
