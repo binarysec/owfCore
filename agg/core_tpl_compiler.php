@@ -85,7 +85,6 @@ class core_tpl_compiler extends wf_agg {
 
 	private $block_stack = array();
 	private $literals = array();
-	private $plugins = array();
 
 	private $current_tag;
 	private $tpl_file;
@@ -113,13 +112,6 @@ class core_tpl_compiler extends wf_agg {
 
 		$res = preg_replace("!{literal}(.*?){/literal}!s", '{literal}', $res);
 		$res = preg_replace_callback("/{((.).*?)}/s", array($this, 'parse'), $res);
-
-		$header = '<?php '."\n";
-		foreach($this->plugins as $plugin => $flag) {
-			$method = 'func_'.$plugin;
-			$header .= 'function tpl_func_'.$plugin.$this->$method()."\n";
-		}
-		$header .= "\n".'?>'."\n";
 
 		if(count($this->block_stack)) {
 			throw new wf_exception(
@@ -276,10 +268,11 @@ class core_tpl_compiler extends wf_agg {
 				);
 				break;
 			default:
-				if (method_exists($this, 'func_'.$name)) {
+				$method = 'func_'.$name;
+				if(method_exists($this, $method)) {
 					$argfct = $this->parse_final($args, $this->alowed_assign);
-					$res = 'tpl_func_'.$name.'($t'.((trim($argfct) != '') ? ', '.$argfct : '').'); ';
-					$this->plugins[$name] = true;
+					$where = '$t->wf->core_tpl_compiler()->'.$method;
+					$res = "$where($argfct); ";
 				}
 				else {
 					throw new wf_exception(
@@ -289,6 +282,27 @@ class core_tpl_compiler extends wf_agg {
 						.' in <strong>'.$this->source_file.'</strong>.'
 					);
 				}
+				break;
+				
+			var_dump($res);
+			exit(0);
+// 			$header .= 'function tpl_func_'.$plugin.$this->$method()."\n";
+
+
+// 				if (method_exists($this, 'func_'.$name)) {
+// 					$argfct = $this->parse_final($args, $this->alowed_assign);
+// 					$res = 'tpl_func_'.$name.'($t'.((trim($argfct) != '') ? ', '.$argfct : '').'); ';
+// 					$this->plugins[$name] = true;
+// 				}
+// 				else {
+// 					throw new wf_exception(
+// 						$this,
+// 						WF_EXC_PRIVATE,
+// 						'Unknown tag <strong>'.$name.'</strong>'
+// 						.' in <strong>'.$this->source_file.'</strong>.'
+// 					);
+// 				}
+				break;
 		}
 		return($res);
 	}
@@ -358,28 +372,18 @@ class core_tpl_compiler extends wf_agg {
 
 	// Plugin functions
 
-	public function func_js() {
-		return('($t, $file) { echo $t->wf->core_js()->linker($file); }');
+	public function func_js($file) {
+		$this->wf->core_html()->add_js($file);
 	}
 
-	public function func_css() {
-		return('($t, $file) { echo $t->wf->core_css()->linker($file); }');
+	public function func_css($file) {
+		$this->wf->core_html()->add_css($file);
 	}
 
-	public function func_img() {
-		return('($t, $file) { echo $t->wf->core_img()->linker($file); }');
+	public function func_link($link) {
+		echo $this->wf->linker($link);
 	}
 
-	public function func_p_js() {
-		return('($t, $file) { echo $t->wf->core_js()->pass_linker($file); }');
-	}
-
-	public function func_p_css() {
-		return('($t, $file) { echo $t->wf->core_css()->pass_linker($file); }');
-	}
-
-	public function func_p_img() {
-		return('($t, $file) { echo $t->wf->core_img()->pass_linker($file); }');
-	}
+	
 
 }
