@@ -25,7 +25,7 @@ class wfr_core_data extends wf_route_request {
 		$file = preg_replace(
 			array(
 				"/\/\.\./",
-				"/\/\./"
+				"/\/\.\//"
 			),
 			array(),
 			$file
