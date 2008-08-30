@@ -15,14 +15,8 @@
 	</table>
 </form>
 
-Linker JS : {js "/file.js"}
+Linker JS : {js "/data/file.js"}
 <br />
-Linker CSS : {css "/file.css"}
+Linker CSS : {css "/data/file.css"}
 <br />
-Linker IMG : {img "/file.png"}
-<br />
-Linker PASS JS : {p_js "/file.js"}
-<br />
-Linker PASS CSS : {p_css "/file.css"}
-<br />
-Linker PASS IMG : {p_img "/file.png"}
+Linker IMG : {link "/data/file.png"}

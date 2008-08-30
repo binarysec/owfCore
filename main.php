@@ -364,7 +364,6 @@ class web_framework {
 		if(!$filter) {
 			return("/index.php".$route);
 		}
-
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -425,6 +424,21 @@ class web_framework {
 		);
 		echo $tpl->fetch("core_html_login");
 		exit(0);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Return the 8bit scale
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function bit8_scale($sz) {
+		if($sz > pow(1024, 3))
+			return(sprintf("%.2f Go", ($sz/pow(1024, 3))));
+		else if($sz > pow(1024, 2))
+			return(sprintf("%.2f Mo", ($sz/pow(1024, 2))));
+		if($sz > 1024) 
+			return(sprintf("%.2f Ko", ($sz/1024)));
+		else
+			return($sz." Octets");
 	}
 	
 }
