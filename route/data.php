@@ -168,7 +168,7 @@ class wfr_core_data extends wf_route_request {
 					$up_dir .= $_directory[$a];
 			}
 		}
-		if(strlen($_directory) == 0)
+		if(strlen($directory) <= 1)
 			$directory = "/";
 		else
 			$directory = trim($directory);
@@ -193,7 +193,7 @@ class wfr_core_data extends wf_route_request {
 			foreach($d as $v) {
 				if($v != '.' && $v != "..") {
 					$file = $dir."/$v";
-					if(strlen($_directory) > 0)
+					if(strlen($_directory) > 1)
 						$link = "$directory/$v";
 					else
 						$link = "/$v";
@@ -201,7 +201,7 @@ class wfr_core_data extends wf_route_request {
 					$last_mod = date("d M Y / G:i:s", filemtime($file));
 					
 					$files[$v] = array(
-						$this->wf->plinker($link),
+						$this->wf->linker("/data$link"),
 						$this->wf->bit8_scale(filesize($file)),
 						mime_content_type($file),
 						$last_mod,
@@ -226,13 +226,13 @@ class wfr_core_data extends wf_route_request {
 		);
 		$tpl->set(
 			"logo_url",
-			$this->wf->core_img()->linker("/logo.png")
+			$this->wf->linker("/data/logo.png")
 		);
-		
-		if(strlen($_directory) > 0 && $_directory[0] == "/")
+
+		if(strlen($_directory) > 0 && $directory != "/")
 			$tpl->set(
 				"up_dir",
-				$this->wf->plinker($up_dir)
+				$this->wf->linker("/data$up_dir")
 			);
 
 		echo $tpl->fetch("core_data_index");

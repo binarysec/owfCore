@@ -48,12 +48,12 @@ a, a:hover {
 <tr>
 <td align="center" valign="middle">
 
-<img src="{$logo_url}"/></br>
+<img src="{link '/data/logo.png'}"/></br>
 
 <h1>Login required</h1>
 <h2>{$message}</h2>
 
-<form action="{$login_url}" method="post">
+<form action="{link '/session/login'}" method="post">
 	{if $back_url }
 	<input type="hidden" name="back_url" value="{$back_url}" />
 	{/if}
