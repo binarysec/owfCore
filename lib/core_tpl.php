@@ -31,7 +31,6 @@
  * Lien            : http://www.jelix.org
  */
 class core_tpl {
-
 	var $a_core_html;
 	var $tpl_file;
 	var $cache_file;
@@ -81,12 +80,14 @@ class core_tpl {
 	
 	public function locate($tpl_name) {
 		$modrev = array_reverse($this->wf->modules);
+		$cache_to = end($this->wf->modules);
+		
 		foreach($modrev as $mod => $mod_infos) {
 			$tmp = $this->wf->modules[$mod][0].
 				'/var/tpl/'.$tpl_name.'.tpl';
 			if(file_exists($tmp)) {
 				$this->tpl_file = $tmp;
-				$this->cache_file = $this->wf->modules[$mod][0].
+				$this->cache_file = $cache_to[0].
 					'/var/tpl_cache/'.$tpl_name.'.tpl';
 				return(true);
 			}
@@ -100,8 +101,11 @@ class core_tpl {
 
 		/* if template doesn't exist */
 		if(!$this->tpl_file) {
-			$this->tpl_file = $this->wf->modules['wf_core'][0]
-			  .'/var/tpl/'.$tpl_name.'.tpl';
+			throw new wf_exception(
+				$this,
+				WF_EXC_PRIVATE,
+				"Can not find template $tpl_name."
+			);
 		}
 
 		if(!$no_manage)
@@ -111,11 +115,19 @@ class core_tpl {
 			return;
 
 		if (!file_exists($this->cache_file) ||
-		     filemtime($this->tpl_file) > filemtime($this->cache_file))
-			$this->compiler->compile($this->tpl_file, $this->cache_file);
+		     filemtime($this->tpl_file) > filemtime($this->cache_file)) {
+				
+			$this->wf->create_dir($this->cache_file);
+			
+			$this->compiler->compile(
+				$tpl_name, 
+				$this->tpl_file, 
+				$this->cache_file
+			);
+		}
 
-		$t = &$this;
-		require_once($this->cache_file);
+		$t = $this;
+		require($this->cache_file);
 	}
 
 	public function fetch($tpl_name, $no_manage=FALSE) {

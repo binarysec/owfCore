@@ -15,8 +15,3 @@
 	</table>
 </form>
 
-Linker JS : {js "/data/file.js"}
-<br />
-Linker CSS : {css "/data/file.css"}
-<br />
-Linker IMG : {link "/data/file.png"}

@@ -348,10 +348,10 @@ class web_framework {
 		$obj = new ${funcname};
 		
 		/* caching object */
-		$this->aggregator_cached[$funcname] = $obj;
+		$this->aggregator_cached[$funcname] = &$obj;
 		
 		/* execute le chargeur */
-		$obj->loader($this);
+		$obj->loader(&$this);
 		
 		return($obj);
 	}
@@ -362,7 +362,12 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function linker($route, $filter=NULL) {
 		if(!$filter) {
-			return("/index.php".$route);
+// 			var_dump($_SERVER["SERVER_NAME"]);
+// 			exit(0);
+			return(
+				"/index.php".
+				$route
+			);
 		}
 	}
 	
@@ -371,7 +376,22 @@ class web_framework {
 	 * Function use to create directories recursively
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function create_dir($filename) {
-	
+		$tab = explode("/", $filename);
+		$dir = "/";
+		for($a=1; $a<count($tab)-1; $a++) {
+			$v = &$tab[$a];
+			$dir .= "$v/";
+			if(!is_dir($dir) && !@mkdir($dir)) {
+				$error = error_get_last();
+				throw new wf_exception(
+					$this,
+					WF_EXC_PRIVATE,
+					"Can not create : $dir / $error[message]"
+				);
+			}
+		}
+		
+		return(TRUE);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -388,7 +408,7 @@ class web_framework {
 			"code",
 			$code
 		);
-		echo $tpl->fetch("core_html_error");
+		echo $tpl->fetch("core/html/error");
 		exit(0);
 	}
 	
@@ -419,7 +439,7 @@ class web_framework {
 			);
 		}
 		
-		echo $tpl->fetch("core_html_login");
+		echo $tpl->fetch("core/html/login");
 		exit(0);
 	}
 	
@@ -438,6 +458,53 @@ class web_framework {
 			return($sz." Octets");
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Locate a file with priority respect
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function locate_file($filename, $return_array=FALSE) {
+		$file = NULL;
+		$modrev = array_reverse($this->modules);
+		foreach($modrev as $mod => $mod_infos) {
+			$tmp = $this->modules[$mod][0].
+				"/$filename";
+			
+			if(file_exists($tmp)) {
+				if($return_array) {
+					$file = array(
+						$tmp,
+						&$this->modules[$mod]
+					);
+				}
+				else
+					$file = $tmp;
+				
+				break;
+			}
+		}
+		if(!$file)
+			return(NULL);
+		return($file);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get the last priority filename
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_last_filename($filename) {
+		$mod = end($this->modules);
+		$file = "$mod[0]/$filename";
+		return($file);
+	}
+	
+/*
+get_last_filename
+get_first_filename
+scandir
+locate_file
+locate_files
+*/
+
 }
 
 

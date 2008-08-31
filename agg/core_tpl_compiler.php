@@ -98,7 +98,7 @@ class core_tpl_compiler extends wf_agg {
 		$this->alowed_assign = array_merge($this->vartype, $this->assign_op, $this->op);
 	}
 
-	public function compile($tpl_file, $tpl_cache) {
+	public function compile($tpl_name, $tpl_file, $tpl_cache) {
 		$this->source_file = $tpl_file;
 
 		/* compile the template */
@@ -111,16 +111,23 @@ class core_tpl_compiler extends wf_agg {
 		$this->literals = $match[1];
 
 		$res = preg_replace("!{literal}(.*?){/literal}!s", '{literal}', $res);
-		$res = preg_replace_callback("/{((.).*?)}/s", array($this, 'parse'), $res);
+		$body = preg_replace_callback("/{((.).*?)}/s", array($this, 'parse'), $res);
+
+		/* generate a lang context for the template */
+		$lctx = "tpl/$tpl_name";
+		$res = '<?php $_lang = $t->wf->core_lang()->get_context("'.
+			$lctx.
+			'");  ?>'.
+			$body;
 
 		if(count($this->block_stack)) {
 			throw new wf_exception(
 				$this,
 				WF_EXC_PRIVATE,
-				'End block missing for <strong>'.end($this->block_stack).'</strong>.'
+				'End block missing for'.
+				'<strong>'.end($this->block_stack).'</strong>.'
 				.' in <strong>'.$this->source_file.'</strong>.'
 			);
-			return(false);
 		}
 
 		$res = $header.$res;
@@ -268,11 +275,33 @@ class core_tpl_compiler extends wf_agg {
 				);
 				break;
 			default:
-				$method = 'func_'.$name;
+				$method = "func_$name";
+				$generator = "gen_$name";
+				
 				if(method_exists($this, $method)) {
-					$argfct = $this->parse_final($args, $this->alowed_assign);
+					$argfct = $this->parse_final(
+						$args, 
+						$this->alowed_assign
+					);
+					$argt = explode(",", $argfct);
+					
+					if(count($argt) == 1) {
+						$buf_arg = $argfct;
+					}
+					else {
+						$buf_arg = "array(";
+						foreach($argt as $v) {
+							$buf_arg .= "$v,";
+						}
+						$buf_arg .= ")";
+					}
+					
+					$this->$method($buf_arg);
 					$where = '$t->wf->core_tpl_compiler()->'.$method;
-					$res = "$where($argfct); ";
+					$res = "$where($buf_arg); ";
+				}
+				else if(method_exists($this, $generator)) {
+					$res = $this->$generator($args);
 				}
 				else {
 					throw new wf_exception(
@@ -282,26 +311,6 @@ class core_tpl_compiler extends wf_agg {
 						.' in <strong>'.$this->source_file.'</strong>.'
 					);
 				}
-				break;
-				
-			var_dump($res);
-			exit(0);
-// 			$header .= 'function tpl_func_'.$plugin.$this->$method()."\n";
-
-
-// 				if (method_exists($this, 'func_'.$name)) {
-// 					$argfct = $this->parse_final($args, $this->alowed_assign);
-// 					$res = 'tpl_func_'.$name.'($t'.((trim($argfct) != '') ? ', '.$argfct : '').'); ';
-// 					$this->plugins[$name] = true;
-// 				}
-// 				else {
-// 					throw new wf_exception(
-// 						$this,
-// 						WF_EXC_PRIVATE,
-// 						'Unknown tag <strong>'.$name.'</strong>'
-// 						.' in <strong>'.$this->source_file.'</strong>.'
-// 					);
-// 				}
 				break;
 		}
 		return($res);
@@ -383,7 +392,30 @@ class core_tpl_compiler extends wf_agg {
 	public function func_link($link) {
 		echo $this->wf->linker($link);
 	}
-
+	
+	
+	public function gen_lang($args) {
+		$argfct = $this->parse_final(
+			$args, 
+			$this->alowed_assign
+		);
+		$argt = explode(",", $argfct);
+		
+		if(count($argt) == 1) {
+			$res = 'echo $_lang->ts('.$argfct.');';
+		}
+		else {
+			$buf_arg = "array(";
+			foreach($argt as $v) {
+				$buf_arg .= "$v,";
+			}
+			$buf_arg .= ")";
+					
+			$res = 'echo $_lang->ts('.$buf_arg.');';
+		}
+		
+		return($res);
+	}
 	
 
 }

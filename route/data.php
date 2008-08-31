@@ -9,6 +9,7 @@ class wfr_core_data extends wf_route_request {
 	public function __construct($wf) {
 		$this->wf = $wf;
 		$this->a_core_request = $this->wf->core_request();
+		$this->a_core_html = $this->wf->core_html();
 	}
 
 
@@ -77,9 +78,9 @@ class wfr_core_data extends wf_route_request {
 			return(FALSE);
 		
 		/* prend le type de contenu */
-		$mime = mime_content_type($used_file);
-		if(!$mime)
-			$mime = 'application/octet-stream';
+		$mime = $this->wf->core_mime()->get_mime(
+			$used_file
+		);
 		
 		/* construit le temps de génération */
 		$mtime = filemtime($used_file);
@@ -92,7 +93,8 @@ class wfr_core_data extends wf_route_request {
 		$requested_time = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
 		if($file_time == $requested_time) {
 			$this->a_core_request->set_header(
-				$_SERVER['SERVER_PROTOCOL']." 304 Not Modified", 
+				$_SERVER['SERVER_PROTOCOL'].
+				" 304 Not Modified", 
 				$file_time
 			);
 			$this->a_core_request->send_headers();
@@ -235,7 +237,7 @@ class wfr_core_data extends wf_route_request {
 				$this->wf->linker("/data$up_dir")
 			);
 
-		echo $tpl->fetch("core_data_index");
+		$this->a_core_html->rendering($tpl->fetch("core/data_index"));
 		exit(0);
 	}
 	

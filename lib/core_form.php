@@ -42,7 +42,6 @@ class core_form {
 		$this->enctype = 'application/x-www-form-urlencoded';
 	}
 
-
 	// Properties
 
 	public function __set($name, $value) {
@@ -79,7 +78,7 @@ class core_form {
 		return($attribs);
 	}
 
-	public function render($tpl_name) {
+	public function render($tpl_name, $no_manage=FALSE) {
 		$attribs = $this->build_attribs(array(
 			'id',
 			'name',
@@ -95,7 +94,7 @@ class core_form {
 		$this->tpl->set('form_elements', $this->elements);
 		$this->tpl->set('form_hidden_elements', $this->hidden_elements);
 
-		return($this->tpl->fetch($tpl_name));
+		return($this->tpl->fetch($tpl_name, $no_manage));
 	}
 
 
