@@ -55,6 +55,14 @@ abstract class wf_route_request {
 abstract class wf_agg {
 	var $wf = NULL;
 	abstract public function loader($wf);
+	
+	public function __clone() {
+		throw new wf_exception(
+			$this,
+			WF_EXC_PRIVATE,
+			"can not clone aggregator for ".__CLASS__
+		);
+	}
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
