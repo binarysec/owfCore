@@ -54,13 +54,15 @@ class core_god extends wf_agg {
 			$tpl = new core_form($this->wf, "god_tpl_edit");
 			
 			$fa1 = new core_form_textarea('text');
-			$fa1->value = 'Hello World!';
+			$fa1->value = $data;
 			$tpl->add_element($fa1);
 		
 			$fs1 = new core_form_submit('submit');
 			$fs1->value = 'Enregistrer';
 			$tpl->add_element($fs1);
 		
+			$tpl->tpl_name = $val[0];
+			
 // 			foreach($this->_core_lang->get_list() as $k => $v) {
 // 			
 // 			}
