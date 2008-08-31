@@ -128,15 +128,15 @@ class core_html extends wf_agg {
 		/* merge toute les variables */
 		$tpl->merge_vars($this->vars);
 		$tpl->merge_vars(array(
+			"html_managed_body" => $this->get_managed(),
 			'html_body' => $body,
 			'html_title' => $this->title,
 			'html_meta' => $this->get_meta(),
-			"html_managed_body" => $this->get_managed(),
 			'html_css' => $this->css,
 			'html_js' => $this->js
 		));
 				
-		echo $tpl->fetch('core_html');
+		echo $tpl->fetch('core/html/general');
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -165,7 +165,7 @@ class core_html extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $js = array();
 	public function add_js($link) {
-		$this->js[] = $link;
+		$this->js[$link] = $this->wf->linker($link);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -174,7 +174,7 @@ class core_html extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $css = array();
 	public function add_css($link) {
-		$this->css[] = $link;
+		$this->css[$link] = $this->wf->linker($link);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -183,22 +183,9 @@ class core_html extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_managed() {
 		if($this->_core_request->permissions["session:god"]) {
-			$buf = NULL;
-			foreach($this->managed_list as $val) {
-				$data = null;
-				if(file_exists($val[1]->tpl_file))
-					$data = file_get_contents($val[1]->tpl_file);
-		
-				$tpl = new core_tpl($this->wf);
-				$tpl->set('data', $data);
-				$tpl->set('title', $val[0]);
-				$tpl->set('path', $val[1]->tpl_file);
-				$tpl->set('vars', $val[1]->vars);
-				
-				$buf .= $tpl->fetch('core_html_managed_body', TRUE);
-			}
+			return($this->wf->core_god()->get_content());
 		}
-		return($buf);
+		return(NULL);
 	}
 	
 	
