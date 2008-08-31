@@ -1,4 +1,48 @@
-.a {
-	color: #a10e09; 
-	text-decoration: none; 
+.god {
+	padding-top: 5px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	
+	background: #000000;
+	color: #ffffff;
+	font-weight: normal;
+	text-decoration: none;
+	font-family: Arial, sans-serif; 
+}
+
+.god_title {
+	font-size: 14pt;
+	font-weight: bold;
+	padding-bottom: 5px;
+}
+
+.god_annonce {	
+	font-size: 7pt;
+	background: #4c4c4c;
+	color: #ffffff;
+	font-weight: bold;
+	padding: 2px;
+}
+
+.god_annonce_cadre {
+	padding: 5px;
+	background: #191919;
+	border-bottom: 1px solid #4c4c4c;
+	border-left: 1px solid #4c4c4c;
+	border-right: 1px solid #4c4c4c;
+}
+
+.god_edit_tpl {
+	background: #a10e09;
+	color: #ffffff;
+	border: 1px dashed #b2b2b2;
+	padding: 10px;
+}
+
+.god_edit_tpl_title {
+	background: #e5e5e5;
+	color: #a10e09;
+	font-weight: bold;
+	padding: 5px;
 }
