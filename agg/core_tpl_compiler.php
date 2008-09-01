@@ -97,7 +97,7 @@ class core_tpl_compiler extends wf_agg {
 		$this->allowed_in_foreach = array_merge($this->vartype, array(T_AS, T_DOUBLE_ARROW));
 		$this->alowed_assign = array_merge($this->vartype, $this->assign_op, $this->op);
 	}
-
+	
 	public function compile($tpl_name, $tpl_file, $tpl_cache) {
 		$this->source_file = $tpl_file;
 
