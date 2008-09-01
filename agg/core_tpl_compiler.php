@@ -1,4 +1,5 @@
 <?php
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Web Framework 1                                       *
  * BinarySEC (c) (2000-2008) / www.binarysec.com         *
@@ -21,17 +22,10 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/**
- * Code fortement inspirée de la librairie jTpl
- * (compilateur de template) du framework PHP Jelix
- * Auteur original : Laurent Jouanneau
- * Modifiée par    : Loic Mathaud
- * Repris par      : Olivier Pascal
- * Licence         : GNU Lesser General Public Licence
- * Lien            : http://www.jelix.org
- */
 class core_tpl_compiler extends wf_agg {
-	
+
+	// Attributes
+
 	private $vartype = array(
 		T_CHARACTER,
 		T_CONSTANT_ENCAPSED_STRING,
@@ -87,7 +81,9 @@ class core_tpl_compiler extends wf_agg {
 	private $literals = array();
 
 	private $current_tag;
-	private $tpl_file;
+
+
+	// Loader
 
 	public function loader($wf) {
 		$this->wf = $wf;
@@ -97,7 +93,10 @@ class core_tpl_compiler extends wf_agg {
 		$this->allowed_in_foreach = array_merge($this->vartype, array(T_AS, T_DOUBLE_ARROW));
 		$this->alowed_assign = array_merge($this->vartype, $this->assign_op, $this->op);
 	}
-	
+
+
+	// Compiler
+
 	public function compile($tpl_name, $tpl_file, $tpl_cache) {
 		$this->source_file = $tpl_file;
 
@@ -114,11 +113,7 @@ class core_tpl_compiler extends wf_agg {
 		$body = preg_replace_callback("/{((.).*?)}/s", array($this, 'parse'), $res);
 
 		/* generate a lang context for the template */
-		$lctx = "tpl/$tpl_name";
-		$res = '<?php $_lang = $t->wf->core_lang()->get_context("'.
-			$lctx.
-			'");  ?>'.
-			$body;
+		$res = '<?php '.$this->get_headers($tpl_name).' ?>'.$body;
 
 		if(count($this->block_stack)) {
 			throw new wf_exception(
@@ -275,34 +270,34 @@ class core_tpl_compiler extends wf_agg {
 				);
 				break;
 			default:
-				$method = "func_$name";
+// 				$method = "func_$name";
 				$generator = "gen_$name";
 				
-				if(method_exists($this, $method)) {
-					$argfct = $this->parse_final(
-						$args, 
-						$this->alowed_assign
-					);
-					$argt = explode(",", $argfct);
-					
-					if(count($argt) == 1) {
-						$buf_arg = $argfct;
-					}
-					else {
-						$buf_arg = "array(";
-						foreach($argt as $v) {
-							$buf_arg .= "$v,";
-						}
-						$buf_arg .= ")";
-					}
-					
-					$this->$method($buf_arg);
-					$where = '$t->wf->core_tpl_compiler()->'.$method;
-					$res = "$where($buf_arg); ";
+				if(method_exists($this, $generator)) {
+					$res = $this->$generator($this, $args);
 				}
-				else if(method_exists($this, $generator)) {
-					$res = $this->$generator($args);
-				}
+// 				else if(method_exists($this, $method)) {
+// 					$argfct = $this->parse_final(
+// 						$args, 
+// 						$this->alowed_assign
+// 					);
+// 					$argt = explode(",", $argfct);
+// 					
+// 					if(count($argt) == 1) {
+// 						$buf_arg = $argfct;
+// 					}
+// 					else {
+// 						$buf_arg = "array(";
+// 						foreach($argt as $v) {
+// 							$buf_arg .= "$v,";
+// 						}
+// 						$buf_arg .= ")";
+// 					}
+// 					
+// 					$this->$method($buf_arg);
+// 					$where = '$t->wf->core_tpl_compiler()->'.$method;
+// 					$res = "echo $where($buf_arg);";
+// 				}
 				else {
 					throw new wf_exception(
 						$this,
@@ -379,24 +374,27 @@ class core_tpl_compiler extends wf_agg {
 	}
 
 
-	// Plugin functions
+	// Plugins
 
-	public function func_js($file) {
-		$this->wf->core_html()->add_js($file);
+	public function get_headers($tpl_name) {
+		return('$_lang = $t->wf->core_lang()->get_context("tpl/'.$tpl_name.'");');
 	}
 
-	public function func_css($file) {
-		$this->wf->core_html()->add_css($file);
+	public function gen_js(core_tpl_compiler $tpl_compiler, $file) {
+		return('$this->wf->core_html()->add_js($file);');
 	}
 
-	public function func_link($link) {
-		echo $this->wf->linker($link);
+	public function gen_css(core_tpl_compiler $tpl_compiler, $file) {
+		return('$this->wf->core_html()->add_css('.$file.');');
+	}
+
+	public function gen_link(core_tpl_compiler $tpl_compiler, $link) {
+		return('echo $this->wf->linker('.$link.');');
 	}
 	
-	
-	public function gen_lang($args) {
+	public function gen_lang(core_tpl_compiler $tpl_compiler, $args) {
 		$argfct = $this->parse_final(
-			$args, 
+			$args,
 			$this->alowed_assign
 		);
 		$argt = explode(",", $argfct);
@@ -416,6 +414,5 @@ class core_tpl_compiler extends wf_agg {
 		
 		return($res);
 	}
-	
 
 }
