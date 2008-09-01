@@ -370,8 +370,6 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function linker($route, $filter=NULL) {
 		if(!$filter) {
-// 			var_dump($_SERVER["SERVER_NAME"]);
-// 			exit(0);
 			return(
 				"/index.php".
 				$route
@@ -383,10 +381,13 @@ class web_framework {
 	 *
 	 * Function use to create directories recursively
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function create_dir($filename) {
+	public function create_dir($filename, $ignore_file=TRUE) {
 		$tab = explode("/", $filename);
 		$dir = "/";
-		for($a=1; $a<count($tab)-1; $a++) {
+
+		$skip = $ignore_file ? 1 : 0;
+		
+		for($a=1; $a<count($tab)-$skip; $a++) {
 			$v = &$tab[$a];
 			$dir .= "$v/";
 			if(!is_dir($dir) && !@mkdir($dir)) {

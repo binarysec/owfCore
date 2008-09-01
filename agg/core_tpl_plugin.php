@@ -26,9 +26,20 @@ class core_tpl_plugin extends wf_agg {
 
 	public function loader($wf) {
 		$this->wf = $wf;
+		
 
 	}
 
+	/* appeleé par le template */
+	public function func_css($file) {
+	
+	}
+	
+	/* appelé lors de la compilation */
+	public function gen_lang(core_tpl_compiler $tpl_compiler, $args) {
+	
+	}
+	
 	
 	
 	
