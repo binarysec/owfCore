@@ -133,7 +133,8 @@ class core_html extends wf_agg {
 			'html_title' => $this->title,
 			'html_meta' => $this->get_meta(),
 			'html_css' => $this->css,
-			'html_js' => $this->js
+			'html_js' => $this->js,
+			'html_body_attribs' => ' class="yui-skin-sam"'
 		));
 				
 		echo $tpl->fetch('core/html/general');

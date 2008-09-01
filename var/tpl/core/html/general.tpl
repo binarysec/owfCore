@@ -3,7 +3,7 @@
 <head>
 <title>{$html_title}</title>
 {if $html_css}
-{foreach $html_css as $k => $v}<link rel="stylesheet" type="text/css" href="{$v}">
+{foreach $html_css as $k => $v}<link rel="stylesheet" type="text/css" href="{$v}" />
 {/foreach}
 {/if}
 {if $html_js}
@@ -13,7 +13,7 @@
 {$html_meta}
 </head>
 
-<body{$body_attribs}>
+<body{$html_body_attribs}>
 
 {$html_body}
 
