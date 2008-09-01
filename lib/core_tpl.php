@@ -31,16 +31,31 @@
  * Lien            : http://www.jelix.org
  */
 class core_tpl {
-	var $a_core_html;
-	var $tpl_file;
-	var $cache_file;
-	var $compiler;
-	var $vars = array();
+
+	// Attributes
+
+	private $wf;
+	private $a_core_html;
+	private $a_core_tpl_compiler;
+	private $cache_file;
+	private $tpl_file;
+
+	private $vars = array();
+
+
+	// Constructor
 
 	public function __construct($wf) {
 		$this->wf = $wf;
-		$this->compiler = $this->wf->core_tpl_compiler();
 		$this->a_core_html = $this->wf->core_html();
+		$this->a_core_tpl_compiler = $this->wf->core_tpl_compiler();
+	}
+
+
+	// Accessors
+
+	public function get_file() {
+		return($this->tpl_file);
 	}
 
 	public function set($name, $value=null) {
@@ -119,7 +134,7 @@ class core_tpl {
 				
 			$this->wf->create_dir($this->cache_file);
 			
-			$this->compiler->compile(
+			$this->a_core_tpl_compiler->compile(
 				$tpl_name, 
 				$this->tpl_file, 
 				$this->cache_file

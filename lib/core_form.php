@@ -56,6 +56,7 @@ class core_form {
 
 
 	public function add_element($element) {
+		$element->id = $this->id.'_'.$element->id;
 		if($element->type == 'hidden')
 			$this->hidden_elements[$element->id] = $element;
 		else

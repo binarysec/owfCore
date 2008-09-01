@@ -1,5 +1,5 @@
 {css '/data/core/data_index.css'}
-<img src="{$logo_url}"/></br>
+<img src="{$logo_url}"/><br />
 <h1>{lang "Index of %s", $dir}</h1>
 {if $up_dir}
 <div class="parent">

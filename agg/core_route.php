@@ -151,7 +151,7 @@ class core_route extends wf_agg {
 					"</strong> object."
 				);
 			}
-		
+
 			/* execute la fonction */
 			call_user_func(array($object, $funcname));
 			exit(0);

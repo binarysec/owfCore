@@ -39,7 +39,6 @@ class core_god extends wf_agg {
 		$tpl->set('tpl_edit', $this->get_template());
 		
 		return($tpl->fetch('core/god/body', TRUE));
-		return(NULL);
 	}
 	
 	private function get_template() {
@@ -47,8 +46,8 @@ class core_god extends wf_agg {
 		foreach($this->_core_html->managed_list as $val) {
 			$data = null;
 
-			if(file_exists($val[1]->tpl_file))
-				$data = file_get_contents($val[1]->tpl_file);
+			if(file_exists($val[1]->get_file()))
+				$data = file_get_contents($val[1]->get_file());
 	
 			/* edit template */
 			$tpl = new core_form($this->wf, "god_tpl_edit");

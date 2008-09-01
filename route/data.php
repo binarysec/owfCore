@@ -17,7 +17,7 @@ class wfr_core_data extends wf_route_request {
 	 *
 	 * Public function
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function show_data() {	
+	public function show_data() {
 		$file = $this->a_core_request->get_ghost();
 		
 		/* remove directory traversal */
@@ -84,13 +84,11 @@ class wfr_core_data extends wf_route_request {
 		
 		/* construit le temps de génération */
 		$mtime = filemtime($used_file);
-		$file_time = array(
-			$mtime,
-			date("D, d M Y H:i:s \G\M\T", $mtime)
-		);
+		$file_time = date("D, d M Y H:i:s \G\M\T", $mtime);
 		
-		/* vérifi la requete */
+		/* vérifie la requete */
 		$requested_time = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
+
 		if($file_time == $requested_time) {
 			$this->a_core_request->set_header(
 				$_SERVER['SERVER_PROTOCOL'].
@@ -100,11 +98,11 @@ class wfr_core_data extends wf_route_request {
 			$this->a_core_request->send_headers();
 			exit(0);
 		}
-		
+
 		/* prepare les type de fichier */
 		$this->a_core_request->set_header(
-			"Last-modified", 
-			$cache_time
+			"Last-modified",
+			$file_time
 		);
 		$this->a_core_request->set_header(
 			"Content-type", 
@@ -114,6 +112,11 @@ class wfr_core_data extends wf_route_request {
 			"Content-length", 
 			filesize($used_file)
 		);
+// 		$this->a_core_request->set_header(
+// 			'Expires',
+// 			'Thu, 15 Apr 2010 20:00:00 GMT'
+// 		);
+
 		$this->a_core_request->send_headers();
 		
 		/* envoi le fichier */

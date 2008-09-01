@@ -3,11 +3,13 @@
 <head>
 <title>{$html_title}</title>
 {if $html_css}
-{foreach $html_css as $k => $v}<link rel="stylesheet" type="text/css" href="{$v}" />
+{foreach $html_css as $v}
+<link rel="stylesheet" type="text/css" href="{$v}" />
 {/foreach}
 {/if}
 {if $html_js}
-{foreach $html_js as $k => $v}<script type="text/javascript" src="{$v}"></script>
+{foreach $html_js as $v}
+<script type="text/javascript" src="{$v}"></script>
 {/foreach}
 {/if}
 {$html_meta}

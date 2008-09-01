@@ -193,7 +193,7 @@ class core_db_pdo_sqlite extends core_db {
 		}
 
 		/* log */
-		//trigger_error('SQLite ORDER #'.($this->request_c + 1).': '.$query, WF_E_NOTICE);
+		//echo('SQLite ORDER #'.($this->request_c + 1).': '.$query.'<br />');
 
 		$this->request_c++;
 		

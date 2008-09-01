@@ -8,9 +8,10 @@
 	{foreach $form_hidden_elements as $id => $element}
 		{$element->render()}
 	{/foreach}
-	
-	{$form_elements["text"]->render()}<br/>
-	{$form_elements["submit"]->render()}
+
+	{foreach $form_elements as $id => $element}
+		{$element->render()}<br />
+	{/foreach}
 </form>
 </div>
 
