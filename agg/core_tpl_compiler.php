@@ -156,7 +156,7 @@ class core_tpl_compiler extends wf_agg {
 	private function parse($matches) {
 		list(, $tag, $firstcar) = $matches;
 
-		if(!preg_match('/^\$|[a-zA-Z\/]$/', $firstcar))
+		if(!preg_match('/^\$|@|[a-zA-Z\/]$/', $firstcar))
 			throw new wf_exception(
 				$this,
 				WF_EXC_PRIVATE,
@@ -166,12 +166,13 @@ class core_tpl_compiler extends wf_agg {
 
 		$this->current_tag = $tag;
 
-		if ($firstcar == '$')
+		if($firstcar == '$')
 			return('<?php echo '.$this->parse_var($tag).'; ?>');
-		elseif ($firstcar == '*')
+		elseif($firstcar == '*')
 			return('');
 		else {
-			if (!preg_match('/^(\/?[a-zA-Z0-9_]+)(?:(?:\s+(.*))|(?:\((.*)\)))?$/', $tag, $m)) {
+			if ($firstcar != '@'
+			&& !preg_match('/^(\/?[a-zA-Z0-9_]+)(?:(?:\s+(.*))|(?:\((.*)\)))?$/', $tag, $m)) {
 				throw new wf_exception(
 					$this,
 					WF_EXC_PRIVATE,
@@ -184,10 +185,17 @@ class core_tpl_compiler extends wf_agg {
 				$m[2] = $m[3];
 			if(!isset($m[2]))
 				$m[2] = '';
-			if($m[1] == 'ldelim')
-				return('{');
-			if($m[1] == 'rdelim')
-				return('}');
+
+			if($firstcar == '@') {
+				return('<?php '.$this->parse_function('lang', substr($tag, 1)).'?>');
+			}
+			else {
+				if($m[1] == 'ldelim')
+					return('{');
+				if($m[1] == 'rdelim')
+					return('}');
+			}
+
 			return('<?php '.$this->parse_function($m[1], $m[2]).'?>');
 		}
 	}
