@@ -381,7 +381,7 @@ class core_tpl_compiler extends wf_agg {
 	}
 
 	public function gen_js(core_tpl_compiler $tpl_compiler, $file) {
-		return('$this->wf->core_html()->add_js($file);');
+		return('$this->wf->core_html()->add_js('.$file.');');
 	}
 
 	public function gen_css(core_tpl_compiler $tpl_compiler, $file) {
