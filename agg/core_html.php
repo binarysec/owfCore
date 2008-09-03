@@ -182,7 +182,8 @@ class core_html extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_managed() {
 		if($this->_core_request->permissions["session:god"]) {
-			return($this->wf->core_god()->get_content());
+			if($this->wf->mod_exists("god"))
+				return($this->wf->god_renderer()->get_content());
 		}
 		return(NULL);
 	}
