@@ -328,7 +328,7 @@ class web_framework {
 	 * Modular aggregator
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $aggregator_cached = array();
-	public function __call($funcname, $args = array()) {
+	public function __call($funcname, $exception=TRUE) {
 		if($this->aggregator_cached[$funcname])
 			return($this->aggregator_cached[$funcname]);
 
@@ -342,11 +342,16 @@ class web_framework {
 			}
 		}
 		if(!$done) {
-			throw new wf_exception(
-				$this,
-				WF_EXC_PRIVATE,
-				"Could not find the aggregated function name $funcname"
-			);
+			if($exception) {
+				throw new wf_exception(
+					$this,
+					WF_EXC_PRIVATE,
+					"Could not find the aggregated "
+					"function name $funcname"
+				);
+			}
+			else
+				return(NULL);
 		}
 		
 		/* loading file */

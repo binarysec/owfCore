@@ -50,7 +50,7 @@ class core_god extends wf_agg {
 				$data = file_get_contents($val[1]->get_file());
 	
 			/* edit template */
-			$tpl = new core_form($this->wf, "god_tpl_edit");
+			$tpl = new core_form($this->wf, "god_edit_tpl");
 			
 			$fa1 = new core_form_textarea('text');
 			$fa1->value = $data;
