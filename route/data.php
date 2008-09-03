@@ -187,7 +187,6 @@ class wfr_core_data extends wf_route_request {
 	
 			if(is_dir($tmp)) {
 				$dirs[] = $tmp;
-				break;
 			}
 		}
 		
@@ -203,7 +202,10 @@ class wfr_core_data extends wf_route_request {
 					else
 						$link = "/$v";
 					
-					$last_mod = date("d M Y / G:i:s", filemtime($file));
+					$last_mod = date(
+						"d M Y / G:i:s", 
+						filemtime($file)
+					);
 					
 					$files[$v] = array(
 						$this->wf->linker("/data$link"),
@@ -215,7 +217,7 @@ class wfr_core_data extends wf_route_request {
 				}
 			}
 		}
-		
+
 		/* trie les fichiers */
 		ksort($files);
 		
