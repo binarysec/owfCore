@@ -23,8 +23,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class core_html extends wf_agg {
-	var $tpl;
-	
 	var $_core_request;
 	
 	public function loader($wf) {
