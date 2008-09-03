@@ -103,7 +103,8 @@ class core_form {
 
 	public function get_values() {
 		$values = array();
-		foreach($this->elements as $id => $element)
+		$elements = array_merge($this->elements, $this->hidden_elements);
+		foreach($elements as $id => $element)
 			$values[$element->name] = $this->get_value($element->name);
 		return($values);
 	}
