@@ -238,11 +238,10 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $modules = array();
 	public function load_module($name, $dir) {
-		$modfile = $dir."/module.php";
-
+		$modfile = $dir."/module.php";	
 		if(file_exists($modfile)) {
 			/* parse/vm the file */
-			require($modfile);
+			require_once($modfile);
 			
 			if(!class_exists($name)) {
 				throw new wf_exception(
@@ -306,16 +305,8 @@ class web_framework {
 	 * PHP object autoloader
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function autoloader($classname) {
-		$done = FALSE;
-		foreach($this->modules as $modname => $info) {
-			$dir = &$info[0];
-			$file = $dir."/lib/".$classname.".php";
-			if(file_exists($file)) {
-				$done = TRUE;
-				break;
-			}
-		}
-		if(!$done) {
+		$file = $this->locate_file("lib/".$classname.".php");
+		if(!$file) {
 			throw new wf_exception(
 				$this,
 				WF_EXC_PRIVATE,
@@ -336,16 +327,8 @@ class web_framework {
 		if($this->aggregator_cached[$funcname])
 			return($this->aggregator_cached[$funcname]);
 
-		$done = FALSE;
-		foreach($this->modules as $modname => $info) {
-			$dir = &$info[0];
-			$file = $dir."/agg/$funcname.php";
-			if(file_exists($file)) {
-				$done = TRUE;
-				break;
-			}
-		}
-		if(!$done) {
+		$file = $this->locate_file("agg/".$funcname.".php");
+		if(!$file) {
 			if($exception) {
 				throw new wf_exception(
 					$this,
@@ -493,10 +476,10 @@ class web_framework {
 	public function locate_file($filename, $return_array=FALSE) {
 		$file = NULL;
 		$modrev = array_reverse($this->modules);
+
 		foreach($modrev as $mod => $mod_infos) {
 			$tmp = $this->modules[$mod][0].
 				"/$filename";
-			
 			if(file_exists($tmp)) {
 				if($return_array) {
 					$file = array(
