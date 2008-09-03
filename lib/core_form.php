@@ -109,11 +109,9 @@ class core_form {
 	}
 
 	public function get_value($name) {
-		if(strtolower($this->method) == 'post'
-		&& array_key_exists($name, $_POST))
+		if(array_key_exists($name, $_POST))
 			return($_POST[$name]);
-		else if(strtolower($this->method) == 'get'
-		&& array_key_exists($name, $_GET))
+		else if(array_key_exists($name, $_GET))
 			return($_GET[$name]);
 		return(null);
 	}
