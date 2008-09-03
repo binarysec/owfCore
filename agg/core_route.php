@@ -24,7 +24,6 @@
 
 class core_route extends wf_agg {
 	var $routes = array();
-	var $wf;
 	var $a_core_cacher;
 	
 	public function loader($wf) {
