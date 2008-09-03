@@ -346,7 +346,7 @@ class web_framework {
 				throw new wf_exception(
 					$this,
 					WF_EXC_PRIVATE,
-					"Could not find the aggregated "
+					"Could not find the aggregated ".
 					"function name $funcname"
 				);
 			}
