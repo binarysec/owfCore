@@ -196,6 +196,10 @@ class web_framework {
 		spl_autoload_register(array($this, 'autoloader'));
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Master processing
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function process(
 		) {
 		/* Open database */
@@ -367,6 +371,16 @@ class web_framework {
 		$obj->loader(&$this);
 		
 		return($obj);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function to check if module exists
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function mod_exists($name) {
+		if(is_array($this->modules[$name]))
+			return(TRUE);
+		return(FALSE);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
