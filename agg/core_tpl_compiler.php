@@ -72,6 +72,20 @@ class core_tpl_compiler extends wf_agg {
 		T_DOUBLE_ARROW
 	);
 
+	private $modifiers = array(
+		'upper'        => 'strtoupper',
+		'lower'        => 'strtolower',
+		'escxml'       => 'htmlspecialchars',
+		'strip_tags'   => 'strip_tags',
+		'escurl'       => 'rawurlencode',
+		'capitalize'   => 'ucwords',
+		'stripslashes' => 'stripslashes',
+		'entities'     => 'htmlentities',
+		'type'         => 'gettype',
+		'nl2br'        => 'nl2br',
+		'class_name'  => 'get_class'
+	);
+
 	private $allowed_in_var;
 	private $allowed_in_expr;
 	private $allowed_in_foreach;
@@ -320,7 +334,37 @@ class core_tpl_compiler extends wf_agg {
 	}
 
 	private function parse_var($expr) {
-		$res = $this->parse_final($expr, $this->allowed_in_var);
+		$tok = explode('|',$expr);
+		$res = $this->parse_final(array_shift($tok), $this->allowed_in_var);
+
+		foreach($tok as $modifier) {
+			if(!preg_match('/^(\w+)(?:\:(.*))?$/', $modifier, $m)){
+				throw new wf_exception(
+					$this,
+					WF_EXC_PRIVATE,
+					'Invalid modifier <strong>'.$this->current_tag.'</strong>'
+					.' in <strong>'.$this->source_file.'</strong>.'
+				);
+				return('');
+			}
+		
+			$targs = array($res);
+		
+			if(isset($this->modifiers[$m[1]])) {
+				$res = $this->modifiers[$m[1]].'('.$res.')';
+			}
+			else {
+				throw new wf_exception(
+					$this,
+					WF_EXC_PRIVATE,
+					'Unknown modifier <strong>'.$m[1].'</strong>'
+					.' for <strong>'.$this->current_tag.'</strong>'
+					.' in <strong>'.$this->source_file.'</strong>.'
+				);
+				return('');
+			}
+		}
+
 		return($res);
 	}
 
