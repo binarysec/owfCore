@@ -5,7 +5,7 @@ Parfait l'édition fonctionne<br>
 	{/foreach}
 	<table style="width: 250px; border: 1px solid;">
 		<tr>
-			<th colspan="2">FORMULAIRE</th>
+			<th colspan="2">FORMULAIREUH</th>
 		</tr>
 		{foreach $form_elements as $id => $element}
 		<tr>
