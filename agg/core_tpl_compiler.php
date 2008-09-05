@@ -72,8 +72,8 @@ class core_tpl_compiler extends wf_agg {
 		T_DOUBLE_ARROW
 	);
 
-	private $ldelim = '{{';
-	private $rdelim = '}}';
+	private $ldelim = '{';
+	private $rdelim = '}';
 
 	private $modifiers = array(
 		'upper'        => 'strtoupper',

@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Login</title>
+{literal}
 <style>
 body { 
 	font-family: Tahoma, Verdana, Arial, sans-serif; 
@@ -37,6 +38,7 @@ a, a:hover {
 	text-decoration: none; 
 }
 </style>
+{/literal}
 </head>
 
 <body>
@@ -45,15 +47,15 @@ a, a:hover {
 <tr>
 <td align="center" valign="middle">
 
-<img src="{{link '/data/logo.png'}}"/></br>
+<img src="{link '/data/logo.png'}"/></br>
 
 <h1>Login required</h1>
-<h2>{{$message}}</h2>
+<h2>{$message}</h2>
 
-<form action="{{link '/session/login'}}" method="post">
-	{{if $back_url }}
-	<input type="hidden" name="back_url" value="{{$back_url}}" />
-	{{/if}}
+<form action="{link '/session/login'}" method="post">
+	{if $back_url }
+	<input type="hidden" name="back_url" value="{$back_url}" />
+	{/if}
 	<table width="300px">
 		<tr>
 			<td><h3>User (mail):</h3></td>

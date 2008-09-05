@@ -1,9 +1,9 @@
 <html>
 <head>
-<title>{{$message}}</title>
+<title>{$message}</title>
 
+{literal}
 <style>
-
 body { 
 	font-family: Tahoma, Verdana, Arial, sans-serif; 
 }
@@ -27,22 +27,22 @@ a, a:hover {
 	color: #a10e09; 
 	text-decoration: none; 
 }
-
 </style>
+{/literal}
 
 </head>
 <body bgcolor="white" text="black">
 <table width="100%" height="100%">
 <tr>
 <td align="center" valign="middle">
-<img src="{{link '/data/logo.png'}}"/></br>
+<img src="{link '/data/logo.png'}"/></br>
 <h1>Sorry your request could not be delivered</h1>
 
-{{if $code == 404}}
+{if $code == 404}
 <h2>Error HTTP 404 : Page not found</h2>
-{{else}}
-<h2>Unknown error {{$code}} : {{$message}}</h2>
-{{/if}}<br/>
+{else}
+<h2>Unknown error {$code} : {$message}</h2>
+{/if}<br/>
 <h3><a href="http://www.binarysec.com/">http://www.binarysec.com/</a></h3>
 </td>
 </tr>
