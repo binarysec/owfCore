@@ -39,6 +39,8 @@ class core_tpl {
 	private $a_core_tpl_compiler;
 	private $cache_file;
 	private $tpl_file;
+	private $ldelim = null;
+	private $rdelim = null;
 
 	private $vars = array();
 
@@ -137,7 +139,9 @@ class core_tpl {
 			$this->a_core_tpl_compiler->compile(
 				$tpl_name, 
 				$this->tpl_file, 
-				$this->cache_file
+				$this->cache_file,
+				$this->ldelim,
+				$this->rdelim
 			);
 		}
 
@@ -150,6 +154,11 @@ class core_tpl {
 		$this->get_template($tpl_name, $no_manage);
 		$content = ob_get_clean();
  		return($content);
+	}
+
+	public function set_delims($ldelim, $rdelim) {
+		$this->ldelim = $ldelim;
+		$this->rdelim = $rdelim;
 	}
 
 }
