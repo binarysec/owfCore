@@ -152,7 +152,7 @@ class wfr_core_data extends wf_route_request {
 	 * Draw the listing
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function show_listing($_directory) {
-		/* trouve s'il y a un répertoire suppérieur */
+		/* trouve s'il y a un répertoire supérieur */
 		$directory = " ";
 		$up_dir = NULL;
 		$token = FALSE;

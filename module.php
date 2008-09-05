@@ -22,6 +22,14 @@ class core extends wf_module {
 				WF_ROUTE_HIDE,
 				array("session:anon")
 			),
+			"/session/logout" => array(
+				WF_ROUTE_ACTION,
+				"session",
+				"logout",
+				"Logout",
+				WF_ROUTE_HIDE,
+				array("session:anon")
+			),
 			"/img" => array(
 				WF_ROUTE_ACTION,
 				"img",

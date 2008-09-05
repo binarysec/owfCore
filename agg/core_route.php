@@ -45,11 +45,11 @@ class core_route extends wf_agg {
 			return(TRUE);
 		}
 
-		/* parcourt les modules dans le sens initié */
+		/* parcours les modules dans le sens initié */
 		foreach($this->wf->modules as $info) {
 			$actions = $info[8]->get_actions();
 			
-			/* parcourt et ajoute les actions */
+			/* parcours et ajoute les actions */
 			foreach($actions as $k => $value) {
 				$this->parse_and_add_link(
 					$k, 
@@ -127,7 +127,7 @@ class core_route extends wf_agg {
 			$object = new ${objectname}($this->wf);
 			$funcname = $channel[0][4];
 
-			/* vérification si la class est bien codé */
+			/* vérification si la classe est bien codée */
 			if(get_parent_class($object) != "wf_route_request") {
 				throw new wf_exception(
 					$this,
@@ -138,7 +138,7 @@ class core_route extends wf_agg {
 				);
 			}
 			
-			/* vérification si la méthode existes */
+			/* vérification si la méthode existe */
 			if(!method_exists($object, $funcname)) {
 				throw new wf_exception(
 					$this,
@@ -151,7 +151,7 @@ class core_route extends wf_agg {
 				);
 			}
 
-			/* execute la fonction */
+			/* exécute la fonction */
 			call_user_func(array($object, $funcname));
 			exit(0);
 		}
@@ -178,8 +178,7 @@ class core_route extends wf_agg {
 				$nav = &$nav[0][$dir[$i]];
 			else
 				$stop = TRUE;
-			
-			
+
 			if($stop == TRUE) {
 				$result[1][] = $dir[$i];
 				$result[4] .= "/$dir[$i]";

@@ -48,6 +48,11 @@ class wfr_core_session extends wf_route_request {
 		}
 	}
 
+	public function logout() {
+		$this->wf->core_session()->logout();
+		$link = $this->wf->linker('/');
+		header("Location: $link");
+		exit(0);
+	}
+
 }
- 
-?>
