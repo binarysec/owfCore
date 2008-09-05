@@ -114,11 +114,13 @@ class core_tpl_compiler extends wf_agg {
 
 	// Compiler
 
-	public function compile($tpl_name, $tpl_file, $tpl_cache) {
+	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null) {
 		$this->source_file = $tpl_file;
 
-		$ld = $this->ldelim;
-		$rd = $this->rdelim;
+		if(!is_null($ldelim) && !is_null($rdelim)) {
+			$ld = $this->ldelim;
+			$rd = $this->rdelim;
+		}
 
 		/* compile the template */
 		$tpl_content = file_get_contents($tpl_file);
