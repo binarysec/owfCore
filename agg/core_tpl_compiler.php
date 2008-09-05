@@ -72,6 +72,9 @@ class core_tpl_compiler extends wf_agg {
 		T_DOUBLE_ARROW
 	);
 
+	private $ldelim = '{{';
+	private $rdelim = '}}';
+
 	private $modifiers = array(
 		'upper'        => 'strtoupper',
 		'lower'        => 'strtolower',
@@ -114,17 +117,20 @@ class core_tpl_compiler extends wf_agg {
 	public function compile($tpl_name, $tpl_file, $tpl_cache) {
 		$this->source_file = $tpl_file;
 
+		$ld = $this->ldelim;
+		$rd = $this->rdelim;
+
 		/* compile the template */
 		$tpl_content = file_get_contents($tpl_file);
 
-		$res = preg_replace("!{\*(.*?)\*}!s", '', $tpl_content);
+		$res = preg_replace('!'.$ld.'\*(.*?)\*'.$rd.'!s', '', $tpl_content);
 		$res = preg_replace("!<\?(.*?)\?>!s", '', $res);
 
-		preg_match_all("!{literal}(.*?){/literal}!s", $res, $match);
+		preg_match_all('!'.$ld.'literal'.$rd.'(.*?)'.$ld.'/literal'.$rd.'!s', $res, $match);
 		$this->literals = $match[1];
 
-		$res = preg_replace("!{literal}(.*?){/literal}!s", '{literal}', $res);
-		$body = preg_replace_callback("/{((.).*?)}/s", array($this, 'parse'), $res);
+		$res = preg_replace('!'.$ld.'literal'.$rd.'(.*?)'.$ld.'/literal'.$rd.'!s', $ld.'literal'.$rd, $res);
+		$body = preg_replace_callback('/'.$ld.'((.).*?)'.$rd.'/s', array($this, 'parse'), $res);
 
 		/* generate a lang context for the template */
 		$res = '<?php '.$this->get_headers($tpl_name).' ?>'.$body;
