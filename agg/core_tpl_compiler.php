@@ -117,7 +117,7 @@ class core_tpl_compiler extends wf_agg {
 	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null) {
 		$this->source_file = $tpl_file;
 
-		if(!is_null($ldelim) && !is_null($rdelim)) {
+		if(is_null($ld) || is_null($rd)) {
 			$ld = $this->ldelim;
 			$rd = $this->rdelim;
 		}
