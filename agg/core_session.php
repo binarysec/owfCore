@@ -244,7 +244,46 @@ class core_session extends wf_agg {
 		
 		return($this->me);
 	}
-	
+
+	public function logout() {
+		/* essaye de prendre un numéro de session */
+		$session = $_COOKIE[$this->sess_var];
+
+		/* lancement de la recherche */
+		$q = new core_db_select("core_session");
+		$where = array(
+			"session_id" => $session
+		);
+
+		$q->where($where);
+		$this->wf->db->query($q);
+		$res = $q->get_result();
+
+		/* aucune session de disponible */
+		if(!$res[0])
+			return;
+
+		$this->me = $res[0];
+
+		/* modification de l'adresse en base + time update */
+		$q = new core_db_update("core_session");
+		$where = array(
+			"id" => $this->me["id"]
+		);
+		$update = array(
+			"remote_address" => $_SERVER["REMOTE_ADDR"],
+			"session_id" => ''
+		);
+		$q->where($where);
+		$q->insert($update);
+		$this->wf->db->query($q);
+
+		/* chargement des données utilisateur */
+		$this->data = unserialize($this->me["session_data"]);
+		if(!$this->data)
+			$this->data = array();
+	}
+
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Master request processor
@@ -457,9 +496,5 @@ class core_session extends wf_agg {
 	public function get_data($key) {
 		return($this->data[$key]);
 	}
-	
-
-	
-	
 
 }
