@@ -218,7 +218,7 @@ abstract class core_dao {
 	 *
 	 * @return Un tableau d'objets
 	 */
-	public function get($fields=array()) {
+	public function get($fields = array()) {
 		/* vérifie que les champs sont valides */
 		foreach($fields as $key => $value)
 			if(!array_key_exists($key, $this->struct)) {
