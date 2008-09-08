@@ -299,10 +299,9 @@ class core_tpl_compiler extends wf_agg {
 				);
 				break;
 			default:
-// 				$method = "func_$name";
-				$generator = "gen_$name";
+				$func = "func_$name";
 				
-				if(method_exists($this, $generator)) {
+				if(method_exists($this, $func)) {
 					$argfct = $this->parse_final(
 						$args,
 						$this->alowed_assign
@@ -317,30 +316,8 @@ class core_tpl_compiler extends wf_agg {
 							$buf_args[] = $v;
 					}
 
-					$res = $this->$generator($this, $buf_args);
+					$res = $this->$func($this, $buf_args);
 				}
-// 				else if(method_exists($this, $method)) {
-// 					$argfct = $this->parse_final(
-// 						$args, 
-// 						$this->alowed_assign
-// 					);
-// 					$argt = explode(",", $argfct);
-// 					
-// 					if(count($argt) == 1) {
-// 						$buf_arg = $argfct;
-// 					}
-// 					else {
-// 						$buf_arg = "array(";
-// 						foreach($argt as $v) {
-// 							$buf_arg .= "$v,";
-// 						}
-// 						$buf_arg .= ")";
-// 					}
-// 					
-// 					$this->$method($buf_arg);
-// 					$where = '$t->wf->core_tpl_compiler()->'.$method;
-// 					$res = "echo $where($buf_arg);";
-// 				}
 				else {
 					throw new wf_exception(
 						$this,
@@ -453,24 +430,28 @@ class core_tpl_compiler extends wf_agg {
 		return('$_lang = $t->wf->core_lang()->get_context("tpl/'.$tpl_name.'");');
 	}
 
-	public function gen_js(core_tpl_compiler $tpl_compiler, $argv) {
+	public function func_js(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$this->wf->core_html()->add_js('.$argv[0].');');
 	}
 
-	public function gen_css(core_tpl_compiler $tpl_compiler, $argv) {
+	public function func_css(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$this->wf->core_html()->add_css('.$argv[0].');');
 	}
 
-	public function gen_link(core_tpl_compiler $tpl_compiler, $argv) {
+	public function func_link(core_tpl_compiler $tpl_compiler, $argv) {
 		return('echo $this->wf->linker('.$argv[0].');');
 	}
 	
-	public function gen_lang(core_tpl_compiler $tpl_compiler, $argv) {
+	public function func_lang(core_tpl_compiler $tpl_compiler, $argv) {
 		$buf_args = 'array(';
 		foreach($argv as $v)
 			$buf_args .= $v.',';
 		$buf_args .= ')';
 		return('echo $_lang->ts('.$buf_args.');');
+	}
+
+	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
+		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
 	}
 
 }

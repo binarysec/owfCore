@@ -79,7 +79,7 @@ class core_form {
 		return($attribs);
 	}
 
-	public function render($tpl_name, $no_manage=FALSE) {
+	public function render($tpl_name, $no_manage = FALSE) {
 		$attribs = $this->build_attribs(array(
 			'id',
 			'name',

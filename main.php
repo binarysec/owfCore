@@ -60,7 +60,7 @@ abstract class wf_agg {
 		throw new wf_exception(
 			$this,
 			WF_EXC_PRIVATE,
-			"can not clone aggregator for ".__CLASS__
+			"Can not clone aggregator for ".__CLASS__
 		);
 	}
 }
