@@ -72,6 +72,8 @@ class core_tpl_compiler extends wf_agg {
 	);
 
 	private $php_exec = 1;
+	private $allowed_func = array();
+	private $registered_generator = array();
 	private $ldelim = '{';
 	private $rdelim = '}';
 
@@ -86,7 +88,8 @@ class core_tpl_compiler extends wf_agg {
 		'entities'     => 'htmlentities',
 		'type'         => 'gettype',
 		'nl2br'        => 'nl2br',
-		'class_name'  => 'get_class'
+		'class_name'   => 'get_class',
+		'count'        => 'count'
 	);
 
 	private $allowed_in_var;
@@ -114,10 +117,13 @@ class core_tpl_compiler extends wf_agg {
 
 	// Compiler
 
-	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null, $php_exec) {
+	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null, $php_exec, $allowed_func, $registered_generator) {
 		$this->source_file = $tpl_file;
 
 		$this->php_exec = $php_exec;
+		$this->allowed_func = $allowed_func;
+		$this->registered_generator = $registered_generator;
+		
 		if(is_null($ld) || is_null($rd)) {
 			$ld = $this->ldelim;
 			$rd = $this->rdelim;
@@ -302,8 +308,10 @@ class core_tpl_compiler extends wf_agg {
 				break;
 			default:
 				$func = "func_$name";
-				
-				if(method_exists($this, $func)) {
+				if(array_key_exists($name, $this->registered_generator)) {
+					$res = $this->generator($this, $name, $args);
+				}
+				else if(method_exists($this, $func)) {
 					$argfct = $this->parse_final(
 						$args,
 						$this->alowed_assign
@@ -374,7 +382,19 @@ class core_tpl_compiler extends wf_agg {
 		$sqbracketcount = 0;
 		
 		if($this->php_exec == 0) {
-			$string = preg_replace('#.*\(.*\).*#s', '$__', $string);
+			$ret = preg_match_all('#([a-zA-Z0-9_]+)\([^(]*\)#', $string, $matches);
+			foreach($matches[1] as $match) {
+				if(!array_key_exists($match, $this->allowed_func)) {
+					//~ $string = preg_replace('#'.$match.'\([^(]*\)#', '$__', $string);
+					throw new wf_exception(
+						$this,
+						WF_EXC_PRIVATE,
+						'Forbidden function <strong>'.$match.'</strong>'
+						.' in <strong>'.$this->source_file.'</strong>.'
+					);
+					return('');
+				}
+			}
 		}
 		
 		$tokens = token_get_all('<?php '.$string.'?>');
@@ -448,6 +468,10 @@ class core_tpl_compiler extends wf_agg {
 		return('echo $this->wf->linker('.$argv[0].');');
 	}
 	
+	public function func_inc(core_tpl_compiler $tpl_compiler, $argv) {
+		return('$cache_to = end($this->wf->modules); $file = $cache_to[0].\'/var/tpl_cache/'.$argv[0].'.tpl\'; if(file_exists($file)) readfile($file);');
+	}
+	
 	public function func_lang(core_tpl_compiler $tpl_compiler, $argv) {
 		$buf_args = 'array(';
 		foreach($argv as $v)
@@ -458,6 +482,10 @@ class core_tpl_compiler extends wf_agg {
 
 	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
+	}
+	
+	public function generator(core_tpl_compiler $tpl_compiler, $name, $args) {
+		return($this->registered_generator[$name].'('.$this->parse_var($args).');');
 	}
 
 }
