@@ -71,6 +71,7 @@ class core_tpl_compiler extends wf_agg {
 		T_DOUBLE_ARROW
 	);
 
+	private $php_exec = 1;
 	private $ldelim = '{';
 	private $rdelim = '}';
 
@@ -113,9 +114,10 @@ class core_tpl_compiler extends wf_agg {
 
 	// Compiler
 
-	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null) {
+	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null, $php_exec) {
 		$this->source_file = $tpl_file;
 
+		$this->php_exec = $php_exec;
 		if(is_null($ld) || is_null($rd)) {
 			$ld = $this->ldelim;
 			$rd = $this->rdelim;
@@ -370,7 +372,11 @@ class core_tpl_compiler extends wf_agg {
 		$result = '';
 		$bracketcount = 0;
 		$sqbracketcount = 0;
-
+		
+		if($this->php_exec == 0) {
+			$string = preg_replace('#.*\(.*\).*#s', '$__', $string);
+		}
+		
 		$tokens = token_get_all('<?php '.$string.'?>');
 
 		if (array_shift($tokens) == '<' && $tokens[0] == '?' && is_array($tokens[1])
