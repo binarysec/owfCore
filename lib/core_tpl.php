@@ -42,6 +42,8 @@ class core_tpl {
 	private $ldelim = null;
 	private $rdelim = null;
 	private $php_exec = 1;
+	private $allowed_func = array();
+	private $registered_generator = array();
 
 	private $vars = array();
 
@@ -142,7 +144,9 @@ class core_tpl {
 				$this->cache_file,
 				$this->ldelim,
 				$this->rdelim,
-				$this->php_exec
+				$this->php_exec,
+				$this->allowed_func,
+				$this->registered_generator
 			);
 		}
 
@@ -162,8 +166,13 @@ class core_tpl {
 		$this->rdelim = $rdelim;
 	}
 
-	public function set_phpexec($php_exec) {
+	public function set_phpexec($php_exec, $allowed_func=array()) {
 		$this->php_exec = $php_exec;
+		$this->allowed_func = $allowed_func;
+	}
+	
+	public function register($name, $php_code) {
+		$this->registered_generator[$name] = $php_code;
 	}
 
 }
