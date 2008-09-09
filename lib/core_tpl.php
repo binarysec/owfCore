@@ -41,6 +41,7 @@ class core_tpl {
 	private $tpl_file;
 	private $ldelim = null;
 	private $rdelim = null;
+	private $php_exec = 1;
 
 	private $vars = array();
 
@@ -52,7 +53,6 @@ class core_tpl {
 		$this->a_core_html = $this->wf->core_html();
 		$this->a_core_tpl_compiler = $this->wf->core_tpl_compiler();
 	}
-
 
 	// Accessors
 
@@ -141,7 +141,8 @@ class core_tpl {
 				$this->tpl_file, 
 				$this->cache_file,
 				$this->ldelim,
-				$this->rdelim
+				$this->rdelim,
+				$this->php_exec
 			);
 		}
 
@@ -159,6 +160,10 @@ class core_tpl {
 	public function set_delims($ldelim, $rdelim) {
 		$this->ldelim = $ldelim;
 		$this->rdelim = $rdelim;
+	}
+
+	public function set_phpexec($php_exec) {
+		$this->php_exec = $php_exec;
 	}
 
 }
