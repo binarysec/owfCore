@@ -380,21 +380,6 @@ class core_form_select extends core_form_element {
 		$this->required = true;
 	}
 
-	private function construct_tree($options) {
-		$buf = '';
-		foreach($options as $label => $group) {
-			if(is_array($group)) {
-				$buf .= '<optgroup label="'.$label.'">';	
-				$buf .= $this->construct_tree($group);
-				$buf .= '</optgroup>';
-			}
-			else {
-				$buf .= '<option>'.$group.'</option>'."\n";
-			}
-		}
-		return($buf);
-	}
-
 	public function render() {
 		$attribs = $this->build_attribs(array(
 			'id',
@@ -423,6 +408,7 @@ class core_form_select extends core_form_element {
 					$buf .= '<option
 					  name="'.$this->name.'[]"
 					  value="'.$value.'"
+					  id="'.$this->id.'_'.$value.'"
 					  '.$selected.'>';
 					$buf .= $name;
 					$buf .= '</option>';
@@ -437,6 +423,7 @@ class core_form_select extends core_form_element {
 				$buf .= '<option
 				  name="'.$this->name.'[]"
 				  value="'.$label.'"
+				  id="'.$this->id.'_'.$label.'"
 				  '.$selected.'>';
 				$buf .= $group;
 				$buf .= '</option>';
