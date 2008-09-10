@@ -385,14 +385,7 @@ class core_tpl_compiler extends wf_agg {
 			$ret = preg_match_all('#([a-zA-Z0-9_]+)\([^(]*\)#', $string, $matches);
 			foreach($matches[1] as $match) {
 				if(!array_key_exists($match, $this->allowed_func)) {
-					//~ $string = preg_replace('#'.$match.'\([^(]*\)#', '$__', $string);
-					throw new wf_exception(
-						$this,
-						WF_EXC_PRIVATE,
-						'Forbidden function <strong>'.$match.'</strong>'
-						.' in <strong>'.$this->source_file.'</strong>.'
-					);
-					return('');
+					$string = preg_replace('#'.$match.'\([^(]*\)#', '$__', $string);
 				}
 			}
 		}
@@ -466,10 +459,6 @@ class core_tpl_compiler extends wf_agg {
 
 	public function func_link(core_tpl_compiler $tpl_compiler, $argv) {
 		return('echo $this->wf->linker('.$argv[0].');');
-	}
-	
-	public function func_inc(core_tpl_compiler $tpl_compiler, $argv) {
-		return('$cache_to = end($this->wf->modules); $file = $cache_to[0].\'/var/tpl_cache/'.$argv[0].'.tpl\'; if(file_exists($file)) readfile($file);');
 	}
 	
 	public function func_lang(core_tpl_compiler $tpl_compiler, $argv) {
