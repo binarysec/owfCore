@@ -309,7 +309,21 @@ class core_tpl_compiler extends wf_agg {
 			default:
 				$func = "func_$name";
 				if(array_key_exists($name, $this->registered_generator)) {
-					$res = $this->generator($this, $name, $args);
+					$argfct = $this->parse_final(
+						$args,
+						$this->alowed_assign
+					);
+					$argt = explode(',', $argfct);
+
+					$buf_args = array();
+					if(count($argt) == 1)
+						$buf_args[] = $argfct;
+					else {
+						foreach($argt as $v)
+							$buf_args[] = $v;
+					}
+				
+					$res = $this->generator($this, $name, $buf_args);
 				}
 				else if(method_exists($this, $func)) {
 					$argfct = $this->parse_final(
@@ -473,8 +487,8 @@ class core_tpl_compiler extends wf_agg {
 		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
 	}
 	
-	public function generator(core_tpl_compiler $tpl_compiler, $name, $args) {
-		return($this->registered_generator[$name].'('.$this->parse_var($args).');');
+	public function generator(core_tpl_compiler $tpl_compiler, $name, $argv) {
+		return(call_user_func($this->registered_generator[$name], $argv));
 	}
 
 }
