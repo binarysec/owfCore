@@ -171,8 +171,8 @@ class core_tpl {
 		$this->allowed_func = $allowed_func;
 	}
 	
-	public function register($name, $php_code) {
-		$this->registered_generator[$name] = $php_code;
+	public function register($name, $callback) {
+		$this->registered_generator[$name] = $callback;
 	}
 
 }
