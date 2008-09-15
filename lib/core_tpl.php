@@ -37,6 +37,7 @@ class core_tpl {
 	private $wf;
 	private $a_core_html;
 	private $a_core_tpl_compiler;
+	private $a_core_request;
 	private $cache_file;
 	private $tpl_file;
 	private $ldelim = null;
@@ -54,6 +55,7 @@ class core_tpl {
 		$this->wf = $wf;
 		$this->a_core_html = $this->wf->core_html();
 		$this->a_core_tpl_compiler = $this->wf->core_tpl_compiler();
+		$this->a_core_request = $this->wf->core_request();
 	}
 
 	// Accessors
@@ -151,6 +153,8 @@ class core_tpl {
 		}
 
 		$t = $this;
+		$t->vars['_URI'] = $this->a_core_request->channel[3];
+		$t->vars['_GHOST'] = $this->a_core_request->get_ghost();
 		require($this->cache_file);
 	}
 

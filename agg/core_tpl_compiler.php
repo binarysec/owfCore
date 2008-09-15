@@ -56,6 +56,7 @@ class core_tpl_compiler extends wf_agg {
 		T_BOOLEAN_OR,
 		T_EMPTY,
 		T_INC,
+		T_DEC,
 		T_ISSET,
 		T_IS_EQUAL,
 		T_IS_GREATER_OR_EQUAL,
@@ -485,6 +486,10 @@ class core_tpl_compiler extends wf_agg {
 
 	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
+	}
+
+	public function func_assign(core_tpl_compiler $tpl_compiler, $argv) {
+		return('$t->vars[\''.$argv[0].'\'] = '.$argv[1].';');
 	}
 	
 	public function generator(core_tpl_compiler $tpl_compiler, $name, $argv) {
