@@ -331,7 +331,9 @@ class core_session extends wf_agg {
 		$q->where(array("id" => $uid));
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		return($res);
+		if($res)
+			return($res[0]);
+		return(null);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -339,10 +341,29 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_mod($uid, $data) {
+		/* sanatization */
+		if(!$data["email"])
+			return(FALSE);
+
+		if(!$data["permissions"])
+			$data["permissions"] = array("session:anon");
+
+		/* input */
+		$insert = array(
+			"email" => $data["email"],
+			"name" => $data["name"],
+			"permissions" => serialize($data["permissions"]),
+		);
+
+		if(array_key_exists('password', $data))
+			$insert['password'] = md5($data['password']);
+		if(array_key_exists('data', $data))
+			$insert['data'] = serialize($data['data']);
+
 		$q = new core_db_update("core_session");
 		$where = array("id" => $uid);
 		$q->where($where);
-		$q->insert($data);
+		$q->insert($insert);
 		$this->wf->db->query($q);
 	}
 	
@@ -352,32 +373,26 @@ class core_session extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_add($data) {
 		/* sanatization */
-		if(
-			!$data["email"] ||
-			!$data["name"] ||
-			!$data["password"] ||
-			!$data["permissions"]
-			)
-				return(FALSE);
+		if(!$data["email"] || !$data["password"])
+			return(FALSE);
+
+		if(!$data["permissions"])
+			$data["permissions"] = array("session:anon");
 		
 		/* input */
 		$insert = array(
 			"email" => $data["email"],
 			"name" => $data["name"],
+			"password" => $data["password"],
 			"create_time" => time(),
-			"password" => md5($data["password"]),
 			"permissions" => serialize($data["permissions"]),
 			"data" => serialize($data["data"])
 		);
-		
+
 		/* vérification si l'utilisateur existe */
-		$q = new core_db_select("core_session");
-		$q->where(array("email" => $data["email"]));
-		$this->wf->db->query($q);
-		$res = $q->get_result();
-		if($res[0])
+		if($this->user_search_by_mail($data["email"]))
 			return(FALSE);
-			
+
 		/* sinon on ajoute l'utilisateur */
 		$q = new core_db_insert("core_session", $insert);
 		$this->wf->db->query($q);
