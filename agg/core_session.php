@@ -383,7 +383,7 @@ class core_session extends wf_agg {
 		$insert = array(
 			"email" => $data["email"],
 			"name" => $data["name"],
-			"password" => $data["password"],
+			"password" => md5($data["password"]),
 			"create_time" => time(),
 			"permissions" => serialize($data["permissions"]),
 			"data" => serialize($data["data"])
