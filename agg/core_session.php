@@ -355,7 +355,7 @@ class core_session extends wf_agg {
 			"permissions" => serialize($data["permissions"]),
 		);
 
-		if(array_key_exists('password', $data))
+		if($data['password'])
 			$insert['password'] = md5($data['password']);
 		if(array_key_exists('data', $data))
 			$insert['data'] = serialize($data['data']);
