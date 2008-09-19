@@ -22,18 +22,18 @@
 
 <td>
 <div class="filename">
-<a href="{$data[0]}">
+<a href="{$data['link']}">
 {$file}
 </a>
 </div>
 </td>
 <td>
 
-<div class="size">{$data[1]}</div>
+<div class="size">{$data['size']}</div>
 </td>
 
 <td>
-<div class="lastmod">{$data[3]}</div>
+<div class="lastmod">{$data['last_mod']}</div>
 </td>
 
 </tr>
