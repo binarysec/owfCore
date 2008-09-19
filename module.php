@@ -58,7 +58,7 @@ class core extends wf_module {
 				WF_ROUTE_ACTION,
 				"data",
 				"show_data",
-				"Data",
+				"Listing des données",
 				WF_ROUTE_SHOW,
 				array("session:anon")
 			)
