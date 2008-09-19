@@ -206,13 +206,14 @@ class wfr_core_data extends wf_route_request {
 						"d M Y / G:i:s", 
 						filemtime($file)
 					);
-					
+
 					$files[$v] = array(
-						$this->wf->linker("/data$link"),
-						$this->wf->bit8_scale(filesize($file)),
-						mime_content_type($file),
-						$last_mod,
-						$file,
+						'link'     => $this->wf->linker("/data$link"),
+						'size'     => $this->wf->bit8_scale(filesize($file)),
+						'mimetype' => mime_content_type($file),
+						'last_mod' => $last_mod,
+						'realpath' => $file,
+						'path'     => $link
 					);
 				}
 			}
