@@ -110,40 +110,6 @@ class core_lang extends wf_agg {
 		$this->_core_cacher = $this->wf->core_cacher();
 	}
 	
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 *
-	 * Vérification de la langue
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function check_lang_request() {
-
-		/* prend les données spécifiques à l'utilisateur */
-		$lang = $this->_core_session->get_data("language");
-		if(!$lang) {
-			$this->_core_session->set_data(array(
-				"language" => $this->wf->ini_arr["lang"]["default"]
-			));
-			$lang = $this->_core_session->get_data("language");
-		}
-		
-		/* set la langue */
-		if(!$this->set($lang)) {
-			if($this->wf->ini_arr["lang"]["default"] == $lang) {
-				throw new wf_exception(
-					$this,
-					WF_EXC_PRIVATE,
-					"Default language does not exists"
-				);
-			}
-			
-			/* force le passage de la langue */
-			$this->_core_session->set_data(array(
-				"language" => $this->wf->ini_arr["lang"]["default"]
-			));
-			$lang = $this->_core_session->get_data("language");
-			$this->set($lang);
-		}
-	}
-	
 	public function set($lang) {
 		/* vérification si les données sont bonnes */
 		$this->current = $this->resolv($lang);
@@ -181,6 +147,11 @@ class core_lang extends wf_agg {
 			"Content-Type", "text/html"
 		);
 		
+		/* force le passage de la langue */
+		$this->_core_session->set_data(array(
+			"language" => $lang
+		));
+	
 		return($this->current);
 	}
 	
@@ -234,6 +205,31 @@ class core_lang extends wf_agg {
 			return(NULL);
 			
 		return($this->contexts[$full]);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Check if a lang has been coded into the route
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function check_lang_route($str) {
+		/* change language if possible */
+		if($this->available[$str]) {
+			$this->set($str);
+			return(TRUE);
+		}
+	
+		if(!$this->available[$this->wf->ini_arr["lang"]["default"]]) {
+			throw new wf_exception(
+				$this,
+				WF_EXC_PRIVATE,
+				"Default language does not exists"
+			);
+		}
+			
+		if(!$this->current) 
+			$this->set($this->wf->ini_arr["lang"]["default"]);
+		
+		return(FALSE);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
