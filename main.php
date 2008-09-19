@@ -371,12 +371,15 @@ class web_framework {
 	 * Use to link
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function linker($route, $filter=NULL) {
-		if(!$filter) {
-			return(
-				"/index.php".
-				$route
-			);
-		}
+		$lang = $this->core_lang()->get();
+		
+		/* encode le lang into the link */
+		$n_route = "/$lang[code]$route";
+	
+		return(
+			"/index.php".
+			$n_route
+		);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -507,6 +510,18 @@ class web_framework {
 		$file = "$mod[0]/$filename";
 		return($file);
 	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get an ini argument
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_ini($where, $key=NULL) {
+		if($key)
+			return($this->ini_arr[$where][$key]);
+		return($this->ini_arr[$where]);
+	}
+	
+	
 	
 /*
 get_last_filename

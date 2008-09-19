@@ -100,9 +100,6 @@ class core_request extends wf_agg {
 		else
 			$this->check_all_permissions(&$need);
 		
-		/* vérification de la langue */
-		$this->wf->core_lang()->check_lang_request();
-		
 		/* terminaison */
 		$this->a_core_route->execute_route(&$this->channel);
 	}

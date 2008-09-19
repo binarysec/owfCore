@@ -242,7 +242,20 @@ class wfr_core_data extends wf_route_request {
 				$this->wf->linker("/data$up_dir")
 			);
 
-		$this->a_core_html->rendering($tpl->fetch("core/data_index"));
+		if(
+			$this->wf->mod_exists("admin") && 
+			($this->a_core_request->permissions[WF_USER_GOD] ||
+			$this->a_core_request->permissions[WF_USER_ADMIN])
+			) {
+			$this->wf->admin_html()->rendering(
+				$tpl->fetch("core/data_admin_index")
+			);
+		}
+		else {
+			$this->wf->a_core_html->rendering(
+				$tpl->fetch("core/data_index")
+			);
+		}
 		exit(0);
 	}
 	

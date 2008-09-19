@@ -169,12 +169,19 @@ $this->a_core_cacher->clear();
 	 * Function used to get channel node
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_channel($link) {
+		$lang = $this->wf->core_lang();
+		
 		$result = array();
 		
 		$dir = explode("/", $link);
 		$nav = &$this->routes;
+		$start = 1;
 		
-		for($i=1; $i<count($dir); $i++) {
+		/* checking lang context if available */
+		if($lang->check_lang_route($dir[1]))
+			$start++;
+		
+		for($i=$start; $i<count($dir); $i++) {
 			if(!$stop && $nav[0][$dir[$i]])
 				$nav = &$nav[0][$dir[$i]];
 			else
