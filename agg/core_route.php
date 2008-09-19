@@ -31,7 +31,6 @@ class core_route extends wf_agg {
 		
 		/* chargement du module de cache */
 		$this->a_core_cacher = $this->wf->core_cacher();
-$this->a_core_cacher->clear();
 	}
 
 	
