@@ -26,12 +26,12 @@
  * This object must be loaded trought core_lang()->get_context()
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 class core_lang_context {
-	private $full;
+	public $full;
 	private $file;
-	private $lang;
+	public $lang;
 	
-	private $keys;
-	private $vars;
+	public $keys;
+	public $vars;
 	
 	private $rewrite = FALSE;
 	
@@ -159,7 +159,7 @@ class core_lang extends wf_agg {
 	 *
 	 * Get a translation context
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private $contexts = array();
+	public $contexts = array();
 	public function get_context($name, $lang=NULL, $create=TRUE) {
 		if($lang)
 			$lang = $lang;
