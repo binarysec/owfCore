@@ -108,7 +108,7 @@ class core_tpl_compiler extends wf_agg {
 
 	public function loader($wf) {
 		$this->wf = $wf;
-
+		
 		$this->allowed_in_var  = array_merge($this->vartype, $this->op);
 		$this->allowed_in_expr = array_merge($this->vartype, $this->op);
 		$this->allowed_in_foreach = array_merge($this->vartype, array(T_AS, T_DOUBLE_ARROW));
@@ -120,7 +120,7 @@ class core_tpl_compiler extends wf_agg {
 
 	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null, $php_exec, $allowed_func, $registered_generator) {
 		$this->source_file = $tpl_file;
-
+		
 		$this->php_exec = $php_exec;
 		$this->allowed_func = $allowed_func;
 		$this->registered_generator = $registered_generator;
@@ -129,22 +129,22 @@ class core_tpl_compiler extends wf_agg {
 			$ld = $this->ldelim;
 			$rd = $this->rdelim;
 		}
-
+		
 		/* compile the template */
 		$tpl_content = file_get_contents($tpl_file);
-
+		
 		$res = preg_replace('!'.$ld.'\*(.*?)\*'.$rd.'!s', '', $tpl_content);
 		$res = preg_replace("!<\?(.*?)\?>!s", '', $res);
-
+		
 		preg_match_all('!'.$ld.'literal'.$rd.'(.*?)'.$ld.'/literal'.$rd.'!s', $res, $match);
 		$this->literals = $match[1];
-
+		
 		$res = preg_replace('!'.$ld.'literal'.$rd.'(.*?)'.$ld.'/literal'.$rd.'!s', $ld.'literal'.$rd, $res);
 		$body = preg_replace_callback('/'.$ld.'((.).*?)'.$rd.'/s', array($this, 'parse'), $res);
-
+		
 		/* generate a lang context for the template */
 		$res = '<?php '.$this->get_headers($tpl_name).' ?>'.$body;
-
+		
 		if(count($this->block_stack)) {
 			throw new wf_exception(
 				$this,
@@ -154,11 +154,11 @@ class core_tpl_compiler extends wf_agg {
 				.' in <strong>'.$this->source_file.'</strong>.'
 			);
 		}
-
+		
 		$res = $header.$res;
 		$res = preg_replace('/\?>\n?<\?php/', '', $res);
 		$res = preg_replace('/<\?php\s*\?>/', '', $res);
-
+		
 		/* cache dir not found or not writable */
 		if(!is_writable(dirname($tpl_cache))) {
 			if(!is_dir(dirname($tpl_cache))) {
@@ -176,16 +176,16 @@ class core_tpl_compiler extends wf_agg {
 			);
 			return(false);
 		}
-
+		
 		/* cache the template in file */
 		file_put_contents($tpl_cache, $res);
-
+		
 		return(true);
 	}
 
 	private function parse($matches) {
 		list(, $tag, $firstcar) = $matches;
-
+		
 		if(!preg_match('/^\$|@|[a-zA-Z\/]$/', $firstcar))
 			throw new wf_exception(
 				$this,
@@ -193,9 +193,9 @@ class core_tpl_compiler extends wf_agg {
 				'Invalid syntax for <strong>'.$tag.'</strong>'
 				.' in <strong>'.$this->source_file.'</strong>.'
 			);
-
+		
 		$this->current_tag = $tag;
-
+		
 		if($firstcar == '$')
 			return('<?php echo '.$this->parse_var($tag).'; ?>');
 		elseif($firstcar == '*')
@@ -215,7 +215,7 @@ class core_tpl_compiler extends wf_agg {
 				$m[2] = $m[3];
 			if(!isset($m[2]))
 				$m[2] = '';
-
+			
 			if($firstcar == '@') {
 				return('<?php '.$this->parse_function('lang', substr($tag, 1)).'?>');
 			}
@@ -225,7 +225,7 @@ class core_tpl_compiler extends wf_agg {
 				if($m[1] == 'rdelim')
 					return('}');
 			}
-
+			
 			return('<?php '.$this->parse_function($m[1], $m[2]).'?>');
 		}
 	}
@@ -315,7 +315,7 @@ class core_tpl_compiler extends wf_agg {
 						$this->alowed_assign
 					);
 					$argt = explode(',', $argfct);
-
+					
 					$buf_args = array();
 					if(count($argt) == 1)
 						$buf_args[] = $argfct;
@@ -323,7 +323,7 @@ class core_tpl_compiler extends wf_agg {
 						foreach($argt as $v)
 							$buf_args[] = $v;
 					}
-				
+					
 					$res = $this->generator($this, $name, $buf_args);
 				}
 				else if(method_exists($this, $func)) {
@@ -332,7 +332,7 @@ class core_tpl_compiler extends wf_agg {
 						$this->alowed_assign
 					);
 					$argt = explode(',', $argfct);
-
+					
 					$buf_args = array();
 					if(count($argt) == 1)
 						$buf_args[] = $argfct;
@@ -340,7 +340,7 @@ class core_tpl_compiler extends wf_agg {
 						foreach($argt as $v)
 							$buf_args[] = $v;
 					}
-
+					
 					$res = $this->$func($this, $buf_args);
 				}
 				else {
@@ -359,7 +359,7 @@ class core_tpl_compiler extends wf_agg {
 	private function parse_var($expr) {
 		$tok = explode('|',$expr);
 		$res = $this->parse_final(array_shift($tok), $this->allowed_in_var);
-
+		
 		foreach($tok as $modifier) {
 			if(!preg_match('/^(\w+)(?:\:(.*))?$/', $modifier, $m)){
 				throw new wf_exception(
@@ -370,9 +370,9 @@ class core_tpl_compiler extends wf_agg {
 				);
 				return('');
 			}
-		
+			
 			$targs = array($res);
-		
+			
 			if(isset($this->modifiers[$m[1]])) {
 				$res = $this->modifiers[$m[1]].'('.$res.')';
 			}
@@ -387,7 +387,7 @@ class core_tpl_compiler extends wf_agg {
 				return('');
 			}
 		}
-
+		
 		return($res);
 	}
 
@@ -406,17 +406,17 @@ class core_tpl_compiler extends wf_agg {
 		}
 		
 		$tokens = token_get_all('<?php '.$string.'?>');
-
+		
 		if (array_shift($tokens) == '<' && $tokens[0] == '?' && is_array($tokens[1])
 		    && $tokens[1][0] == T_STRING && $tokens[1][1] == 'php') {
 			array_shift($tokens);
 			array_shift($tokens);
 		}
-
+		
 		foreach($tokens as $tok) {
 			if (is_array($tok)) {
 				list($type, $str) = $tok;
-
+				
 				if($type == T_CLOSE_TAG)
 					continue;
 				elseif($type == T_VARIABLE)
@@ -445,7 +445,7 @@ class core_tpl_compiler extends wf_agg {
 				$result .= $tok;
 			}
 		}
-
+		
 		if($bracketcount != 0 || $sqbracketcount !=0)
 			throw new wf_exception(
 				$this,
@@ -453,7 +453,7 @@ class core_tpl_compiler extends wf_agg {
 				'Bracket error for <strong>'.$this->current_tag.'</strong>'
 				.' in <strong>'.$this->source_file.'</strong>.'
 			);
-
+		
 		return($result);
 	}
 
