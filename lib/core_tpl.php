@@ -119,7 +119,7 @@ class core_tpl {
 	public function get_template($tpl_name, $no_manage=FALSE) {
 		/* locate the template */
 		$found = $this->locate($tpl_name);
-
+		
 		/* if template doesn't exist */
 		if(!$this->tpl_file) {
 			throw new wf_exception(
@@ -128,13 +128,13 @@ class core_tpl {
 				"Can not find template $tpl_name."
 			);
 		}
-
+		
 		if(!$no_manage)
 			$this->a_core_html->add_managed_tpl($tpl_name, &$this);
-
+		
 		if(!$this->tpl_file)
 			return;
-
+		
 		if (!file_exists($this->cache_file) ||
 		     filemtime($this->tpl_file) > filemtime($this->cache_file)) {
 				
@@ -151,7 +151,7 @@ class core_tpl {
 				$this->registered_generator
 			);
 		}
-
+		
 		$t = $this;
 		$t->vars['_URI'] = $this->a_core_request->channel[3];
 		$t->vars['_GHOST'] = $this->a_core_request->get_ghost();
