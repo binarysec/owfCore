@@ -25,7 +25,7 @@
 class core_form {
 
 	private $wf              = null;
-	private $tpl             = null;
+	public  $tpl             = null;
 	private $attribs         = array();
 	private $elements        = array();
 	private $hidden_elements = array();

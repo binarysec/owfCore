@@ -25,20 +25,23 @@ define("CORE_LOCKED",       1);
 define("CORE_UNLOCKED",     2);
 define("CORE_LOCK_TIMEOUT", 3);
 
-define("CORE_LOCK_DIE_TIMEOUT", 5*60);
-define("CORE_LOCK_DFT_TIMEOUT", 2*60);
+define("CORE_LOCK_TIMEOUT", 60);
 
 abstract class core_lock_driver {
 	abstract public function lock($name, $timeout);
 	abstract public function unlock($name);
-	abstract public function get_banner($name);
+	abstract public function trylock($name);
+	abstract public function get_banner();
 }
 
 class core_lock extends wf_agg {
 	
-	var $driver;
-	var $timeout_die;
-	var $timeout_dft;
+	private $driver;
+	private $timeout;
+	
+	private $device;
+	
+	private $ident;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
@@ -46,24 +49,46 @@ class core_lock extends wf_agg {
 		$this->driver = $this->wf->get_ini(
 			"common", "lock_driver"
 		);
-		$this->timeout_die = $this->wf->get_ini(
-			"common", "lock_timeout_die"
-		);
-		$this->timeout_dft = $this->wf->get_ini(
-			"common", "lock_timeout_default"
+		$this->timeout = $this->wf->get_ini(
+			"common", "lock_timeout"
 		);
 		
-
+		if(!$this->driver)
+			$this->driver = "db";
+		if(!$this->timeout)
+			$this->timeout = CORE_LOCK_TIMEOUT;
+			
+		$this->ident = rand();
+		
+		$this->load_device();
 	}
 	
-	public function lock($name, $timeout=4) {
-	
+	public function lock($name, $timeout=NULL) {
+		if($timeout)
+			return($this->device->lock($name, $timeout));
+		return($this->device->lock($name, $this->timeout));
 	}
 	
 	public function unlock($name) {
-	
+		return($this->device->unlock($name));
 	}
 	
+	public function trylock() {
+		return($this->device->trylock($name));
+	}
+	
+	public function get_ident() {
+		return($this->ident);
+	}
+	
+	private function load_device() {
+		/* set the object name */
+		$name = "core_lock_".$this->driver;
+		
+		/* load the device */
+		$this->device = new ${name}($this->wf);
+	}
+
 }
 
 ?>
