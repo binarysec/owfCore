@@ -135,6 +135,10 @@ class core_request extends wf_agg {
 	public function get_args() {
 		return($this->channel[1]);
 	}
+
+	public function get_uri() {
+		return('/'.implode('/', $this->channel[2]));
+	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
