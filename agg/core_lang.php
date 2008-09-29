@@ -104,7 +104,7 @@ class core_lang extends wf_agg {
 		/* charge les langues disponible */
 		$t = explode(',', $this->wf->ini_arr["lang"]["available"]);
 		foreach($t as $v)
-			$this->available[$v] = $this->ini[$v];
+			$this->available[$v] = TRUE;
 			
 		$this->_core_session = $this->wf->core_session();
 		$this->_core_cacher = $this->wf->core_cacher();
@@ -238,6 +238,14 @@ class core_lang extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get() {
 		return($this->current);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get current code
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_code() {
+		return($this->current["code"]);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *

@@ -371,11 +371,12 @@ class web_framework {
 	 * Use to link
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function linker($route, $filter=NULL, $lang_code=NULL) {
-		if(!$lang_code) {
-			$lang = $this->core_lang()->get();
-			$lang_code = $lang['code'];
-		}
-		
+		$cl = $this->core_lang()->resolv($lang_code);
+		if(!$cl)
+			$lang_code = $this->core_lang()->get_code();
+		else
+			$lang_code = $cl["code"];
+			
 		/* encode le lang into the link */
 		$n_route = "/$lang_code$route";
 	
