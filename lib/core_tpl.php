@@ -153,7 +153,7 @@ class core_tpl {
 		}
 		
 		$t = $this;
-		$t->vars['_URI'] = $this->a_core_request->channel[3];
+		$t->vars['_URI'] = $this->a_core_request->get_uri();
 		$t->vars['_GHOST'] = $this->a_core_request->get_ghost();
 		require($this->cache_file);
 	}
