@@ -31,7 +31,6 @@ class core_lang_context {
 	public $lang;
 	
 	public $keys;
-	public $vars;
 	
 	private $rewrite = FALSE;
 	
@@ -72,10 +71,11 @@ class core_lang_context {
 	 * key translation
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function get_translation($text) {
-		$ktext = &$this->keys[$text];
+		$key = base64_encode($text);
+		
+		$ktext = &$this->keys[$key];
 		if(!$ktext) {
 			$ktext = $text;
-			$this->vars[] = &$this->keys[$text];
 			$this->rewrite = TRUE;
 		}
 		return($ktext);

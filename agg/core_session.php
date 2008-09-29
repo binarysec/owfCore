@@ -28,10 +28,11 @@ define("CORE_SESSION_USER_UNKNOWN", 3);
 define("CORE_SESSION_AUTH_FAILED",  4);
 
 class core_session extends wf_agg {
+
 	/** TODO: PARAMETRER */
 	var $sess_var = "session";
 	var $sess_timeout = 3600;
-		
+	
 	var $me = NULL;
 	var $data = NULL;
 	

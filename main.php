@@ -315,7 +315,7 @@ class web_framework {
 		}
 		
 		/* chargement */
-		require($file);
+		require_once($file);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

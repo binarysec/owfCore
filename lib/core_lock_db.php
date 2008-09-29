@@ -23,13 +23,63 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class core_lock_db extends core_lock_driver {
+	private $_core_lock;
+	
 	public function __construct($wf) {
 		$this->wf = $wf;
+		$this->_core_lock = $wf->core_lock();
+		
+		$struct = array(
+			"name" => WF_VARCHAR,
+			"who" => WF_VARCHAR,
+			"state" => WF_INT
+		);
+		$this->wf->db->register_zone(
+			"core_lock_db", 
+			"Core lock device using database", 
+			$struct
+		);
+		
 	}
 
+	public function lock($name, $timeout) {
+		echo"lala";
+	}
+	
+	public function unlock($name) {
+	
+	}
+	
+	public function trylock($name) {
+	
+// 		$where = array(
+// 			"name" => $name,
+// 			"who" => $this->_core_lock->get_ident()
+// 		);
+// 		$update = array(
+// 			"who" => $this->_core_lock->get_ident()
+// 			"state" => CORE_LOCKED
+// 		);
+		
+		
+	}
+	
+	private function push() {
+	
+// 		$q = new core_db_insert("core_session", $insert);
+// 		$this->wf->db->query($q);
+		
+	}
+	
+	private function select() {
+	
+	}
+	
 	public function get_banner() {
 		return("Database");
 	}
+	
+	
 }
 
 ?>
