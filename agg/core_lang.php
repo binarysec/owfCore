@@ -267,7 +267,9 @@ class core_lang extends wf_agg {
 	 *
 	 * Resolv information in relation with the language
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function resolv($lang) {
+	public function resolv($lang=NULL) {
+		if($lang == NULL)
+			return($this->ini);
 		if($this->ini[$lang])
 			return($this->ini[$lang]);
 		return(FALSE);
@@ -277,4 +279,4 @@ class core_lang extends wf_agg {
 	
 }
 
-?>
+// svn merge -r83:81
