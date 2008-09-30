@@ -146,7 +146,9 @@ class core_cacher extends wf_agg {
 	 *
 	 */
 	public function delete($var) {
-		return($this->system->delete($this->namespace.$var));
+		if($this->system)
+			return($this->system->delete($this->namespace.$var));
+		return(NULL);
 	}
 
 	/**
@@ -155,6 +157,7 @@ class core_cacher extends wf_agg {
 	public function clear() {
 		if($this->system)
 			return($this->system->clear());
+		return(NULL);
 	}
 
 	/**
