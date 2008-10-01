@@ -88,7 +88,6 @@ class core_lang extends wf_agg {
 	
 	var $current = NULL;
 	var $available = NULL;
-	var $available_resolved = array();
 	
 	var $_core_session;
 	var $_core_cacher;
@@ -104,11 +103,9 @@ class core_lang extends wf_agg {
 		
 		/* charge les langues disponibles */
 		$t = explode(',', $this->wf->ini_arr["lang"]["available"]);
-		foreach($t as $v) {
-			$this->available[$v] = TRUE;
-			$this->available_resolved[$v] = $this->resolv($v);
-		}
-			
+		foreach($t as $v)
+			$this->available[$v] = $this->ini[$v];
+
 		$this->_core_session = $this->wf->core_session();
 		$this->_core_cacher = $this->wf->core_cacher();
 	}
@@ -258,10 +255,6 @@ class core_lang extends wf_agg {
 	public function get_list() {
 		return($this->available);
 	}
-
-	public function get_resolved_list() {
-		return($this->available_resolved);
-	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
@@ -272,7 +265,6 @@ class core_lang extends wf_agg {
 			return($this->ini[$lang]);
 		return(FALSE);
 	}
-	
 
 	
 }
