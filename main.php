@@ -376,7 +376,6 @@ class web_framework {
 			$lang_code = $this->core_lang()->get_code();
 		else
 			$lang_code = $cl["code"];
-			
 		/* encode le lang into the link */
 		$n_route = "/$lang_code$route";
 	
