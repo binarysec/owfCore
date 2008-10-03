@@ -177,7 +177,7 @@ class core_cacher extends wf_agg {
 	public function get_banner() {
 		if($this->system)
 			return($this->system->get_banner());
-		return(NULL);
+		return("None");
 	}
 
 	/**
