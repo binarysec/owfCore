@@ -22,6 +22,8 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+define("WF_VERSION",   "1.0.0-branched");
+
 define("WF_T_INTEGER", 1);
 define("WF_T_DOUBLE",  2);
 define("WF_T_STRING",  6);
@@ -354,6 +356,14 @@ class web_framework {
 		$obj->loader(&$this);
 		
 		return($obj);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function used to get the rail
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_rail() {
+		return($_SERVER["PATH_INFO"]);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

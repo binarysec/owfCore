@@ -47,7 +47,7 @@ class core_request extends wf_agg {
 	public function process() {
 		/* chargement du canal */
 		$this->channel = $this->a_core_route->get_channel(
-			$_SERVER["PATH_INFO"]
+			$this->wf->get_rail()
 		);
 
 		/* vérification du canal */
