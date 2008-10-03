@@ -500,7 +500,7 @@ class web_framework {
 				if($return_array) {
 					$file = array(
 						$tmp,
-						&$this->modules[$mod]
+						&$this->modules[$mod][0]
 					);
 				}
 				else
