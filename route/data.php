@@ -210,7 +210,7 @@ class wfr_core_data extends wf_route_request {
 					$files[$v] = array(
 						'link'     => $this->wf->linker("/data$link"),
 						'size'     => $this->wf->bit8_scale(filesize($file)),
-						'mimetype' => mime_content_type($file),
+						'mimetype' => $this->wf->core_mime()->get_mime($file),
 						'last_mod' => $last_mod,
 						'realpath' => $file,
 						'path'     => $link
