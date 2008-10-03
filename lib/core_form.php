@@ -500,3 +500,17 @@ class core_form_checkbox extends core_form_radio {
 	}
 
 }
+
+
+class core_form_ext extends core_form_element {
+
+	public function __construct($id) {
+		parent::__construct($id);
+		$this->required = true;
+	}
+	
+	public function render() {
+		return($this->value);
+	}
+
+}
