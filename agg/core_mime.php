@@ -50,7 +50,11 @@ class core_mime extends wf_agg {
 			return($this->ini[$ext]);
 		
 		/* if not know */
-		$mime = mime_content_type($file);
+		if(function_exists("mime_content_type")) 
+			$mime = mime_content_type($file);
+		else 
+			$mime = NULL;
+			
 		if(!$mime)
 			$mime = 'application/octet-stream';
 		return($mime);
