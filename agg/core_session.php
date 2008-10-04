@@ -90,46 +90,6 @@ class core_session extends wf_agg {
 			"permissions" => array("session:service"),
 			"data" => array(),
 		));
-
-		$this->user_add(array(
-			"email" => "test1@test.test",
-			"name" => "Test",
-			"password" => "test",
-			"permissions" => array("session:service"),
-			"data" => array(),
-		));
-
-		$this->user_add(array(
-			"email" => "test2@test.test",
-			"name" => "Test",
-			"password" => "test",
-			"permissions" => array("session:service"),
-			"data" => array(),
-		));
-
-		$this->user_add(array(
-			"email" => "test3@test.test",
-			"name" => "Test",
-			"password" => "test",
-			"permissions" => array("session:service"),
-			"data" => array(),
-		));
-
-		$this->user_add(array(
-			"email" => "test4@test.test",
-			"name" => "Test",
-			"password" => "test",
-			"permissions" => array("session:service"),
-			"data" => array(),
-		));
-
-		$this->user_add(array(
-			"email" => "test5@test.test",
-			"name" => "Test",
-			"password" => "test",
-			"permissions" => array("session:service"),
-			"data" => array(),
-		));
 		
 	}
 
