@@ -53,43 +53,55 @@ class core_db_pdo_mysql extends core_db {
 		/* open mysql database */
 		try {
 			$dsn  = "mysql:";
-			$dsn .= "dbname=".$dbconf["dbname"].';';
-			$dsn .= "host=".$dbconf["host"];
+
+			$dsn .= "dbname=".$dbconf["dbname"];
+			if($dbconf["host"])
+				$dsn .= ";host=".$dbconf["host"];
+			if($dbconf["port"])
+				$dsn .= ";port=".$dbconf["port"];
+			if($dbconf["unix_socket"])
+				$dsn .= ";unix_socket=".$dbconf["unix_socket"];
+				
 			$user = $dbconf["user"];
 			$pass = $dbconf["pass"];
-
-			$this->hdl = new PDO($dsn, $user, $pass);
+			
+			$this->hdl = new PDO($dsn, $user, $pass);	
 		} 
 		catch (PDOException $e) {
-			throw new wf_exception(
-				$this,
-				WF_EXC_PRIVATE,
-				"PDO::SQLite: Could not load database: ".$e->getMessage()
-			);
+			print "MySQL: " . $e->getMessage() . "<br/>";
+			die();
 		}
-		
+
 		/* check zone table */
 		$this->check_zone_tab();
 
 		return(TRUE);
 	}
-
+	
 	public function get_last_insert_id($seq=null) {
 		return($this->hdl->lastInsertId($seq));
 	}
-
+	
+	public function is_usable() {
+		$d = PDO::getAvailableDrivers();
+		foreach($d as $v) {
+			if($v == "mysql")
+				return(TRUE);
+		}
+		return(FALSE);
+	}
+	
 	public function get_driver_name() {
-		return("PDO::MySQL");
+		return("MySQL");
 	}
 	
 	public function get_driver_banner() {
-		return("PDO::MySQL/".$this->hdl->getAttribute(PDO::ATTR_SERVER_VERSION));
+		return("MySQL/".$this->hdl->getAttribute(PDO::ATTR_SERVER_VERSION));
 	}
 	
 	public function get_request_counter() {
 		return($this->request_c);
 	}
-	
 	
 	/*
 	register a new data zone
@@ -111,49 +123,35 @@ class core_db_pdo_mysql extends core_db {
 
 	}
 	
-
-	
 	private function check_for_data_translation($name, $description, $struct, $info) {
+		foreach($info as $k => $v)
+			$all[$v["b.name"]] = (int)$v["b.type"];
+
 		$change = FALSE;
-		$selector = new core_db_select($name);
-		$fields_selector = array();
-		$old_struct = array();
-		foreach($info as $k => $v) {
-			$col_name = &$v["b.name"];
-			$col_type = &$v["b.type"];
-			if($struct[$col_name]) {
-				if($col_type != $struct[$col_name])
-					$change = TRUE;
-				$old_struct[$col_name] = $struct[$col_name];
-				array_push($fields_selector, $col_name);
-			}
-			else
-				$change = TRUE;
-		}
+		
+		/* vérifi les élément à ajouter */
 		foreach($struct as $k => $v) {
-			if(!$old_struct[$k])
+			if(!$all[$k]) {
+				$type = $this->get_struct_type($v);
+				$query = "ALTER TABLE `$name` ADD `$k` $type ;";
+				$this->sql_query($query);
 				$change = TRUE;
-		}
-		if($change) {
-			$selector->fields($fields_selector);
-			$this->sql_query("BEGIN TRANSACTION;");
-			$this->query($selector);
-			$res = $selector->get_result();
-			$this->info("* Design has changed for the zone '$name' please wait... ");
-			$tmp_name = "new_$name";
-			$this->create_table($tmp_name, $struct);
-			$el = 0;
-			foreach($res as $k => $v) {
-				$q = new core_db_insert($tmp_name, $v);
-				$this->query($q);
-				$el++;
 			}
-			$this->drop_table($name);
-			$this->rename_table($tmp_name, $name);
+		}
+		
+		/* vérifi les élément à enlever */
+		foreach($all as $k => $v) {
+			if(!$struct[$k]) {
+				$query = "ALTER TABLE `$name` DROP `$k` ;";
+				$this->sql_query($query);
+				$change = TRUE;
+			}
+
+		}
+
+		if($change == TRUE) {
 			$this->drop_zone($name);
 			$this->create_zone($name, $struct);
-			$this->sql_query("COMMIT;");
-			$this->info("$el elements updated.\n");
 		}
 	}
 	
@@ -164,38 +162,25 @@ class core_db_pdo_mysql extends core_db {
 	
 	/* backyard functions :] */
 	private function sql_query($query, $values=NULL) {
-		$q = $this->hdl->prepare($query);
+		$q = $this->hdl->prepare(
+			$query, 
+			array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true)
+		);
 		if(!$q) {
 			$er = $this->hdl->errorInfo();
-			
-			throw new wf_exception(
-				$this,
-				WF_EXC_PRIVATE,
-				array(
-					"PDO::SQLite->prepare()#$er[0]: $er[2]",
-					"PDO::SQLite->prepare()# SQL request:",
-					"<pre>$query</pre>"
-				)
-			);
+			echo "* MySQL->prepare()#$er[0]: $er[2]\n";
+			echo "*            \_ SQL request: $query\n";
+			die();
 		}
 
 		$q->execute($values);
 		$er = $q->errorInfo();
 		if($er[0] != 0) {
 			$er = $this->hdl->errorInfo();
-			throw new wf_exception(
-				$this,
-				WF_EXC_PRIVATE,
-				array(
-					"PDO::SQLite->execute()#$er[0]: $er[2]",
-					"PDO::SQLite->execute()# SQL request:",
-					"<pre>$query</pre>"
-				)
-			);
+			echo "* MySQL->prepare()#$er[0]: $er[2]\n";
+			echo "*            \_ SQL request: $query\n";
+			die();
 		}
-
-		/* log */
-		//trigger_error('MySQL ORDER #'.($this->request_c + 1).': '.$query, WF_E_NOTICE);
 
 		$this->request_c++;
 		
@@ -668,22 +653,37 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	public function get_configuration() {
+	
+				$dsn .= "dbname=".$dbconf["dbname"].';';
+			$dsn .= "host=".$dbconf["host"];
+			$user = $dbconf["user"];
+			$pass = $dbconf["pass"];
+			
 		$ret = array(
-			"file" => array(
-				"default" => "/var/lib/wafd/data/db.sqlite",
-				"size" => "25",
-				"lang" => array(
-					"fr" => "Fichier base de donn&eacute;e",
-					"eng" => "Database filename"
-				)
+			"dbhost" => array(
+				"default" => "localhost",
+				"size" => "20",
+				"descript" => "Host du serveur MySQL"
 			),
-			"perm" => array(
-				"default" => "700",
+			"dbport" => array(
+				"default" => "3306",
 				"size" => "6",
-				"lang" => array(
-					"fr" => "Permission du fichier",
-					"eng" => "File permission"
-				)
+				"descript" => "Port du serveur MySQL"
+			),
+			"dbname" => array(
+				"default" => "binarysec",
+				"size" => "15",
+				"descript" => "Nom de la base de donnée"
+			),
+			"dbuser" => array(
+				"default" => "",
+				"size" => "15",
+				"descript" => "Nom d'utilisateur"
+			),
+			"dbpass" => array(
+				"default" => "",
+				"size" => "15",
+				"descript" => "Mot de passe"
 			)
 		);
 		
@@ -691,6 +691,22 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	public function test_configuration($dbconf) {
+		try {
+			$dsn  = "mysql:";
+			$dsn .= "dbname=".$dbconf["dbname"];
+			if($dbconf["dbhost"])
+				$dsn .= ";host=".$dbconf["dbhost"];
+			if($dbconf["dbport"])
+				$dsn .= ";port=".$dbconf["dbport"];
+
+			$user = $dbconf["dbuser"];
+			$pass = $dbconf["dbpass"];
+			$this->hdl = new PDO($dsn, $user, $pass);
+		}
+		catch (PDOException $e) {
+			return($e->getMessage());
+		}
+
 		return(TRUE);
 	}
 	
@@ -739,31 +755,53 @@ class core_db_pdo_mysql extends core_db {
 	private function get_struct_type($item) {
 		switch($item) {
 			case WF_VARCHAR:
-				return("VARCHAR(255)");
+				return("VARCHAR(255) NULL");
 			case WF_SMALLINT:
-				return("SMALLINT");
+				return("SMALLINT NULL");
 			case WF_INT:
-				return("INT");
+				return("INT NULL");
 			case WF_FLOAT:
-				return("FLOAT");
+				return("FLOAT NULL");
 			case WF_TIME:
-				return("INT");
+				return("INT NULL");
 			case WF_DATA:
 				return("BLOB");
 			case WF_PRI:
-				return("INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT");
+				return("INT NULL AUTO_INCREMENT");
 		}
 	}
 
 	private function create_table($name, $struct) {
-		$query = 'CREATE TABLE "'.$name.'" (';
+		$pri_list = array();
+		
+		$query = 'CREATE TABLE `'.$name.'` (';
 		$vir = FALSE;
 		foreach($struct as $k => $v) {
+			if($v == WF_PRI)
+				$pri_list[] = $k;
+					
 			if($vir == TRUE) $query .= ",";
 			$query .= '`'.$k.'` '.$this->get_struct_type($v);
 			$vir = TRUE;
 		}
+		
+		/* preparation des clés */
+		if(count($pri_list) > 0) {
+			$query .= ", PRIMARY KEY ( ";
+			for($a=0; $a<count($pri_list); $a++) {
+				$v = &$pri_list[$a];
+			
+				if($a > 0)
+					$query .= ",";
+					
+				$query .= "`$v`";
+			}
+			$query .= ")";
+		}
+		
+		/* ajoute les clés */
 		$query .= ")";
+		
 		$this->sql_query($query);
 	}
 	
@@ -773,7 +811,7 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	private function drop_table($name) {
-		$query = 'DROP TABLE "$name"';
+		$query = 'DROP TABLE "'.$name.'"';
 		$this->sql_query($query);
 	}
 	
@@ -861,6 +899,42 @@ class core_db_pdo_mysql extends core_db {
 
 	}
 	
+	/* gestion des transactions */
+	public function trans_begin($type=WF_TRANS_DEFERRED, $name=NULL) {
+		
+		/* type de transaction */
+		switch($type) {
+// 			case WF_TRANS_IMMEDIAT:
+// 				$type_str = "IMMEDIAT"; break;
+// 			
+// 			case WF_TRANS_DEFERRED:
+// 				$type_str = "DEFERRED"; break;
+// 				
+// 			case WF_TRANS_EXCLUSIF:
+// 				$type_str = "EXCLUSIF"; break;
+				
+			default:
+				$type_str = ""; break;
+		}
+		/* il y a un nom */
+		$name_str = $name == NULL ? "" : $name;
+		
+		/* req sql */
+		$query = "BEGIN $type_str TRANSACTION";
+// 		$this->sql_query($query);
+		
+		return(TRUE);
+	}
+	
+	public function trans_cancel($name=NULL) {
+		/* req sql */
+// 		$this->sql_query("ROLLBACK");
+	}
+	
+	public function trans_commit($name=NULL) {
+		/* req sql */
+// 		$this->sql_query("COMMIT");
+	}
 	
 	private function safe_input($i) {
 		return(stripslashes($i));

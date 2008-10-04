@@ -181,7 +181,12 @@ class web_framework {
 	var $ini_arr;
 	var $db;
 	
+	public $time_start;
+	
 	public function __construct($ini) {
+		/* record starting time */
+		$this->time_start = microtime(TRUE);
+		
 		/* load the ini file */
 		$this->load_by_file($ini);
 		
@@ -196,6 +201,9 @@ class web_framework {
 		
 		/* fonction d'autoloader */
 		spl_autoload_register(array($this, 'autoloader'));
+		
+		/* Open database */
+		$this->open_db();
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -204,9 +212,6 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function process(
 		) {
-		/* Open database */
-		$this->open_db();
-		
 		/* chargement des routes */
 		$this->core_route()->scan();
 		
@@ -423,6 +428,18 @@ class web_framework {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Get a variable
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_var($name) {
+		if($_GET[$name])
+			return($_GET[$name]);
+		else if($_POST[$name])
+			return($_POST[$name]);
+		return(NULL);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Display the error page
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function display_error($code, $message) {
@@ -513,7 +530,7 @@ class web_framework {
 			return(NULL);
 		return($file);
 	}
-	
+	 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Get the last priority filename

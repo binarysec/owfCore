@@ -76,11 +76,11 @@ class core_db_pdo_sqlite extends core_db {
 	}
 
 	public function get_driver_name() {
-		return("PDO::SQLite");
+		return("SQLite");
 	}
 	
 	public function get_driver_banner() {
-		return("PDO::SQLite/".$this->hdl->getAttribute(PDO::ATTR_SERVER_VERSION));
+		return("SQLite/".$this->hdl->getAttribute(PDO::ATTR_SERVER_VERSION));
 	}
 	
 	public function get_request_counter() {
