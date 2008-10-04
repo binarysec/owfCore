@@ -27,10 +27,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 class core_lang_context {
 	public $full;
-	private $file;
+	public $file;
 	public $lang;
 	
-	public $keys;
+	public $keys = array();
 	
 	private $rewrite = FALSE;
 	
@@ -62,10 +62,19 @@ class core_lang_context {
 	 *
 	 * Used to write 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function change($id, $value) {
-	
+	public function change($key, $value) {
+		$this->keys[$key] = $value;
+		return(TRUE);
 	}
 
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Used to read 
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get($key) {
+		return($this->keys[$key]);
+	}
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * key translation
@@ -167,7 +176,7 @@ class core_lang extends wf_agg {
 			$lang = $this->_core_session->get_data("language");
 			
 		/* get the full context path */
-		$full = "lang/ctx/".
+		$full = "var/lang/ctx/".
 			$lang.
 			"/".
 			$name;
@@ -176,7 +185,7 @@ class core_lang extends wf_agg {
 			return($this->contexts[$full]);
 			
 		/* locate file */
-		$file = $this->wf->locate_file($full, TRUE);
+		$file = $this->wf->locate_file($full);
 		
 		/* if file exists try to unserialize it*/
 		if($file) {
@@ -185,6 +194,8 @@ class core_lang extends wf_agg {
 			));
 			if(is_object($obj)) {
 				$this->contexts[$full] = &$obj;
+// 				echo "<pre>";
+// 				var_dump($obj);
 				return($this->contexts[$full]);
 			}
 		}
