@@ -33,11 +33,14 @@ class core_session extends wf_agg {
 	var $sess_var = "session";
 	var $sess_timeout = 3600;
 	
-	var $me = NULL;
+	public $me = NULL;
 	var $data = NULL;
+	
+	private $_core_cacher;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
+		$this->_core_cacher = $wf->core_cacher();
 		
 		$struct = array(
 			"id" => WF_PRI,
@@ -50,6 +53,7 @@ class core_session extends wf_agg {
 			"session_time" => WF_INT,
 			"session_data" => WF_DATA,
 			"remote_address" => WF_VARCHAR,
+			"remote_hostname" => WF_VARCHAR,
 			"permissions" => WF_DATA,
 			"data" => WF_DATA
 		);
@@ -59,6 +63,18 @@ class core_session extends wf_agg {
 			$struct
 		);
 	
+		$struct = array(
+			"id" => WF_PRI,
+			"core_session_id" => WF_VARCHAR,
+			"perm_name" => WF_VARCHAR,
+			"perm_value" => WF_VARCHAR
+		);
+		$this->wf->db->register_zone(
+			"core_session_perm", 
+			"Core session permission table", 
+			$struct
+		);
+		
 		$this->user_add(array(
 			"email" => "mv@binarysec.com",
 			"name" => "Michael VERGOZ",
@@ -116,8 +132,7 @@ class core_session extends wf_agg {
 			if($this->wf->ini_arr["session"]["allow_anonymous"]) {
 				$this->me = array(
 					"id" => -1,
-					"remote_address" => $_SERVER["REMOTE_ADDR"],
-					"permissions" => serialize(array(WF_USER_ANON))
+					"remote_address" => $_SERVER["REMOTE_ADDR"]
 				);
 				return(CORE_SESSION_VALID);
 			}
@@ -139,6 +154,7 @@ class core_session extends wf_agg {
 		);
 		$update = array(
 			"remote_address" => $_SERVER["REMOTE_ADDR"],
+			"remote_hostname" => gethostbyaddr($_SERVER["REMOTE_ADDR"]),
 			"session_time" => time()
 		);
 		$q->where($where);
@@ -153,10 +169,13 @@ class core_session extends wf_agg {
 		return(CORE_SESSION_VALID);
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Generate a session id
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function generate_session_id() {
-		return("E".rand().rand());
+		return("E".rand().rand().rand());
 	}
-	
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
@@ -187,7 +206,8 @@ class core_session extends wf_agg {
 			"session_id" => $this->generate_session_id(),
 			"session_time_auth" => time(),
 			"session_time" => time(),
-			"remote_address" => $_SERVER["REMOTE_ADDR"]
+			"remote_address" => $_SERVER["REMOTE_ADDR"],
+			"remote_hostname" => gethostbyaddr($_SERVER["REMOTE_ADDR"])
 		);
 		$q->where($where);
 		$q->insert($update);
@@ -289,7 +309,7 @@ class core_session extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_info($uid) {
 		$q = new core_db_select("core_session");
-		$q->where(array("id" => $uid));
+		$q->where(array("id" => (int)$uid));
 		$this->wf->db->query($q);
 		$res = $q->get_result();
 		if($res)
@@ -306,14 +326,10 @@ class core_session extends wf_agg {
 		if(!$data["email"])
 			return(FALSE);
 
-		if(!$data["permissions"])
-			$data["permissions"] = array("session:anon");
-
 		/* input */
 		$insert = array(
 			"email" => $data["email"],
-			"name" => $data["name"],
-			"permissions" => serialize($data["permissions"]),
+			"name" => $data["name"]
 		);
 
 		if($data['password'])
@@ -326,6 +342,15 @@ class core_session extends wf_agg {
 		$q->where($where);
 		$q->insert($insert);
 		$this->wf->db->query($q);
+		
+		/* ajoute les permissions*/
+		if(is_array($data["permissions"])) {
+			$this->user_set_permissions(
+				&$uid,
+				&$data["permissions"]
+			);
+		}
+		
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -338,7 +363,7 @@ class core_session extends wf_agg {
 			return(FALSE);
 
 		if(!$data["permissions"])
-			$data["permissions"] = array("session:anon");
+			$data["permissions"] = array("session:simple");
 		
 		/* input */
 		$insert = array(
@@ -346,10 +371,9 @@ class core_session extends wf_agg {
 			"name" => $data["name"],
 			"password" => md5($data["password"]),
 			"create_time" => time(),
-			"permissions" => serialize($data["permissions"]),
 			"data" => serialize($data["data"])
 		);
-
+		
 		/* vérification si l'utilisateur existe */
 		if($this->user_search_by_mail($data["email"]))
 			return(FALSE);
@@ -358,6 +382,16 @@ class core_session extends wf_agg {
 		$q = new core_db_insert("core_session", $insert);
 		$this->wf->db->query($q);
 		
+		/* reprend les informations */
+		$user = $this->user_search_by_mail($data["email"]);
+		
+		/* ajoute les permissions*/
+		if(is_array($data["permissions"])) {
+			$this->user_set_permissions(
+				&$user["id"],
+				&$data["permissions"]
+			);
+		}
 		return(TRUE);
 	}
 	
@@ -366,43 +400,119 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_del($uid) {
-		$q = new core_db_delete("core_session", array("id" => $uid));
+		$q = new core_db_delete(
+			"core_session", 
+			array("id" => (int)$uid)
+		);
 		$this->wf->db->query($q);
+		
+		$q = new core_db_delete(
+			"core_session_perm", 
+			array("core_session_id" => (int)$uid)
+		);
+		$this->wf->db->query($q);
+		
+		$this->_core_cacher->delete("user_perms_".(int)$uid);
+		
+		return(TRUE);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Master request processor
+	 * Function used to add a permission
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function user_set_permissions($uid, $perms) {
-		/* update des perms */
-		$q = new core_db_update("core_session");
-		$where = array("id" => $uid);
-		$update = array("permissions" => serialize($perms));
+	private function user_insert_permission($uid, $name, $val=NULL) {
+		$insert = array(
+			"core_session_id" => (int)$uid,
+			"perm_name" => trim($name)
+		);
+		if($value)
+			$insert["perm_value"] = $val;
+		
+		$q = new core_db_insert("core_session_perm", $insert);
+		$this->wf->db->query($q);
+		
+		$this->_core_cacher->delete("user_perms_$uid");
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function used to update a permission
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private function user_update_permission($uid, $name, $val=NULL) {
+		$q = new core_db_update("core_session_perm");
+		$where = array("core_session_id" => (int)$uid);
+		$update = array("perm_name" => trim($name));
+		if($value)
+			$update["perm_value"] = $val;
+			
 		$q->where($where);
 		$q->insert($update);
 		$this->wf->db->query($q);
+		
+		$this->_core_cacher->delete("user_perms_$uid");
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function user_add_permissions($uid, $perm) { 
-		$perms = $this->user_get_permissions($uid);
-
-		/* l'user n'existe pas */
-		if (is_null($perms))
-			return NULL;
-
-		/* merge des perms */
-		$perms = array_merge($perms, $perm);
-
-		/* supprime les doublons */
-		$perms = array_unique($perms);
-
-		/* update des perms */
-		$this->user_set_permissions($uid, $perms);
+	public function user_set_permissions($uid, $perms, $value=NULL) {
+		/* search if uid exists */
+		if(!$this->user_info($uid)) 
+			return(FALSE);
+		
+		/* update data */
+		if(is_string($perms)) {
+			if(!$this->user_get_permissions(&$uid, &$perms))
+				$this->user_insert_permission(
+					&$uid, 
+					&$perms, 
+					&$value
+				);
+			else
+				$this->user_update_permission(
+					&$uid, 
+					&$perms, 
+					&$value
+				);
+		}
+		else if(is_array($perms)) {
+			
+			for($a=0; $a<count($perms); $a++) {
+				$p = &$perms[$a];
+				$v = is_array($value) ? $value[$a] : NULL;
+				
+				
+				if(!$this->user_get_permissions(&$uid, &$perms))
+					$this->user_insert_permission(
+						&$uid, 
+						&$p, 
+						&$v
+					);
+				else
+					$this->user_update_permission(
+						&$uid, 
+						&$p, 
+						&$v
+					);
+			}
+		}
+		else
+			return(FALSE);
+	
+		return(TRUE);
+	}
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Master request processor
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function user_add_permissions($uid, $perm, $value=NULL) {
+		return(
+			$this->user_set_permissions(&$uid, &$perm, &$value)
+		);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -410,34 +520,127 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_del_permissions($uid, $perm) { 
-		$perms = $this->user_get_permissions($uid);
-
-		/* l'user n'existe pas */
-		if (is_null($perms))
-			return NULL;
-
-		/* suppression de la permission */
-		$perms = array_diff($perms, $perm);
-
-		/* update des perms */
-		$this->user_set_permissions($uid, $perms);
+		$q = new core_db_adv_delete();
+		
+		$q->alias('a', 'core_session');
+		$q->alias('b', 'core_session_perm');
+		
+		$q->do_comp('a.id', '=', (int)$uid);
+		$q->do_comp('a.id', '==', 'b.core_session_id');
+		$q->do_comp('b.perm_name', '=', $perm);
+		
+		$this->wf->db->query($q);
+		
+		$this->_core_cacher->delete("user_perms_$uid");
+		return(TRUE);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Prend les permissions
+	 * Get or check permissions.
+	 * If $use_and is true then it means that all permissions passed
+	 * to $perm will be checked and if not all permissions aren't
+	 * verified then the funtion return NULL. If $use_and is false 
+	 * then the function will return all available permissions using 
+	 * $perms as a mask.
+	 * $ask is $perms but arranged with key.
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function user_get_permissions($uid) { 
-		$q = new core_db_select("core_session");
-		$q->fields(array("permissions"));
-		$q->where(array("id" => $uid));
+	public function user_get_permissions(
+			$uid=NULL, 
+			$perms=NULL, 
+			$use_and=TRUE, 
+			$ask=NULL
+		) {
+		/* use current user ? */
+		if(!$uid)
+			$uid = $this->me["id"];
+		if(!is_array($ask))
+			$ask = array();
+		
+		/* get the cache */
+		$cache = $this->_core_cacher->get("user_perms_$uid");
+		if(is_array($cache)) {
+			/* check into the cache */
+			if(is_string($perms)) {
+				if(isset($cache[$perms]))
+					return($cache);
+			}
+			else if(is_array($perms)) {
+				$all_match = TRUE;
+				$matchs = 0;
+				for($a=0; $a<count($perms); $a++) {
+					$kp = &$perms[$a];
+					if(!isset($cache[$kp]))
+						$all_match = FALSE;
+					else
+						$matchs++;
+					$ask[$kp] = FALSE;
+				}
+
+				if($all_match)
+					return($cache);
+				else {
+					if(!$use_and && $matchs > 0)
+						return($cache);
+					return(NULL);
+				}
+			}
+		}
+		
+		/* create the request object */
+		$q = new core_db_adv_select();
+		
+		$q->alias('a', 'core_session');
+		$q->alias('b', 'core_session_perm');
+		
+		$q->fields("b.perm_name");
+		$q->fields("b.perm_value");
+		
+		$q->do_comp('a.id', '=', (int)$uid);
+		$q->do_comp('a.id', '==', 'b.core_session_id');
+		
+		/* construct need */
+		if(is_string($perms)) {
+			$q->do_comp('b.perm_name', '=', $perms);
+		}
+		else if(is_array($perms)) {
+			for($a=0; $a<count($perms); $a++) {
+				$kp = &$perms[$a];
+				if($a > 0 && !$use_and)
+					$q->do_or();
+				$q->do_comp('b.perm_name', '=', $kp);
+
+				$ask[$kp] = FALSE;
+			}
+		}
+
+		/* execute request */
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		if (!$res)
-			$perms = NULL;
+		
+		$tab = array();
+		
+		/* construct tab perm */
+		foreach($res as $lres)
+			$tab[$lres["b.perm_name"]] = $lres["b.perm_value"] == NULL ? 
+				TRUE : $lres["b.perm_value"];
+		
+		/* merge known & unknown */
+		$data = array_merge($ask, $tab);
+		
+		/* merge information */
+		if(!is_array($cache))
+			$cache = &$data;
 		else
-			$perms = unserialize($res[0]["permissions"]);
-		return($perms);
+			$cache = array_merge($cache, &$data);
+	
+		/* store now */
+		$this->_core_cacher->store(
+			"user_perms_$uid", 
+			$tab = array_merge($cache, $tab)
+		);
+		
+		return($tab);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

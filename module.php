@@ -54,14 +54,20 @@ class core extends wf_module {
 				WF_ROUTE_HIDE,
 				array("session:anon")
 			),
+			"/admin/system/data" => array(
+				WF_ROUTE_REDIRECT,
+				"/data",
+				"Listing des données",
+				WF_ROUTE_SHOW
+			),
 			"/data" => array(
 				WF_ROUTE_ACTION,
 				"data",
 				"show_data",
 				"Listing des données",
-				WF_ROUTE_SHOW,
+				WF_ROUTE_HIDE,
 				array("session:anon")
-			)
+			),
 		));
 	}
 }

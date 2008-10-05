@@ -1,45 +1,46 @@
-{css '/data/core/data_index.css'}
-<img src="{$logo_url}"/><br />
-<h1>{@"Index of %s", $dir}</h1>
-{if $up_dir}
-<div class="parent">
-<a href="{$up_dir}">{lang "Parent directory"}</a>
-</div>
-{/if}
-
-<hr size="1">
-
-<table>
-
-<tr>
-<td class="title">Name</td>
-<td class="title">Size</td>
-<td class="title">Last modification</td>
-</tr>
-
-{foreach $files as $file => $data}
-<tr>
-
-<td>
-<div class="filename">
-<a href="{$data['link']}">
-{$file}
-</a>
-</div>
-</td>
-<td>
-
-<div class="size">{$data['size']}</div>
-</td>
-
-<td>
-<div class="lastmod">{$data['last_mod']}</div>
-</td>
-
-</tr>
-{/foreach}
-
+<table class="list">
+	<thead>
+		<tr>
+			<th class="icon"></th>
+			<th class="title">Nom</th>
+			<th>Taille</th>
+			<th>Chemin</th>
+			<th>Type</th>
+			<th>Derni&egrave;re modification</th>
+		</tr>
+	</thead>
+	<tbody>
+		{if $up_dir}
+			<tr class="cat">
+				<td class="icon"><img src="{link '/data/admin/img/icons/16x16/cat_open.png'}" alt="[FILE]" /></td>
+					<td class="id title"><a href="{$up_dir}">..</a></td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+			</tr>
+		{/if}
+		{foreach $files as $file => $data}
+			<tr class="cat">
+				<td class="icon">
+					{if $data['mimetype'] == 'httpd/unix-directory'}
+						<img src="{link '/data/admin/img/icons/16x16/cat_close.png'}" alt="[DIR]" />
+					{elseif $data['mimetype'] == 'image/png' || $data['mimetype'] == 'image/gif' || $data['mimetype'] == 'image/jpeg'}
+						<img src="{link '/data/admin/img/icons/16x16/mime_image.png'}" alt="[DIR]" />
+					{else}
+						<img src="{link '/data/admin/img/icons/16x16/mime_unknown.png'}" alt="[FILE]" />
+					{/if}
+				</td>
+				<td class="id title"><a href="{$data['link']}">{$file}</a></td>
+				<td>{$data['size']}</td>
+				<td>{$data['path']}</td>
+				<td>{$data['mimetype']}</td>
+				<td>{$data['last_mod']}</td>
+			</tr>
+		{/foreach}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th colspan="6">Total ({$files|count})</th>
+		</tr>
+	</tfoot>
 </table>
-
-<hr size="1">
-<h3><a href="http://www.binarysec.com/">http://www.binarysec.com/</a></h3>

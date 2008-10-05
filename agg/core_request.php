@@ -77,30 +77,50 @@ class core_request extends wf_agg {
 		/* chargement du canal et des filtres */
 		$this->filters = $_GET["f"];
 		
-		/* vérification des permissions necessaires du canal */
-		$perm = unserialize($this->a_core_session->me["permissions"]);
-		$need = $this->channel[0][7];
+		/* get channel needed permissions */
+		$need = &$this->channel[0][7];
+		$need_arranged = array();
 		
-		/* vérification si c'est pas une redirection */
+		/* get uid */
+		$uid = &$this->a_core_session->me["id"];
+		
+		/* Get information to if user is privileged */
+		$perm = $this->a_core_session->user_get_permissions(
+			&$uid,
+			&$need,
+			TRUE,
+			&$need_arranged
+		);
+		if(!$perm) {
+			$is = $this->a_core_session->user_get_permissions(
+				&$uid, 
+				array(
+					WF_USER_GOD,
+					WF_USER_ADMIN
+				),
+				FALSE
+			);
+			
+			$display_login = TRUE;
+			if($is[WF_USER_GOD])
+				$display_login = FALSE;
+			else if($is[WF_USER_ADMIN] && !$need_arranged[WF_USER_GOD])
+				$display_login = FALSE;
+		}
+		else
+			$display_login = FALSE;
+
+		/* do we need to display login ? */
+		if($display_login)
+			$this->wf->display_login(
+				"You don't have enought of permissions"
+			);
+
+		/* check if it isn't a redirection */
 		if($this->channel[0][2] == WF_ROUTE_REDIRECT)
 			$this->a_core_route->execute_route(&$this->channel);
-			
-		/* chargement des permissions */
-		$this->load_user_permissions(&$perm, &$need);
-		
-		/* vérification des niveaux de permission */
-		if(
-			$this->permissions[WF_USER_GOD] ||
-			$this->permissions[WF_USER_ADMIN])
-			$adm = NULL; // pff
-		else if($this->permissions[WF_USER_SIMPLE])
-			$this->check_all_permissions(&$need);
-		else if($this->permissions[WF_USER_SERVICE])
-			$this->check_all_permissions(&$need);
-		else
-			$this->check_all_permissions(&$need);
-		
-		/* terminaison */
+	
+		/* terminate */
 		$this->a_core_route->execute_route(&$this->channel);
 	}
 
@@ -148,27 +168,6 @@ class core_request extends wf_agg {
 		return($this->channel[4]);
 	}
 	
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 *
-	 * Function that checking all permission
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function check_all_permissions($need) {
-		foreach($need as $value) {
-			if(!$this->permissions[$value]) {
-				$this->wf->display_login(
-					"You don't have enought of permissions"
-				);
-			}
-		}
-		return(TRUE);
-	}
-	
-	private function load_user_permissions($perm, $need) {
-		foreach($perm as $value)
-			$this->permissions[$value] = TRUE;
-		return(TRUE);
-	}
-
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Use to get input filter array
