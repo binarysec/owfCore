@@ -54,7 +54,6 @@ class core_session extends wf_agg {
 			"session_data" => WF_DATA,
 			"remote_address" => WF_VARCHAR,
 			"remote_hostname" => WF_VARCHAR,
-			"permissions" => WF_DATA,
 			"data" => WF_DATA
 		);
 		$this->wf->db->register_zone(
@@ -117,30 +116,36 @@ class core_session extends wf_agg {
 		/* essaye de prendre un numéro de session */
 		$session = $_COOKIE[$this->sess_var];
 
-		/* lancement de la recherche */
-		$q = new core_db_select("core_session");
-		$where = array(
-			"session_id" => $session
-		);
-
-		$q->where($where);
-		$this->wf->db->query($q);
-		$res = $q->get_result();
-
-		/* aucune session de disponible */
-		if(!$res[0]) {
-			if($this->wf->ini_arr["session"]["allow_anonymous"]) {
-				$this->me = array(
-					"id" => -1,
-					"remote_address" => $_SERVER["REMOTE_ADDR"]
-				);
-				return(CORE_SESSION_VALID);
+		/* use cache */
+		$data = $this->_core_cacher->get("user_by_session_$session");
+		if($data)
+			$this->me = $data;
+		else {
+			$q = new core_db_select("core_session");
+			$where = array(
+				"session_id" => $session
+			);
+	
+			$q->where($where);
+			$this->wf->db->query($q);
+			$res = $q->get_result();
+			
+			/* aucune session de disponible */
+			if(!$res[0]) {
+				if($this->wf->ini_arr["session"]["allow_anonymous"]) {
+					$this->me = array(
+						"id" => -1,
+						"remote_address" => $_SERVER["REMOTE_ADDR"]
+					);
+					return(CORE_SESSION_VALID);
+				}
+				else {
+					return(CORE_SESSION_TIMEOUT);
+				}
 			}
-			else {
-				return(CORE_SESSION_TIMEOUT);
-			}
+			
+			$this->me = $res[0];
 		}
-		$this->me = $res[0];
 
 		/* vérfication du timeout */
 		if(time()-$this->me["session_time"] > $this->sess_timeout) {
@@ -166,6 +171,13 @@ class core_session extends wf_agg {
 		if(!$this->data)
 			$this->data = array();
 
+		/* store data into the cache for a short time */
+		$this->_core_cacher->store(
+			"user_by_session_$session", 
+			$this->me, 
+			5
+		);
+		
 		return(CORE_SESSION_VALID);
 	}
 	
@@ -287,7 +299,7 @@ class core_session extends wf_agg {
 		$q->where(array("email" => $mail));
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		return($res);
+		return($res[0]);
 		
 	}
 	
@@ -362,7 +374,7 @@ class core_session extends wf_agg {
 		if(!$data["email"] || !$data["password"])
 			return(FALSE);
 
-		if(!$data["permissions"])
+		if(count($data["permissions"]) <= 0)
 			$data["permissions"] = array("session:simple");
 		
 		/* input */
@@ -381,7 +393,7 @@ class core_session extends wf_agg {
 		/* sinon on ajoute l'utilisateur */
 		$q = new core_db_insert("core_session", $insert);
 		$this->wf->db->query($q);
-		
+
 		/* reprend les informations */
 		$user = $this->user_search_by_mail($data["email"]);
 		
@@ -392,6 +404,7 @@ class core_session extends wf_agg {
 				&$data["permissions"]
 			);
 		}
+		
 		return(TRUE);
 	}
 	
@@ -461,7 +474,7 @@ class core_session extends wf_agg {
 		/* search if uid exists */
 		if(!$this->user_info($uid)) 
 			return(FALSE);
-		
+
 		/* update data */
 		if(is_string($perms)) {
 			if(!$this->user_get_permissions(&$uid, &$perms))
@@ -478,13 +491,12 @@ class core_session extends wf_agg {
 				);
 		}
 		else if(is_array($perms)) {
-			
 			for($a=0; $a<count($perms); $a++) {
 				$p = &$perms[$a];
 				$v = is_array($value) ? $value[$a] : NULL;
 				
 				
-				if(!$this->user_get_permissions(&$uid, &$perms))
+				if(!$this->user_get_permissions(&$uid, &$p))
 					$this->user_insert_permission(
 						&$uid, 
 						&$p, 
@@ -545,6 +557,8 @@ class core_session extends wf_agg {
 	 * $perms as a mask.
 	 * $ask is $perms but arranged with key.
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private $perms_cache = array();
+	
 	public function user_get_permissions(
 			$uid=NULL, 
 			$perms=NULL, 
@@ -557,12 +571,17 @@ class core_session extends wf_agg {
 		if(!is_array($ask))
 			$ask = array();
 		
+		/* cache variable */
+		$cvar = "user_perms_$uid";
+		
+		$used = array();
+		
 		/* get the cache */
-		$cache = $this->_core_cacher->get("user_perms_$uid");
-		if(is_array($cache)) {
+		$this->perms_cache[$cvar] = $this->_core_cacher->get(&$cvar);
+		if(is_array($this->perms_cache[$cvar])) {
 			/* check into the cache */
 			if(is_string($perms)) {
-				if(isset($cache[$perms]))
+				if(isset($this->perms_cache[$cvar][$perms]))
 					return($cache);
 			}
 			else if(is_array($perms)) {
@@ -570,19 +589,19 @@ class core_session extends wf_agg {
 				$matchs = 0;
 				for($a=0; $a<count($perms); $a++) {
 					$kp = &$perms[$a];
-					if(!isset($cache[$kp]))
+					if(!isset($this->perms_cache[$cvar][$kp]))
 						$all_match = FALSE;
 					else
 						$matchs++;
-					$ask[$kp] = FALSE;
+					$ask[$kp] = TRUE;
+					$used[$kp] = FALSE;
 				}
 
 				if($all_match)
-					return($cache);
+					return($this->perms_cache[$cvar]);
 				else {
 					if(!$use_and && $matchs > 0)
-						return($cache);
-					return(NULL);
+						return($this->perms_cache[$cvar]);
 				}
 			}
 		}
@@ -610,7 +629,8 @@ class core_session extends wf_agg {
 					$q->do_or();
 				$q->do_comp('b.perm_name', '=', $kp);
 
-				$ask[$kp] = FALSE;
+				$ask[$kp] = TRUE;
+				$used[$kp] = FALSE;
 			}
 		}
 
@@ -621,26 +641,35 @@ class core_session extends wf_agg {
 		$tab = array();
 		
 		/* construct tab perm */
-		foreach($res as $lres)
+		foreach($res as $lres) {
 			$tab[$lres["b.perm_name"]] = $lres["b.perm_value"] == NULL ? 
 				TRUE : $lres["b.perm_value"];
+			
+		}
 		
 		/* merge known & unknown */
-		$data = array_merge($ask, $tab);
+		$data = array_merge($used, $tab);
 		
 		/* merge information */
-		if(!is_array($cache))
-			$cache = &$data;
-		else
-			$cache = array_merge($cache, &$data);
-	
+		if(!is_array($this->perms_cache[$cvar]))
+			$this->perms_cache[$cvar] = &$data;
+		else if(count($data) > 0)
+			$this->perms_cache[$cvar] = array_merge(
+				$this->perms_cache[$cvar], 
+				&$data
+			);
+		
 		/* store now */
 		$this->_core_cacher->store(
-			"user_perms_$uid", 
-			$tab = array_merge($cache, $tab)
+			&$cvar, 
+			&$this->perms_cache[$cvar],
+			10
 		);
-		
-		return($tab);
+
+		if(count($res) <= 0)
+			return(NULL);
+			
+		return($this->perms_cache[$cvar]);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
