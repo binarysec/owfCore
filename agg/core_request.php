@@ -83,6 +83,21 @@ class core_request extends wf_agg {
 		
 		/* get uid */
 		$uid = &$this->a_core_session->me["id"];
+	
+		/* special handle form anon session */
+		if($uid == -1) {
+			$display_login = FALSE;
+			foreach($need as $c) {
+				if($c != WF_USER_ANON)
+					$display_login = TRUE;
+			}
+			
+			/* do we need to display login ? */
+			if($display_login)
+				$this->wf->display_login(
+					"You don't have enought of permissions"
+				);
+		}
 		
 		/* Get information to if user is privileged */
 		$perm = $this->a_core_session->user_get_permissions(
@@ -91,6 +106,7 @@ class core_request extends wf_agg {
 			TRUE,
 			&$need_arranged
 		);
+		
 		if(!$perm) {
 			$is = $this->a_core_session->user_get_permissions(
 				&$uid, 
@@ -100,16 +116,22 @@ class core_request extends wf_agg {
 				),
 				FALSE
 			);
-			
+
 			$display_login = TRUE;
 			if($is[WF_USER_GOD])
 				$display_login = FALSE;
-			else if($is[WF_USER_ADMIN] && !$need_arranged[WF_USER_GOD])
-				$display_login = FALSE;
+			else if($is[WF_USER_ADMIN]) {
+				if($need_arranged[WF_USER_GOD]) 
+					$display_login = TRUE;
+				else
+					$display_login = FALSE;
+			}
 		}
-		else
+		else {
 			$display_login = FALSE;
-
+			
+		}
+		
 		/* do we need to display login ? */
 		if($display_login)
 			$this->wf->display_login(

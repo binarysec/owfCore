@@ -188,7 +188,7 @@ class core_html extends wf_agg {
 			NULL, 
 			WF_USER_GOD
 		);
-		if($is && $this->wf->mod_exists("god")) {
+		if($is[WF_USER_GOD] && $this->wf->mod_exists("god")) {
 			return($this->wf->god_renderer()->get_content());
 		}
 		return(NULL);
