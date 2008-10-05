@@ -10,6 +10,7 @@ class wfr_core_data extends wf_route_request {
 		$this->wf = $wf;
 		$this->a_core_request = $this->wf->core_request();
 		$this->a_core_html = $this->wf->core_html();
+		$this->a_core_session = $this->wf->core_session();
 	}
 
 
@@ -44,8 +45,13 @@ class wfr_core_data extends wf_route_request {
 				/* autorisé à afficher listing ? */
 				$allowed = $this->wf->ini_arr["common"]
 					["allow_data_index"];
-					
-				if(!$allowed)
+				
+				/* get permission */
+				$is = $this->a_core_session->user_get_permissions(
+					NULL, 
+					WF_USER_GOD
+				);
+				if(!$is && !$this->wf->mod_exists("admin"))
 					$this->wf->display_error(
 						404,
 						"Page not found"
@@ -159,14 +165,11 @@ class wfr_core_data extends wf_route_request {
 		for($a=strlen($_directory)-1, $b=0; $a>=0; $a--, $b++) {
 			if($_directory[$a] != '/') {
 				$directory[$a] = $_directory[$a];
-				
 				if($token)
 					$up_dir .= $_directory[$a];
 			}
 			else if($_directory[$a] == '/' && $b > 0) {
 				$directory[$a] = $_directory[$a];
-				
-				
 				if(!$token)
 					$token = TRUE;
 				else
@@ -243,20 +246,9 @@ class wfr_core_data extends wf_route_request {
 				$this->wf->linker("/data$up_dir")
 			);
 
-		if(
-			$this->wf->mod_exists("admin") && 
-			($this->a_core_request->permissions[WF_USER_GOD] ||
-			$this->a_core_request->permissions[WF_USER_ADMIN])
-			) {
-			$this->wf->admin_html()->rendering(
-				$tpl->fetch("core/data_admin_index")
-			);
-		}
-		else {
-			$this->wf->a_core_html->rendering(
-				$tpl->fetch("core/data_index")
-			);
-		}
+		$this->wf->admin_html()->rendering(
+			$tpl->fetch("core/data_index")
+		);
 		exit(0);
 	}
 	

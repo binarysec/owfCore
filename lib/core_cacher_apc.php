@@ -49,7 +49,13 @@ class core_cacher_apc extends core_cacher_lib {
 	}
 
 	public function get_banner() {
-		return("APC");
+		$i = apc_cache_info();
+		
+		$d = "slots=$i[num_slots] ".
+			"hits=$i[num_hits] ".
+			"opfile=".count($i["cache_list"]);
+		
+		return("APC ($d)");
 	}
 }
 

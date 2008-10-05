@@ -24,10 +24,13 @@
 
 class core_html extends wf_agg {
 	var $_core_request;
+	private $_core_session;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
 		$this->_core_request = $this->wf->core_request();
+		$this->_core_session = $this->wf->core_session();
+		
 		$this->set_title("Core module default HTML title");
 	}
 
@@ -181,9 +184,12 @@ class core_html extends wf_agg {
 	 * Permet de recuperer le contenu managé
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_managed() {
-		if($this->_core_request->permissions["session:god"]) {
-			if($this->wf->mod_exists("god"))
-				return($this->wf->god_renderer()->get_content());
+		$is = $this->_core_session->user_get_permissions(
+			NULL, 
+			WF_USER_GOD
+		);
+		if($is && $this->wf->mod_exists("god")) {
+			return($this->wf->god_renderer()->get_content());
 		}
 		return(NULL);
 	}
