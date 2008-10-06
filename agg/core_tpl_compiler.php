@@ -497,7 +497,7 @@ class core_tpl_compiler extends wf_agg {
 	public function generator(core_tpl_compiler $tpl_compiler, $name, $argv) {
 		$class = $this->registered_generator[$name][0];
 		$method = $this->registered_generator[$name][1];
-		$this->wf->$class()->$method($argv);
+		return($this->wf->$class()->$method($argv));
 	}
 
 }
