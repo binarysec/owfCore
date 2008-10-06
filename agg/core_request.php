@@ -87,11 +87,12 @@ class core_request extends wf_agg {
 		/* special handle form anon session */
 		if($uid == -1) {
 			$display_login = FALSE;
-			foreach($need as $c) {
-				if($c != WF_USER_ANON)
-					$display_login = TRUE;
+			if(is_array($need)) {
+				foreach($need as $c) {
+					if($c != WF_USER_ANON)
+						$display_login = TRUE;
+				}
 			}
-			
 			/* do we need to display login ? */
 			if($display_login)
 				$this->wf->display_login(
