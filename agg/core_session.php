@@ -565,6 +565,8 @@ class core_session extends wf_agg {
 			$use_and=TRUE, 
 			$ask=NULL
 		) {
+		/*! \todo faire un faire */
+		
 		/* use current user ? */
 		if(!$uid)
 			$uid = $this->me["id"];
@@ -573,38 +575,7 @@ class core_session extends wf_agg {
 		
 		/* cache variable */
 		$cvar = "user_perms_$uid";
-		
 		$used = array();
-		
-		/* get the cache */
-		$this->perms_cache[$cvar] = $this->_core_cacher->get(&$cvar);
-		if(is_array($this->perms_cache[$cvar])) {
-			/* check into the cache */
-			if(is_string($perms)) {
-				if(isset($this->perms_cache[$cvar][$perms]))
-					return($cache);
-			}
-			else if(is_array($perms)) {
-				$all_match = TRUE;
-				$matchs = 0;
-				for($a=0; $a<count($perms); $a++) {
-					$kp = &$perms[$a];
-					if(!isset($this->perms_cache[$cvar][$kp]))
-						$all_match = FALSE;
-					else
-						$matchs++;
-					$ask[$kp] = TRUE;
-					$used[$kp] = FALSE;
-				}
-
-				if($all_match)
-					return($this->perms_cache[$cvar]);
-				else {
-					if(!$use_and && $matchs > 0)
-						return($this->perms_cache[$cvar]);
-				}
-			}
-		}
 		
 		/* create the request object */
 		$q = new core_db_adv_select();
@@ -658,13 +629,6 @@ class core_session extends wf_agg {
 				$this->perms_cache[$cvar], 
 				&$data
 			);
-		
-		/* store now */
-		$this->_core_cacher->store(
-			&$cvar, 
-			&$this->perms_cache[$cvar],
-			10
-		);
 
 		if(count($res) <= 0)
 			return(NULL);
