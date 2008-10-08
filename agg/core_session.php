@@ -28,19 +28,19 @@ define("CORE_SESSION_USER_UNKNOWN", 3);
 define("CORE_SESSION_AUTH_FAILED",  4);
 
 class core_session extends wf_agg {
-
-	/** TODO: PARAMETRER */
-	var $sess_var = "session";
-	var $sess_timeout = 3600;
+	private $sess_var;
+	private $sess_timeout;
 	
 	public $me = NULL;
 	var $data = NULL;
 	
 	private $_core_cacher;
+	private $pref_id;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
 		$this->_core_cacher = $wf->core_cacher();
+		$this->_core_pref = $wf->core_pref();
 		
 		$struct = array(
 			"id" => WF_PRI,
@@ -105,6 +105,31 @@ class core_session extends wf_agg {
 			"permissions" => array("session:service"),
 			"data" => array(),
 		));
+		
+		/* registre session preferences group */
+		$this->pref_id = $this->_core_pref->register_group(
+			"core_session", 
+			"Core session"
+		);
+		
+		/* session variable */
+		$this->sess_var = $this->_core_pref->register(
+			"variable",
+			"Variable context",
+			CORE_PREF_VARCHAR,
+			"session".rand(),
+			&$this->pref_id
+		);
+
+		/* session timeout */
+		$this->sess_timeout = $this->_core_pref->register(
+			"timeout",
+			"Session timeout",
+			CORE_PREF_NUM,
+			3600,
+			&$this->pref_id
+		);
+
 		
 	}
 
