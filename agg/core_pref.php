@@ -26,6 +26,217 @@ define("CORE_PREF_BOOL",     902);
 define("CORE_PREF_VARCHAR",  903);
 define("CORE_PREF_DATA",     904);
 
+class core_pref_context {
+	public $wf;
+	
+	public $id;
+	public $create_time;
+	public $name;
+	public $description;
+	
+	private $variables = array();
+	private $need_up = FALSE;
+	
+	
+	public function __construct($wf) {
+		$this->wf = $wf;
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * When destruction update the cache if necessary
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function __destruct() {
+		if($this->need_up) {
+			$this->need_up = FALSE;
+			$this->wf->core_pref()->store_context(
+				$this, $this->name
+			);
+		}
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Register a new variable 
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function register($var, $description, $type, $dft, $serial=NULL) {
+		if($this->variables[$var])
+			return($this->variables[$var]["value"]);
+			
+		$data = $this->db_find($var);
+		if(!$data) {
+			$insert = array(
+				"create_time" => time(),
+				"variable" => $var,
+				"description" => base64_encode($description),
+				"group_id" => $this->id
+			);
+
+			switch($type) {
+				case CORE_PREF_NUM:
+					$insert["type"] = CORE_PREF_NUM;
+					$insert["dft"] = $dft;
+					$insert["value"] = $dft;
+					break;
+					
+				case CORE_PREF_BOOL:
+					$insert["type"] = CORE_PREF_BOOL;
+					$insert["dft"] = $dft;
+					$insert["value"] = $dft;
+					break;
+					
+				case CORE_PREF_VARCHAR:
+					$insert["type"] = CORE_PREF_VARCHAR;
+					$insert["dft"] = $dft;
+					$insert["value"] = $dft;
+					break;
+				
+				case CORE_PREF_DATA:
+					$insert["type"] = CORE_PREF_DATA;
+					$insert["dft"] = $dft;
+					$insert["value"] = $dft;
+					break;
+				
+				default:
+					throw new wf_exception(
+						$this,
+						WF_EXC_PRIVATE,
+						"Preference type unknown for ".
+						$this->name.
+						"::$var"
+					);
+			}
+		
+			$q = new core_db_insert("core_pref", $insert);
+			$this->wf->db->query($q);
+			
+			$this->variables[$var] = $insert;
+			
+			/* need cacher update */
+			$this->need_up = TRUE;
+		}
+		else if($description != $data["description"]) {
+			$q = new core_db_update("core_pref");
+			$where = array();
+			$where["variable"] = $var;
+			$where["group_id"] = $this->id;
+			
+			$insert = array(
+				"description" => base64_encode($description)
+			);
+
+			$q->where($where);
+			$q->insert($insert);
+			$this->wf->db->query($q);
+			
+			if(!is_array($this->variables[$var]))
+				$this->variables[$var] = array();
+				
+			$this->variables[$var] = array_merge(
+				&$data,
+				&$insert
+			);
+
+			/* need cacher update */
+			$this->need_up = TRUE;
+		}
+		
+		return($this->variables[$var]["value"]);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Change the value of a variable 
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function set_value($var, $value) {
+		$ret = $this->db_find($var);
+		
+		/* update database */
+		$q = new core_db_update("core_pref");
+		$where = array(
+			"variable" => $var,
+			"group_id" => $this->id
+		);
+		
+		$insert = array("value" => $value);
+		
+		$q->where($where);
+		$q->insert($insert);
+		$this->wf->db->query($q);
+		
+		/* update short cache */
+		$this->variables[$var]["value"] = $value;
+		
+		/* need cacher update */
+		$this->need_up = TRUE;
+		
+		return(TRUE);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get a value
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_value($var) {
+		$ret = $this->db_find($var);
+		return($ret["value"]);
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get the default value
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_default($var) {
+		$ret = $this->db_find($var);
+		return($ret["dft"]);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get/load all variable
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_all() {
+		$q = new core_db_select("core_pref");
+		$where = array("group_id" => (int)$this->id);
+		$q->where($where);
+		$this->wf->db->query($q);
+		$res = $q->get_result();
+
+		foreach($res as $info)
+			$this->variables[$info["variable"]] = $info;
+
+		/* need cacher update */
+		$this->need_up = TRUE;
+		
+		return($this->variables);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Low level function to find variable
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private function db_find($var) {
+		if(is_array($this->variables[$var]))
+			return($this->variables[$var]);
+			
+		$q = new core_db_select("core_pref");
+		$where = array();
+		$where["variable"] = $var;
+		$where["group_id"] = $this->id;
+		$q->where($where);
+		$this->wf->db->query($q);
+		$res = $q->get_result();
+		
+		/* store short cache */
+		$this->variables[$var] = $res[0];
+		
+		/* need cacher update */
+		$this->need_up = TRUE;
+
+		return($res[0]);
+	}
+}
+
 class core_pref extends wf_agg {
 	private $_core_cacher;
 	
@@ -64,17 +275,29 @@ class core_pref extends wf_agg {
 		);
 	}
 	
+	private $contexts = array();
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Register a new group of vars and return the object
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register_group($name, $description=NULL) {
 		$cvar = "core_pref_RG_$name";
 		
-		/* look at the cache */
+		/* local and short cache */
+		if(is_object($this->contexts[$name]))
+			return($this->contexts[$name]);
+			
+		/* look at the long cache */
 		$cache = $this->_core_cacher->get($cvar);
-		if($cache)
-			return($cache["id"]);
+		if(is_object($cache)) {
+			$cache->wf = $this->wf;
+			$this->contexts[$name] = $cache;
+			return($cache);
+		}
 		
 		$data = $this->group_find($name);
 		if(!$data) {
-
 			$insert = array(
 				"create_time" => time(),
 				"name" => $name,
@@ -86,9 +309,16 @@ class core_pref extends wf_agg {
 			$res = $q->get_result();
 			$id = $res["id"];
 			
-			$this->_core_cacher->store(
-				$cvar,
-				&$res
+			$this->contexts[$name] = new core_pref_context(
+				$this->wf
+			);
+			
+			$this->contexts[$name]->id = (int)$id;
+			$this->contexts[$name]->create_time = 
+				(int)$insert["create_time"];
+			$this->contexts[$name]->name = $insert["name"];
+			$this->contexts[$name]->description = base64_decode(
+				$insert["description"]
 			);
 			
 		}
@@ -104,148 +334,52 @@ class core_pref extends wf_agg {
 			$this->wf->db->query($q);
 
 			$id = $data[0]["id"];
+
+			/* store into the short cache */
+			$this->contexts[$name] = new core_pref_context(
+				$this->wf
+			);
 			
-			$this->_core_cacher->store(
-				$cvar,
-				&$data[0]
+			/* update object information */
+			$this->contexts[$name]->id = (int)$id;
+			$this->contexts[$name]->create_time = 
+				(int)$data[0]["create_time"];
+			$this->contexts[$name]->name = $data[0]["name"];
+			
+			$this->contexts[$name]->description = base64_decode(
+				$insert["description"] ?
+					$insert["description"] :
+					$data[0]["description"]
 			);
 		}
 
-		return($id);
+		$this->store_context($this->contexts[$name], &$name);
+		
+		return($this->contexts[$name]);
 	}
 	
-	public function register($var, $description, $type, $dft, $group=0, $serial=NULL) {
-		$cvar = "core_pref_R$group"."_$var";
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Opaque function to store the cache context
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function store_context($obj, $name) {
+		$cvar = "core_pref_RG_$name";
 		
-// 		$cache = $this->_core_cacher->get($cvar);
-// 		if($cache)
-// 			return($cache["value"]);
+		/* store the objet into the cache */
+		unset($obj->wf);
+		$this->_core_cacher->store(
+			$cvar,
+			$obj
+		);
+		$obj->wf = $this->wf;
 		
-		$data = $this->db_find($var);
-		if(!$data) {
-
-			$insert = array(
-				"create_time" => time(),
-				"variable" => $var,
-				"description" => base64_encode($description),
-				"group_id" => $group,
-			);
-
-			switch($type) {
-				case CORE_PREF_NUM:
-					$insert["type"] = CORE_PREF_NUM;
-					$insert["dft"] = $dft;
-					$insert["value"] = $dft;
-					break;
-					
-				case CORE_PREF_BOOL:
-					$insert["type"] = CORE_PREF_BOOL;
-					$insert["dft"] = $dft;
-					$insert["value"] = $dft;
-					break;
-					
-				case CORE_PREF_VARCHAR:
-					$insert["type"] = CORE_PREF_VARCHAR;
-					$insert["dft"] = $dft;
-					$insert["value"] = $dft;
-					break;
-				
-				case CORE_PREF_DATA:
-					$insert["type"] = CORE_PREF_DATA;
-					$insert["dft"] = $dft;
-					$insert["value"] = $dft;
-					break;
-				
-				default:
-					/*! \todo exeption */
-					exit(0);
-			}
-		
-			$q = new core_db_insert("core_pref", $insert);
-			$this->wf->db->query($q);
-			
-			$this->_core_cacher->store(
-				$cvar,
-				&$insert
-			);
-			
-		}
-		else {
-			$q = new core_db_update("core_pref");
-			$where = array();
-			$where["variable"] = $var;
-			$insert = array();
-			$insert["description"] = base64_encode($description);
-// 			$insert["dft"] = $dft;
-			$insert["group_id"] = $group;
-					
-			$q->where($where);
-			$q->insert($insert);
-			$this->wf->db->query($q);
-			
-			if(!is_array($cache))
-				$cache = array();
-				
-			$res = array_merge(
-				$cache,
-				$insert
-			);
-			
-			$this->_core_cacher->store(
-				$cvar,
-				&$res
-			);
-		}
-
-		return($this->cache[$var]["value"]);
+		return(TRUE);
 	}
 	
-	public function set_value($var, $value) {
-		$ret = $this->db_find($var);
-		
-		$q = new core_db_update("core_pref");
-		$where = array();
-		$where["variable"] = $var;
-		$insert = array();
-		$insert["value"] = $value;
-		$q->where($where);
-		$q->insert($insert);
-		$this->wf->db->query($q);
-		
-		return(0);
-	}
-	
-	public function get_value($var) {
-		$ret = $this->db_find($var);
-		return($ret["value"]);
-	}
-
-	public function get_default($var) {
-
-	}
-	
-	public function get_all($id) {
-		$q = new core_db_select("core_pref");
-		$where = array();
-		$where["group_id"] = intval($id);
-		$q->where($where);
-		$this->wf->db->query($q);
-		$res = $q->get_result();
-		return($res);
-		
-	}
-	
-	public function db_find($var) {
-		$q = new core_db_select("core_pref");
-		$where = array();
-		$where["variable"] = $var;
-		$q->where($where);
-		$this->wf->db->query($q);
-		$res = $q->get_result();
-		$this->cache[$var] = $res[0];
-		return($res[0]);
-	}
-	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function used to find group
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function group_find($name=NULL, $id=NULL) {
 		$q = new core_db_select("core_pref_group");
 		$where = array();

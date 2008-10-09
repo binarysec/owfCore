@@ -51,7 +51,7 @@ class wfr_core_data extends wf_route_request {
 					NULL, 
 					WF_USER_GOD
 				);
-				if(!$is && !$this->wf->mod_exists("admin"))
+				if(!$is || !$this->wf->mod_exists("admin"))
 					$this->wf->display_error(
 						404,
 						"Page not found"
