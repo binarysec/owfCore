@@ -35,7 +35,7 @@ class core_session extends wf_agg {
 	var $data = NULL;
 	
 	private $_core_cacher;
-	private $pref_id;
+	private $pref_session;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
@@ -107,30 +107,27 @@ class core_session extends wf_agg {
 		));
 		
 		/* registre session preferences group */
-		$this->pref_id = $this->_core_pref->register_group(
+		$this->pref_session = $this->_core_pref->register_group(
 			"core_session", 
 			"Core session"
 		);
 		
 		/* session variable */
-		$this->sess_var = $this->_core_pref->register(
+		$this->sess_var = $this->pref_session->register(
 			"variable",
 			"Variable context",
 			CORE_PREF_VARCHAR,
-			"session".rand(),
-			&$this->pref_id
+			"session".rand()
 		);
 
 		/* session timeout */
-		$this->sess_timeout = $this->_core_pref->register(
+		$this->sess_timeout = $this->pref_session->register(
 			"timeout",
 			"Session timeout",
 			CORE_PREF_NUM,
-			3600,
-			&$this->pref_id
+			3600
 		);
 
-		
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
