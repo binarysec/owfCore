@@ -25,6 +25,7 @@ define("CORE_PREF_NUM",      900);
 define("CORE_PREF_BOOL",     902);
 define("CORE_PREF_VARCHAR",  903);
 define("CORE_PREF_DATA",     904);
+define("CORE_PREF_SELECT",   905);
 
 class core_pref_context {
 	public $wf;

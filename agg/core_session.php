@@ -54,6 +54,8 @@ class core_session extends wf_agg {
 			"session_data" => WF_DATA,
 			"remote_address" => WF_VARCHAR,
 			"remote_hostname" => WF_VARCHAR,
+			"forwarded_remote_address" => WF_VARCHAR,
+			"forwarded_remote_hostname" => WF_VARCHAR,
 			"data" => WF_DATA
 		);
 		$this->wf->db->register_zone(
@@ -193,6 +195,9 @@ class core_session extends wf_agg {
 		if(!$this->data)
 			$this->data = array();
 
+		/* merge data & update */
+		$this->me = array_merge($this->me, $update);
+		
 		/* store data into the cache for a short time */
 		$this->_core_cacher->store(
 			"user_by_session_$session", 
@@ -247,6 +252,9 @@ class core_session extends wf_agg {
 		$q->insert($update);
 		$this->wf->db->query($q);
 
+		/* merge data & update */
+		$this->me = array_merge($this->me, $update);
+		
 		/* utilisation d'un cookie */
 		setcookie(
 			$this->sess_var,
@@ -637,7 +645,6 @@ class core_session extends wf_agg {
 		foreach($res as $lres) {
 			$tab[$lres["b.perm_name"]] = $lres["b.perm_value"] == NULL ? 
 				TRUE : $lres["b.perm_value"];
-			
 		}
 		
 		/* merge known & unknown */
