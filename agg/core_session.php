@@ -667,6 +667,49 @@ class core_session extends wf_agg {
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Check permission and allow GOD and ADMIN if possible
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function check_permissions($need, $uid=NULL, $is=NULL, $need_arranged=NULL) {
+		if(!is_array($need_arranged))
+			$need_arranged = array();
+			
+		/* Get information to if user is privileged */
+		$perm = $this->user_get_permissions(
+			&$uid,
+			&$need,
+			TRUE,
+			&$need_arranged
+		);
+		
+		if(!$perm) {
+			$is = $this->user_get_permissions(
+				&$uid, 
+				array(
+					WF_USER_GOD,
+					WF_USER_ADMIN
+				),
+				FALSE
+			);
+
+			$valid = FALSE;
+			if($is[WF_USER_GOD])
+				$valid = TRUE;
+			else if($is[WF_USER_ADMIN]) {
+				if($need_arranged[WF_USER_GOD]) 
+					$valid = FALSE;
+				else
+					$valid = TRUE;
+			}
+		}
+		else
+			$valid = TRUE;
+		
+		return($valid);
+	}
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Définition des données utilisateur
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function set_data($data=array()) {

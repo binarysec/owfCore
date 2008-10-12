@@ -100,41 +100,12 @@ class core_request extends wf_agg {
 				);
 		}
 		
-		/* Get information to if user is privileged */
-		$perm = $this->a_core_session->user_get_permissions(
-			&$uid,
-			&$need,
-			TRUE,
-			&$need_arranged
+		$display_login = $this->a_core_session->check_permissions(
+			$need, NULL, NULL, &$need_arranged
 		);
 		
-		if(!$perm) {
-			$is = $this->a_core_session->user_get_permissions(
-				&$uid, 
-				array(
-					WF_USER_GOD,
-					WF_USER_ADMIN
-				),
-				FALSE
-			);
-
-			$display_login = TRUE;
-			if($is[WF_USER_GOD])
-				$display_login = FALSE;
-			else if($is[WF_USER_ADMIN]) {
-				if($need_arranged[WF_USER_GOD]) 
-					$display_login = TRUE;
-				else
-					$display_login = FALSE;
-			}
-		}
-		else {
-			$display_login = FALSE;
-			
-		}
-		
 		/* do we need to display login ? */
-		if($display_login)
+		if(!$display_login)
 			$this->wf->display_login(
 				"You don't have enought of permissions"
 			);

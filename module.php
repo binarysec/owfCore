@@ -58,7 +58,8 @@ class core extends wf_module {
 				WF_ROUTE_REDIRECT,
 				"/data",
 				"Listing des données",
-				WF_ROUTE_SHOW
+				WF_ROUTE_SHOW,
+				array("session:god")
 			),
 			"/data" => array(
 				WF_ROUTE_ACTION,
