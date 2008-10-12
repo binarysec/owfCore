@@ -38,9 +38,37 @@ class core_pref_context {
 	private $variables = array();
 	private $need_up = FALSE;
 	
-	
-	public function __construct($wf) {
+	public function loader($wf) {
 		$this->wf = $wf;
+
+		$struct = array(
+			"id" => WF_PRI,
+			"create_time" => WF_INT,
+			"name" => WF_VARCHAR,
+			"description" => WF_VARCHAR
+		);
+		$this->wf->db->register_zone(
+			"core_pref_group", 
+			"Group of global core preference table", 
+			$struct
+		);
+		
+		$struct = array(
+			"id" => WF_PRI,
+			"create_time" => WF_INT,
+			"variable" => WF_VARCHAR,
+			"description" => WF_VARCHAR,
+			"group_id" => WF_INT,
+			"type" => WF_INT,
+			"dft" => WF_DATA,
+			"value" => WF_DATA,
+			"serial" => WF_DATA
+		);
+		$this->wf->db->register_zone(
+			"core_pref", 
+			"Core preference table", 
+			$struct
+		);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

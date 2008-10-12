@@ -90,7 +90,8 @@ class core_tpl_compiler extends wf_agg {
 		'type'         => 'gettype',
 		'nl2br'        => 'nl2br',
 		'class_name'   => 'get_class',
-		'count'        => 'count'
+		'count'        => 'count',
+		'b64_dcode'    => 'base64_decode',
 	);
 
 	private $allowed_in_var;
