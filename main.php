@@ -33,6 +33,7 @@ define("WF_USER_ADMIN",   "session:admin");
 define("WF_USER_SIMPLE",  "session:simple");
 define("WF_USER_SERVICE", "session:service");
 define("WF_USER_ANON",    "session:anon");
+define("WF_USER_RANON",   "session:ranon");
 
 define("WF_ROUTE_ACTION",   1);
 define("WF_ROUTE_REDIRECT", 2);
@@ -551,7 +552,17 @@ class web_framework {
 		return($this->ini_arr[$where]);
 	}
 	
-	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function used to get a random buffer from available interface
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private $rfd = NULL;
+	public function get_rand($size=1024) {
+		if(!$rfd)
+			$fd = fopen("/dev/urandom", "r");
+		$b = fread($fd, $size);
+		return($b);
+	}
 	
 /*
 get_last_filename
