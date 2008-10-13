@@ -297,7 +297,7 @@ class web_framework {
 		$d = $this->ini_arr["db"];
 		$driver = "core_db_".$d["driver"];
 		$this->db = new ${driver};
-		$this->db->waf = $this;
+		$this->db->wf = $this;
 		$ret = $this->db->load($d);
 		if($ret == FALSE) {
 			throw new wf_exception(

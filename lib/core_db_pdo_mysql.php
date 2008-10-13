@@ -44,6 +44,7 @@ function core_gettype($value) {
 }
 
 class core_db_pdo_mysql extends core_db {
+	private $a_core_cacher;
 	var $hdl = NULL;
 	var $request_c = 0;
 	
@@ -71,7 +72,10 @@ class core_db_pdo_mysql extends core_db {
 			print "MySQL: " . $e->getMessage() . "<br/>";
 			die();
 		}
-
+		
+		/* get cacher */
+		$this->a_core_cacher = $this->wf->core_cacher();
+		
 		/* check zone table */
 		$this->check_zone_tab();
 
@@ -806,18 +810,45 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	private function rename_table($old, $new) {
+		$cvar = "core_db_pdo_mysql_table_$name";
 		$query = 'ALTER TABLE "'.$old.'" RENAME TO "'.$new.'"';
 		$this->sql_query($query);
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_mysql_table_$old";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_mysql_zone_$old";
+		$this->a_core_cacher->delete($cvar);
+		
 	}
 	
 	private function drop_table($name) {
 		$query = 'DROP TABLE "'.$name.'"';
 		$this->sql_query($query);
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_mysql_table_$name";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_mysql_zone_$name";
+		$this->a_core_cacher->delete($cvar);
 	}
 	
 	private function table_exists($name) {
+		$cvar = "core_db_pdo_mysql_table_$name";
+		
+		/* check if possible to get data from the cache */
+		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+			return($res);
+			
 		$query = 'SHOW TABLES LIKE "'.$name.'"';
 		$res = $this->sql_query($query);
+		
+		/* push table information */
+		$this->a_core_cacher->store(
+			$cvar,
+			!$res->rowCount() ? FALSE : TRUE
+		);
+		
 		if(!$res->rowCount())
 			return(FALSE);
 		return(TRUE);
@@ -839,6 +870,12 @@ class core_db_pdo_mysql extends core_db {
 			);
 			$this->query($q);
 		}
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_mysql_table_$name";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_mysql_zone_$name";
+		$this->a_core_cacher->delete($cvar);
 	}
 	
 	private function create_zone($name, $struct) {
@@ -860,9 +897,20 @@ class core_db_pdo_mysql extends core_db {
 			$q = new core_db_insert("zone_col", $insert);
 			$this->query($q);
 		}
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_mysql_table_$name";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_mysql_zone_$name";
+		$this->a_core_cacher->delete($cvar);
 	}
 	
 	private function get_zone($name) {
+		/* try to retrieve zone from the cache */
+		$cvar = "core_db_pdo_mysql_zone_$name";
+		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+			return($res);
+
 		$q = new core_db_adv_select;
 		
 		$q->alias("a", "zone");
@@ -873,6 +921,12 @@ class core_db_pdo_mysql extends core_db {
 		
 		$this->query($q);
 		$res = $q->get_result();
+		
+		/* push the zone into the cache */
+		$this->a_core_cacher->store(
+			$cvar,
+			$res
+		);
 		
 		return($res);
 	}

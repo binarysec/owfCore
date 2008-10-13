@@ -49,7 +49,7 @@ define("WF_DES",              11);
 define("WF_REQ_FCT_COUNT",    20);
 
 abstract class core_db {
-	var $waf = NULL;
+	public $wf = NULL;
 	abstract public function load($dbconf);
 	abstract public function get_driver_banner();
 	abstract public function get_driver_name();
