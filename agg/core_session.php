@@ -84,29 +84,29 @@ class core_session extends wf_agg {
 			"data" => array(),
 		));
 		
-		$this->user_add(array(
-			"email" => "td@binarysec.com",
-			"name" => "Thomas DIJOUX",
-			"password" => "lala",
-			"permissions" => array("session:god"),
-			"data" => array(),
-		));
-		
-		$this->user_add(array(
-			"email" => "op@binarysec.com",
-			"name" => "Olivier PASCAL",
-			"password" => "lala",
-			"permissions" => array("session:god"),
-			"data" => array(),
-		));
-		
-		$this->user_add(array(
-			"email" => "citron@system.agent",
-			"name" => "Michael VERGOZ",
-			"password" => "lala",
-			"permissions" => array("session:service"),
-			"data" => array(),
-		));
+// 		$this->user_add(array(
+// 			"email" => "td@binarysec.com",
+// 			"name" => "Thomas DIJOUX",
+// 			"password" => "lala",
+// 			"permissions" => array("session:god"),
+// 			"data" => array(),
+// 		));
+// 		
+// 		$this->user_add(array(
+// 			"email" => "op@binarysec.com",
+// 			"name" => "Olivier PASCAL",
+// 			"password" => "lala",
+// 			"permissions" => array("session:god"),
+// 			"data" => array(),
+// 		));
+// 		
+// 		$this->user_add(array(
+// 			"email" => "citron@system.agent",
+// 			"name" => "Michael VERGOZ",
+// 			"password" => "lala",
+// 			"permissions" => array("session:service"),
+// 			"data" => array(),
+// 		));
 		
 		/* registre session preferences group */
 		$this->pref_session = $this->_core_pref->register_group(
@@ -213,7 +213,9 @@ class core_session extends wf_agg {
 	 * Generate a session id
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function generate_session_id() {
-		return("E".rand().rand().rand());
+		$s1 = $this->wf->get_rand();
+		$s2 = $this->wf->get_rand();
+		return("E".md5($s1).md5($s2));
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -325,12 +327,26 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_search_by_mail($mail) {
+		$cvar = "core_session_user_email_$mail";
+		
+		/* check the cache */
+		$cache = $this->_core_cacher->get($cvar);
+		if(is_array($cache))
+			return($cache);
+		else if(is_string($cache))
+			return(NULL);
+		
 		$q = new core_db_select("core_session");
 		$q->where(array("email" => $mail));
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		return($res[0]);
 		
+		/* store the result we need */
+		$this->_core_cacher->store(
+			$cvar, 
+			count($res) <= 0 ? " " : $res[0]
+		);
+		return($res[0]);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -619,9 +635,13 @@ class core_session extends wf_agg {
 		$q->do_comp('a.id', '=', (int)$uid);
 		$q->do_comp('a.id', '==', 'b.core_session_id');
 		
+		/* identifying the request */
+		$request = NULL;
+		
 		/* construct need */
 		if(is_string($perms)) {
 			$q->do_comp('b.perm_name', '=', $perms);
+			$request .= $perms;
 		}
 		else if(is_array($perms)) {
 			for($a=0; $a<count($perms); $a++) {
@@ -632,9 +652,21 @@ class core_session extends wf_agg {
 
 				$ask[$kp] = TRUE;
 				$used[$kp] = FALSE;
+				$request .= $kp;
 			}
 		}
 
+		/* generate the cvar corresponding to the request */
+		$cvar = "core_session_preq_$uid".
+			"_$request";
+
+		/* load the cache */
+		$cache = $this->_core_cacher->get($cvar);
+		if(is_array($cache))
+			return($cache);
+		else if(is_string($cache))
+			return(NULL);
+	
 		/* execute request */
 		$this->wf->db->query($q);
 		$res = $q->get_result();
@@ -659,6 +691,12 @@ class core_session extends wf_agg {
 				&$data
 			);
 
+		/* store the result we need */
+		$this->_core_cacher->store(
+			$cvar, 
+			count($res) <= 0 ? " " : $this->perms_cache[$cvar]
+		);
+		
 		if(count($res) <= 0)
 			return(NULL);
 			

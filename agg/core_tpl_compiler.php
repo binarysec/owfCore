@@ -81,7 +81,7 @@ class core_tpl_compiler extends wf_agg {
 	private $modifiers = array(
 		'upper'        => 'strtoupper',
 		'lower'        => 'strtolower',
-		'escxml'       => 'htmlspecialchars',
+		'html'         => 'htmlspecialchars',
 		'strip_tags'   => 'strip_tags',
 		'escurl'       => 'rawurlencode',
 		'capitalize'   => 'ucwords',
