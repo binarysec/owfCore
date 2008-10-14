@@ -767,6 +767,7 @@ class core_session extends wf_agg {
 		$this->wf->db->query($q);
 		
 		/* invalide user session cache */
+		$this->_core_cacher->delete("user_by_session_".$this->me["session_id"]);
 		$this->_core_cacher->delete("user_perms_".(int)$this->me["id"]);
 	}
 	
