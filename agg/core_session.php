@@ -32,7 +32,7 @@ class core_session extends wf_agg {
 	private $sess_timeout;
 	
 	public $me = NULL;
-	var $data = NULL;
+	var $data = array();
 	
 	private $_core_cacher;
 	private $pref_session;
@@ -750,12 +750,8 @@ class core_session extends wf_agg {
 	 *
 	 * Définition des données utilisateur
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function set_data($data=array()) {
-		/* merge les informations */
-		if(!$this->data)
-			$this->data = $data;
-		else
-			$this->data = array_merge($this->data, $data);
+	public function set_data($data) {
+		$this->data = array_merge($this->data, $data);
 
 		/* update les informations dans la bdd */
 		$q = new core_db_update("core_session");
@@ -765,6 +761,7 @@ class core_session extends wf_agg {
 		$update = array(
 			"session_data" => serialize($this->data)
 		);
+
 		$q->where($where);
 		$q->insert($update);
 		$this->wf->db->query($q);
