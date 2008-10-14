@@ -765,6 +765,9 @@ class core_session extends wf_agg {
 		$q->where($where);
 		$q->insert($update);
 		$this->wf->db->query($q);
+		
+		/* invalide user session cache */
+		$this->_core_cacher->delete("user_perms_".(int)$this->me["id"]);
 	}
 	
 	public function unset_data($list) {
