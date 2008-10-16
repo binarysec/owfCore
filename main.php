@@ -505,6 +505,32 @@ class web_framework {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Scan a directory
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function scandir($path, $assoc=array()) {
+		$modrev = array_reverse($this->modules);
+		$list = array();
+		
+		foreach($modrev as $mod => $mod_infos) {
+			$tmp = $this->modules[$mod][0].
+				"$path";
+			$dirs = @scandir($tmp);
+			if(file_exists($tmp)) {
+				foreach($dirs as $dir) {
+					if(!$assoc[$dir]) {
+						$assoc[$dir] = 
+							$this->modules[$mod][0];
+						$list[] = $dir;
+					}
+				}
+			}
+		}
+
+		return($list);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Locate a file with priority respect
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function locate_file($filename, $return_array=FALSE) {
@@ -565,10 +591,7 @@ class web_framework {
 	}
 	
 /*
-get_last_filename
 get_first_filename
-scandir
-locate_file
 locate_files
 */
 
