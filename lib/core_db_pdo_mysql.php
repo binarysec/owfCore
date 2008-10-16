@@ -107,9 +107,10 @@ class core_db_pdo_mysql extends core_db {
 		return($this->request_c);
 	}
 	
-	/*
-	register a new data zone
-	*/
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Register a new DB zone
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register_zone($name, $description, $struct) {
 		$res = $this->get_zone($name);
 		if(!$res[0]) {
@@ -126,6 +127,17 @@ class core_db_pdo_mysql extends core_db {
 		$this->schema[$name] = $struct;
 
 	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Unregister a DB zone
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function unregister_zone($name) {
+		$this->drop_zone($name);
+		$this->drop_table($name);
+		return(TRUE);
+	}
+	
 	
 	private function check_for_data_translation($name, $description, $struct, $info) {
 		foreach($info as $k => $v)
