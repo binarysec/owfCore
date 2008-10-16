@@ -182,46 +182,34 @@ class wfr_core_data extends wf_route_request {
 			$directory = trim($directory);
 		$up_dir = strrev($up_dir);
 		
-		/* trouve tout le répertoire */
-		$dirs = array();
-		foreach($this->wf->modules as $mod => $mod_infos) {
-			$tmp = $this->wf->modules[$mod][0].
-				'/var/data'.$directory;
+		/* scan thr directory */
+		$d = $this->wf->scandir('/var/data'.$directory);
+		foreach($d as $v) {
+			if($v != '.' && $v != "..") {
+				$file = "$dir/$v";
+				if(strlen($_directory) > 1)
+					$link = "$directory/$v";
+				else
+					$link = "/$v";
+				
+				$file = $this->wf->locate_file("/var/data/$link");
+				
+				$last_mod = date(
+					"d M Y / G:i:s", 
+					filemtime($file)
+				);
+
+				$files[$v] = array(
+					'link'     => $this->wf->linker("/data$link"),
+					'size'     => $this->wf->bit8_scale(filesize($file)),
+					'mimetype' => $this->wf->core_mime()->get_mime($file),
+					'last_mod' => $last_mod,
+					'realpath' => $file,
+					'path'     => $link
+				);
+			}
+		}
 	
-			if(is_dir($tmp)) {
-				$dirs[] = $tmp;
-			}
-		}
-		
-		/* recherche les répertoires */
-		$files = array();
-		foreach($dirs as $dir) {
-			$d = scandir($dir);
-			foreach($d as $v) {
-				if($v != '.' && $v != "..") {
-					$file = $dir."/$v";
-					if(strlen($_directory) > 1)
-						$link = "$directory/$v";
-					else
-						$link = "/$v";
-					
-					$last_mod = date(
-						"d M Y / G:i:s", 
-						filemtime($file)
-					);
-
-					$files[$v] = array(
-						'link'     => $this->wf->linker("/data$link"),
-						'size'     => $this->wf->bit8_scale(filesize($file)),
-						'mimetype' => $this->wf->core_mime()->get_mime($file),
-						'last_mod' => $last_mod,
-						'realpath' => $file,
-						'path'     => $link
-					);
-				}
-			}
-		}
-
 		/* trie les fichiers */
 		ksort($files);
 		
