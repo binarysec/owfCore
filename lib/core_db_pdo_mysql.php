@@ -835,7 +835,7 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	private function drop_table($name) {
-		$query = 'DROP TABLE "'.$name.'"';
+		$query = 'DROP TABLE `'.$name.'`';
 		$this->sql_query($query);
 		
 		/* remove the cache */
