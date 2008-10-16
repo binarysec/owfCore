@@ -65,6 +65,9 @@ class core_db_pdo_sqlite extends core_db {
 			);
 		}
 		
+		/* get cacher */
+		$this->a_core_cacher = $this->wf->core_cacher();
+		
 		/* check zone table */
 		$this->check_zone_tab();
 
@@ -108,7 +111,15 @@ class core_db_pdo_sqlite extends core_db {
 
 	}
 	
-
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Unregister a DB zone
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function unregister_zone($name) {
+		$this->drop_zone($name);
+		$this->drop_table($name);
+		return(TRUE);
+	}
 	
 	private function check_for_data_translation($name, $description, $struct, $info) {
 		$change = FALSE;
@@ -768,22 +779,46 @@ class core_db_pdo_sqlite extends core_db {
 	private function rename_table($old, $new) {
 		$query = 'ALTER TABLE "'.$old.'" RENAME TO "'.$new.'"';
 		$this->sql_query($query);
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_sqlite_table_$old";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_sqlite_zone_$old";
+		$this->a_core_cacher->delete($cvar);
 	}
 	
 	private function drop_table($name) {
 		$query = "DROP TABLE $name";
 		$this->sql_query($query);
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_sqlite_table_$name";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_sqlite_zone_$name";
+		$this->a_core_cacher->delete($cvar);
 	}
 	
 	private function table_exists($name) {
+		$cvar = "core_db_pdo_sqlite_table_$name";
+		
+		/* check if possible to get data from the cache */
+		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+			return($res);
+			
 		$q = new core_db_select("sqlite_master");
 
 		$where = array();
 		$where["name"] = $name;
 		$q->where($where);
 		$this->query($q);
-
 		$res = $q->get_result();
+		
+		/* push table information */
+		$this->a_core_cacher->store(
+			$cvar,
+			!$res[0] ? FALSE : TRUE
+		);
+		
 		if(!$res[0])
 			return(FALSE);
 		return(TRUE);
@@ -805,6 +840,12 @@ class core_db_pdo_sqlite extends core_db {
 			);
 			$this->query($q);
 		}
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_sqlite_table_$name";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_sqlite_zone_$name";
+		$this->a_core_cacher->delete($cvar);
 	}
 	
 	private function create_zone($name, $struct) {
@@ -814,7 +855,7 @@ class core_db_pdo_sqlite extends core_db {
 		);
 		$q = new core_db_insert_id("zone", "id", $insert);
 		$this->query($q);
-		
+			
 		$insert_id = $q->get_result();
 		
 		foreach($struct as $k => $v) {
@@ -826,9 +867,20 @@ class core_db_pdo_sqlite extends core_db {
 			$q = new core_db_insert("zone_col", $insert);
 			$this->query($q);
 		}
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_sqlite_table_$name";
+		$this->a_core_cacher->delete($cvar);
+		$cvar = "core_db_pdo_sqlite_zone_$name";
+		$this->a_core_cacher->delete($cvar);
 	}
 	
 	private function get_zone($name) {
+		/* try to retrieve zone from the cache */
+		$cvar = "core_db_pdo_sqlite_zone_$name";
+		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+			return($res);
+
 		$q = new core_db_adv_select;
 		
 		$q->alias("a", "zone");
@@ -839,6 +891,12 @@ class core_db_pdo_sqlite extends core_db {
 		
 		$this->query($q);
 		$res = $q->get_result();
+		
+		/* push the zone into the cache */
+		$this->a_core_cacher->store(
+			$cvar,
+			$res
+		);
 		
 		return($res);
 	}

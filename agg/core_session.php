@@ -333,7 +333,7 @@ class core_session extends wf_agg {
 		$cache = $this->_core_cacher->get($cvar);
 		if(is_array($cache))
 			return($cache);
-		else if(is_string($cache))
+		else if($cache == TRUE)
 			return(NULL);
 		
 		$q = new core_db_select("core_session");
@@ -344,7 +344,7 @@ class core_session extends wf_agg {
 		/* store the result we need */
 		$this->_core_cacher->store(
 			$cvar, 
-			count($res) <= 0 ? " " : $res[0]
+			count($res) <= 0 ? TRUE : $res[0]
 		);
 		return($res[0]);
 	}
@@ -440,6 +440,10 @@ class core_session extends wf_agg {
 		$q = new core_db_insert("core_session", $insert);
 		$this->wf->db->query($q);
 
+		/* remove the user search cache */
+		$cvar = "core_session_user_email_".$data["email"];
+		$this->_core_cacher->delete($cvar);
+		
 		/* reprend les informations */
 		$user = $this->user_search_by_mail($data["email"]);
 		

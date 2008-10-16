@@ -54,6 +54,7 @@ abstract class core_db {
 	abstract public function get_driver_banner();
 	abstract public function get_driver_name();
 	abstract public function register_zone($name, $description, $struct);
+	abstract public function unregister_zone($name);
 	abstract public function query($query_obj);
 	abstract public function get_configuration();
 	abstract public function test_configuration($dbconf);
