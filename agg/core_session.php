@@ -664,12 +664,13 @@ class core_session extends wf_agg {
 		$cvar = "core_session_preq_$uid".
 			"_$request";
 
-		/* load the cache */
-		$cache = $this->_core_cacher->get($cvar);
-		if(is_array($cache))
-			return($cache);
-		else if(is_string($cache))
-			return(NULL);
+// 		/* load the cache */
+// 		$cache = $this->_core_cacher->get($cvar);
+// 		var_dump($cache);
+// 		if(is_array($cache))
+// 			return($cache);
+// 		else if(is_string($cache))
+// 			return(NULL);
 	
 		/* execute request */
 		$this->wf->db->query($q);
