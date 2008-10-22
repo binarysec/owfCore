@@ -519,7 +519,7 @@ class web_framework {
 				foreach($dirs as $dir) {
 					if(!$assoc[$dir]) {
 						$assoc[$dir] = 
-							$this->modules[$mod][0];
+							$tmp;
 						$list[] = $dir;
 					}
 				}
