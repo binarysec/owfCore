@@ -84,21 +84,21 @@ class core_session extends wf_agg {
 			"data" => array(),
 		));
 		
-// 		$this->user_add(array(
-// 			"email" => "td@binarysec.com",
-// 			"name" => "Thomas DIJOUX",
-// 			"password" => "lala",
-// 			"permissions" => array("session:god"),
-// 			"data" => array(),
-// 		));
-// 		
-// 		$this->user_add(array(
-// 			"email" => "op@binarysec.com",
-// 			"name" => "Olivier PASCAL",
-// 			"password" => "lala",
-// 			"permissions" => array("session:god"),
-// 			"data" => array(),
-// 		));
+		$this->user_add(array(
+			"email" => "td@binarysec.com",
+			"name" => "Thomas DIJOUX",
+			"password" => "lala",
+			"permissions" => array("session:god"),
+			"data" => array(),
+		));
+		
+		$this->user_add(array(
+			"email" => "op@binarysec.com",
+			"name" => "Olivier PASCAL",
+			"password" => "lala",
+			"permissions" => array("session:god"),
+			"data" => array(),
+		));
 // 		
 // 		$this->user_add(array(
 // 			"email" => "citron@system.agent",
