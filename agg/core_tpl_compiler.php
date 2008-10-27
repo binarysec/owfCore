@@ -119,12 +119,16 @@ class core_tpl_compiler extends wf_agg {
 
 	// Compiler
 
+	public function register($name, $callback) {
+		$this->registered_generator[$name] = $callback;
+	}
+
 	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null, $php_exec, $allowed_func, $registered_generator) {
 		$this->source_file = $tpl_file;
-		
+
 		$this->php_exec = $php_exec;
 		$this->allowed_func = $allowed_func;
-		$this->registered_generator = $registered_generator;
+		$this->registered_generator = array_merge($this->registered_generator, $registered_generator);
 		
 		if(is_null($ld) || is_null($rd)) {
 			$ld = $this->ldelim;
