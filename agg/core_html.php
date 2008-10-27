@@ -166,8 +166,8 @@ class core_html extends wf_agg {
 	 * Gestion des javascript
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $js = array();
-	public function add_js($link) {
-		$this->js[$link] = $this->wf->linker($link);
+	public function add_js($link, $filter=NULL, $lang_code=NULL) {
+		$this->js[$link] = $this->wf->linker($link, $filter, $lang_code);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -175,8 +175,8 @@ class core_html extends wf_agg {
 	 * Gestion des CSS
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $css = array();
-	public function add_css($link) {
-		$this->css[$link] = $this->wf->linker($link);
+	public function add_css($link, $filter=NULL, $lang_code=NULL) {
+		$this->css[$link] = $this->wf->linker($link, $filter, $lang_code);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
