@@ -37,6 +37,8 @@ class core_session extends wf_agg {
 	private $_core_cacher;
 	private $pref_session;
 	
+	private $cache = array();
+	
 	public function loader($wf) {
 		$this->wf = $wf;
 		$this->_core_cacher = $wf->core_cacher();
@@ -74,6 +76,12 @@ class core_session extends wf_agg {
 			"core_session_perm", 
 			"Core session permission table", 
 			$struct
+		);
+		
+		
+		/* create cache group */
+		$this->cache = $this->wf->core_cacher()->create_group(
+			"core_session"
 		);
 		
 		$this->user_add(array(
@@ -141,7 +149,7 @@ class core_session extends wf_agg {
 		$session = $_COOKIE[$this->sess_var];
 
 		/* use cache */
-		$data = $this->_core_cacher->get("user_by_session_$session");
+		$data = $this->cache->get("user_by_session_$session");
 		if($data)
 			$this->me = $data;
 		else {
@@ -199,7 +207,7 @@ class core_session extends wf_agg {
 		$this->me = array_merge($this->me, $update);
 		
 		/* store data into the cache for a short time */
-		$this->_core_cacher->store(
+		$this->cache->store(
 			"user_by_session_$session", 
 			$this->me, 
 			5
@@ -330,7 +338,7 @@ class core_session extends wf_agg {
 		$cvar = "core_session_user_email_$mail";
 		
 		/* check the cache */
-		$cache = $this->_core_cacher->get($cvar);
+		$cache = $this->cache->get($cvar);
 		if(is_array($cache))
 			return($cache);
 		else if($cache == TRUE)
@@ -342,7 +350,7 @@ class core_session extends wf_agg {
 		$res = $q->get_result();
 		
 		/* store the result we need */
-		$this->_core_cacher->store(
+		$this->cache->store(
 			$cvar, 
 			count($res) <= 0 ? TRUE : $res[0]
 		);
@@ -442,7 +450,7 @@ class core_session extends wf_agg {
 
 		/* remove the user search cache */
 		$cvar = "core_session_user_email_".$data["email"];
-		$this->_core_cacher->delete($cvar);
+		$this->cache->delete($cvar);
 		
 		/* reprend les informations */
 		$user = $this->user_search_by_mail($data["email"]);
@@ -475,7 +483,7 @@ class core_session extends wf_agg {
 		);
 		$this->wf->db->query($q);
 		
-		$this->_core_cacher->delete("user_perms_".(int)$uid);
+		$this->cache->delete("user_perms_".(int)$uid);
 		
 		return(TRUE);
 	}
@@ -495,7 +503,7 @@ class core_session extends wf_agg {
 		$q = new core_db_insert("core_session_perm", $insert);
 		$this->wf->db->query($q);
 		
-		$this->_core_cacher->delete("user_perms_$uid");
+		$this->cache->delete("user_perms_$uid");
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -513,7 +521,7 @@ class core_session extends wf_agg {
 		$q->insert($update);
 		$this->wf->db->query($q);
 		
-		$this->_core_cacher->delete("user_perms_$uid");
+		$this->cache->delete("user_perms_$uid");
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -593,7 +601,7 @@ class core_session extends wf_agg {
 		
 		$this->wf->db->query($q);
 		
-		$this->_core_cacher->delete("user_perms_$uid");
+		$this->cache->delete("user_perms_$uid");
 		return(TRUE);
 	}
 	
@@ -665,7 +673,7 @@ class core_session extends wf_agg {
 			"_$request";
 
 // 		/* load the cache */
-// 		$cache = $this->_core_cacher->get($cvar);
+// 		$cache = $this->cache->get($cvar);
 // 		var_dump($cache);
 // 		if(is_array($cache))
 // 			return($cache);
@@ -697,7 +705,7 @@ class core_session extends wf_agg {
 			);
 
 		/* store the result we need */
-		$this->_core_cacher->store(
+		$this->cache->store(
 			$cvar, 
 			count($res) <= 0 ? " " : $this->perms_cache[$cvar]
 		);
@@ -772,8 +780,8 @@ class core_session extends wf_agg {
 		$this->wf->db->query($q);
 		
 		/* invalide user session cache */
-		$this->_core_cacher->delete("user_by_session_".$this->me["session_id"]);
-		$this->_core_cacher->delete("user_perms_".(int)$this->me["id"]);
+		$this->cache->delete("user_by_session_".$this->me["session_id"]);
+		$this->cache->delete("user_perms_".(int)$this->me["id"]);
 	}
 	
 	public function unset_data($list) {

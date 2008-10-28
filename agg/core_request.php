@@ -49,7 +49,13 @@ class core_request extends wf_agg {
 		$this->channel = $this->a_core_route->get_channel(
 			$this->wf->get_rail()
 		);
-
+		
+		/* Check for real anonymous */
+		if($this->channel[0][7][0] == WF_USER_RANON) {
+			$this->a_core_route->execute_route(&$this->channel);
+			exit(0);
+		}
+		
 		/* vérification du canal */
 		if(!$this->channel[0]) {
 			if(!$this->channel[3]) {
@@ -110,10 +116,6 @@ class core_request extends wf_agg {
 				"You don't have enought of permissions"
 			);
 
-		/* check if it isn't a redirection */
-		if($this->channel[0][2] == WF_ROUTE_REDIRECT)
-			$this->a_core_route->execute_route(&$this->channel);
-	
 		/* terminate */
 		$this->a_core_route->execute_route(&$this->channel);
 	}
