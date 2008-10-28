@@ -26,13 +26,7 @@
  * Driver for cache in shared memory
  */
 abstract class core_cacher_lib {
-
-	// Attributes
-
-	var $wf; /**< The web_framework object */
-
-
-	// Construction / Destruction
+	var $wf;
 
 	/**
 	 * Constructor
@@ -40,9 +34,6 @@ abstract class core_cacher_lib {
 	 * @param $wf The web_framework object
 	 */
 	abstract public function __construct($wf);
-
-
-	// Abstract methods
 
 	/**
 	 * Store a key-value pair
@@ -83,17 +74,97 @@ abstract class core_cacher_lib {
 }
 
 /**
+ * Cache grouping system
+ */
+class core_cacher_group {
+	private $name;
+	private $wf;
+	private $ref = array();
+	private $ref_update = FALSE;
+	private $core_cacher;
+	
+	/**
+	 * Constructor
+	 * @param $wf Web Framework
+	 * @param $name The group name
+	 */
+	public function __construct($wf, $name) {
+		$this->wf = $wf;
+		$this->name = $name;
+		$this->core_cacher = $this->wf->core_cacher();
+		
+		
+		/* load group */
+		$this->ref = $this->core_cacher->get(
+			"core_cacher_group_".$this->name
+		);
+	}
+	
+	/**
+	 * Destructor
+	 * @param $wf Web Framework
+	 * @param $name The group name
+	 */
+	public function __destruct() {
+		if($this->ref_update) {
+			$this->core_cacher->store(
+				"core_cacher_group_".$this->name,
+				$this->ref
+			);
+		}
+	}
+	
+	/**
+	 * Store a key-value pair
+	 * @param $var The key
+	 * @param $val The value
+	 * @param $timeout Maximum time (in milliseconds)
+	 */
+	public function store($var, $val, $timeout=NULL) {
+		$this->ref[$var] = TRUE;
+		$this->ref_update = TRUE;
+		return($this->core_cacher->store($var, $val, $timeout));
+	}
+
+	/**
+	 * Retrieve a cached value
+	 *
+	 * @param $var The key
+	 * @return The cached value
+	 */
+	public function get($var) {
+		return($this->core_cacher->get($var));
+	}
+
+	/**
+	 * Delete a cached value
+	 * @param $var The key
+	 */
+	public function delete($var) {
+		return($this->core_cacher->delete($var));
+	}
+
+	/**
+	 * Delete all cached values of this group
+	 */
+	public function clear() {
+		foreach($this->ref as $key => $val) {
+			$this->core_cacher->delete($key);
+		}
+		$this->ref_update = TRUE;
+		return(TRUE);
+	}
+	
+}
+
+ 
+/**
  * Cache system in shared memory
  */
 class core_cacher extends wf_agg {
 
-	// Attributes
-
 	private $system    = NULL; /**< The cache driver */
 	private $namespace = NULL; /**< The cache namespace */
-
-
-	// Methods
 
 	/**
 	 * Aggregator loader
@@ -206,6 +277,22 @@ class core_cacher extends wf_agg {
 		else {
 			$this->system = NULL;
 		}
+	}
+	
+	
+	private $group_obj = array();
+	
+	/**
+	 * Create a new cache group
+	 * @param $name The group name
+	 */
+	public function create_group($name) {
+		if(is_object($this->group_obj[$name]))
+			return($this->group_obj[$name]);
+			
+		$obj = new core_cacher_group($this->wf, $name);
+		$this->group_obj[$name] = $obj;
+		return($this->group_obj[$name]);
 	}
 
 }
