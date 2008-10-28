@@ -251,7 +251,11 @@ class web_framework {
 			/* parse/vm the file */
 			require_once($modfile);
 			
-			if(!class_exists($name)) {
+			/* define the module name */
+			$objname = "wfm_$name";
+			
+			/* check if the class exists */
+			if(!class_exists($objname)) {
 				throw new wf_exception(
 					$this,
 					WF_EXC_PRIVATE,
@@ -261,7 +265,7 @@ class web_framework {
 			}
 			
 			/* load the object */
-			$obj = new ${name}($this);
+			$obj = new ${objname}($this);
 			
 			/* sanatize */
 			if(get_parent_class($obj) != "wf_module") {
