@@ -504,10 +504,10 @@ class core_tpl_compiler extends wf_agg {
 		$method = $this->registered_generator[$name][1];
 		
 		if(is_object($class)) {
-			return(call_user_func($this->registered_generator[$name], $argv));
+			return('?>'.call_user_func($this->registered_generator[$name], $argv).'<?php');
 		}
 		else {
-			return($this->wf->$class()->$method($argv));
+			return('?>'.$this->wf->$class()->$method($argv).'<?php');
 		}
 	}
 
