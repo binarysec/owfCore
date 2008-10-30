@@ -480,7 +480,7 @@ class core_tpl_compiler extends wf_agg {
 	public function func_link(core_tpl_compiler $tpl_compiler, $argv) {
 		$args = $argv[0];
 		if(isset($argv[1])) $args .= ', null, '.$argv[1];
-		return('echo $this->wf->linker('.$args.')');
+		return('echo $this->wf->linker('.$args.');');
 	}
 	
 	public function func_lang(core_tpl_compiler $tpl_compiler, $argv) {
