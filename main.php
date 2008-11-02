@@ -146,7 +146,7 @@ class wf_exception extends Exception {
 	}
 	
 	public function load_message() {
-		if($this->wf->ini_arr["common"]["show_backtrace"]) {
+// 		if($this->wf->ini_arr["common"]["show_backtrace"]) {
 			if(!is_array($this->messages)) {
 				$msg = array($this->messages);
 				$this->messages = $msg;
@@ -168,7 +168,7 @@ class wf_exception extends Exception {
 						"<u><b>$v[class]::$v[function]()</b></u>";
 				}
 			}
-		}
+// 		}
 
 		return($this->messages);
 	}
@@ -519,6 +519,55 @@ class web_framework {
 			$tpl->set(
 				"back_url", 
 				base64_encode($_SERVER["REQUEST_URI"])
+			);
+		}
+
+		if($_SERVER["HTTP_X_REAL_IP"]) {
+			$tpl->set(
+				"via_ip", 
+				htmlspecialchars($_SERVER["REMOTE_ADDR"])
+			);
+			$tpl->set(
+				"via_addr", 
+				gethostbyaddr($_SERVER["REMOTE_ADDR"])
+			);
+		
+			$tpl->set(
+				"remote_ip", 
+				htmlspecialchars($_SERVER["HTTP_X_REAL_IP"])
+			);
+			$tpl->set(
+				"remote_addr", 
+				gethostbyaddr($_SERVER["HTTP_X_REAL_IP"])
+			);
+		}
+		else if($_SERVER["HTTP_X_FORWARDED_FOR"]) {
+			$tpl->set(
+				"via_ip", 
+				htmlspecialchars($_SERVER["REMOTE_ADDR"])
+			);
+			$tpl->set(
+				"via_addr", 
+				gethostbyaddr($_SERVER["REMOTE_ADDR"])
+			);
+		
+			$tpl->set(
+				"remote_ip", 
+				htmlspecialchars($_SERVER["HTTP_X_FORWARDED_FOR"])
+			);
+			$tpl->set(
+				"remote_addr", 
+				gethostbyaddr($_SERVER["HTTP_X_FORWARDED_FOR"])
+			);
+		}
+		else {
+			$tpl->set(
+				"remote_ip", 
+				htmlspecialchars($_SERVER["REMOTE_ADDR"])
+			);
+			$tpl->set(
+				"remote_addr", 
+				gethostbyaddr($_SERVER["REMOTE_ADDR"])
 			);
 		}
 		
