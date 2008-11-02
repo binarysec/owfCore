@@ -70,6 +70,14 @@ a, a:hover {
 		</tr>
 	</table>
 </form>
+<h4>
+{if $via_addr}
+from {$remote_ip} ({$remote_addr}) via {$via_addr} ({$via_addr})
+{else}
+from {$remote_ip} ({$remote_addr})
+{/if}
+
+</h4>
 <h4><a href="http://www.binarysec.com/">http://www.binarysec.com/</a></h4>
 </td>
 </tr>
