@@ -244,7 +244,9 @@ class web_framework {
 	 *
 	 * Application modules manager
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	var $modules = array();
+	public $modules = array();
+	public $events = array();
+	
 	public function load_module($name, $dir) {
 		$modfile = $dir."/module.php";	
 		if(file_exists($modfile)) {
@@ -290,6 +292,19 @@ class web_framework {
 				$obj->get_depends(),
 				&$obj
 			);
+			
+			/* check if module has hookable event */
+			if(method_exists($obj, "get_events")) {
+				$events = $obj->get_events();
+				if(count($events) > 0) {
+					foreach($events as $name => $event) {
+						if(!is_array($this->events[$name]))
+							$this->events[$name] = array();
+						$this->events[$name][] = $event;
+					}
+				}
+			}
+			
 		}
 	}
 	
@@ -310,6 +325,25 @@ class web_framework {
 				"DB driver exception"
 			);
 		}
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function used to execute a share event
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function execute_hook($name, $args, $result=NULL) {
+		if(!$this->events[$name])
+			return(FALSE);
+			
+		/* execute filters */
+		foreach($this->events[$name] as $event) {
+			$agg = $this->__call($event[0]);
+			$ret = $agg->$event[1]($args);
+			if(is_array($result))
+				$result[] = $ret;
+		}
+		
+		return(TRUE);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -496,11 +530,11 @@ class web_framework {
 	 *
 	 * Return the 8bit scale
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function bit8_scale($sz) {
-		if($sz > pow(1024, 3))
-			return(sprintf("%.2f Go", ($sz/pow(1024, 3))));
-		else if($sz > pow(1024, 2))
-			return(sprintf("%.2f Mo", ($sz/pow(1024, 2))));
+	public function bit8_scale($sz, $init_pow=0) {
+		if($sz > pow(1024, 3+$init_pow))
+			return(sprintf("%.2f Go", ($sz/pow(1024, 3+$init_pow))));
+		else if($sz > pow(1024, 2+$init_pow))
+			return(sprintf("%.2f Mo", ($sz/pow(1024, 2+$init_pow))));
 		if($sz > 1024) 
 			return(sprintf("%.2f Ko", ($sz/1024)));
 		else
