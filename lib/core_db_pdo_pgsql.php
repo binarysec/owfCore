@@ -267,19 +267,6 @@ class core_db_pdo_pgsql extends core_db {
 					}
 				}
 			}
-
-			/* check for group */
-			$group = NULL;
-			if($query_obj->group != NULL) {
-				foreach($query_obj->group as $k) {
-					if(!$group) {
-						$group = 'GROUP BY '.$k.'';
-					}
-					else {
-						$group .= ', '.$k.'';
-					}
-				}
-			}
 			
 			/* check for limit and offset */
 			$limit = NULL;
@@ -403,19 +390,6 @@ class core_db_pdo_pgsql extends core_db {
 					}
 				}
 			}
-
-			/* check for group */
-			$group = NULL;
-			if($query_obj->group != NULL) {
-				foreach($query_obj->group as $k) {
-					if(!$group) {
-						$group = 'GROUP BY '.$k.'';
-					}
-					else {
-						$group .= ', '.$k.'';
-					}
-				}
-			}
 			
 			/* check for limit and offset */
 			$limit = NULL;
@@ -454,6 +428,7 @@ class core_db_pdo_pgsql extends core_db {
 				array_push($prepare_value, $v);
 			}
 			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES ($val);";
+			
 			$this->sql_query($query, $prepare_value);
 		}
 		/* Insert query with ID */
@@ -514,6 +489,7 @@ class core_db_pdo_pgsql extends core_db {
 			$where = NULL;
 			foreach($query_obj->where as $k => $sv) {
 				$v = $this->safe_input($sv);
+				
 				if(!$where) {
 					if(core_gettype($v) == WF_T_STRING)
 						$where .= 'WHERE '.$k.' LIKE ?';
@@ -531,7 +507,6 @@ class core_db_pdo_pgsql extends core_db {
 			
 			/* prepare and exec the query */
 			$query = "UPDATE ".$query_obj->zone." SET $set $where";
-
 			
 			$this->sql_query($query, $prepare_value);
 		}
@@ -780,9 +755,9 @@ class core_db_pdo_pgsql extends core_db {
 			case WF_TIME:
 				return("INT NULL");
 			case WF_DATA:
-				return("BYTEA NULL");
+				return("TEXT");
 			case WF_PRI:
-				return("SERIAL NOT NULL");
+				return("SERIAL PRIMARY KEY");
 		}
 	}
 
@@ -800,22 +775,7 @@ class core_db_pdo_pgsql extends core_db {
 			$vir = TRUE;
 		}
 		
-		/* preparation des clés */
-		if(count($pri_list) > 0) {
-			$query .= ", PRIMARY KEY ( ";
-			for($a=0; $a<count($pri_list); $a++) {
-				$v = &$pri_list[$a];
-			
-				if($a > 0)
-					$query .= ",";
-					
-				$query .= "$v";
-			}
-			$query .= ")";
-		}
-		
-		/* ajoute les clés */
-		$query .= ")";
+		$query .= ") WITH OIDS";
 		
 		$this->sql_query($query);
 	}
@@ -851,10 +811,10 @@ class core_db_pdo_pgsql extends core_db {
 		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
 			return($res);
 		
-		$q = new core_db_select("information_schema.tables");
 		
+		$q = new core_db_select("pg_tables");
 		$where = array();
-		$where["table_name"] = $name;
+		$where["tablename"] = $name;
 		$q->where($where);
 		$this->query($q);
 		$res = $q->get_result();
@@ -967,43 +927,6 @@ class core_db_pdo_pgsql extends core_db {
 			$this->create_table("zone_col", $zone_col);
 		}
 
-	}
-	
-	/* gestion des transactions */
-	public function trans_begin($type=WF_TRANS_DEFERRED, $name=NULL) {
-		
-		/* type de transaction */
-		switch($type) {
-// 			case WF_TRANS_IMMEDIAT:
-// 				$type_str = "IMMEDIAT"; break;
-// 			
-// 			case WF_TRANS_DEFERRED:
-// 				$type_str = "DEFERRED"; break;
-// 				
-// 			case WF_TRANS_EXCLUSIF:
-// 				$type_str = "EXCLUSIF"; break;
-				
-			default:
-				$type_str = ""; break;
-		}
-		/* il y a un nom */
-		$name_str = $name == NULL ? "" : $name;
-		
-		/* req sql */
-		$query = "BEGIN $type_str TRANSACTION";
-// 		$this->sql_query($query);
-		
-		return(TRUE);
-	}
-	
-	public function trans_cancel($name=NULL) {
-		/* req sql */
-// 		$this->sql_query("ROLLBACK");
-	}
-	
-	public function trans_commit($name=NULL) {
-		/* req sql */
-// 		$this->sql_query("COMMIT");
 	}
 	
 	private function safe_input($i) {

@@ -187,7 +187,7 @@ class core_session extends wf_agg {
 		/* modification de l'adresse en base + time update */
 		$q = new core_db_update("core_session");
 		$where = array(
-			"id" => $this->me["id"]
+			"id" => (int)$this->me["id"]
 		);
 		$update = array(
 			"remote_address" => $_SERVER["REMOTE_ADDR"],
@@ -249,7 +249,7 @@ class core_session extends wf_agg {
 		/* update les informations dans la bdd */
 		$q = new core_db_update("core_session");
 		$where = array(
-			"id" => $this->me["id"]
+			"id" => (int)$this->me["id"]
 		);
 		$update = array(
 			"session_id" => $this->generate_session_id(),
@@ -301,7 +301,7 @@ class core_session extends wf_agg {
 		/* modification de l'adresse en base + time update */
 		$q = new core_db_update("core_session");
 		$where = array(
-			"id" => $this->me["id"]
+			"id" => (int)$this->me["id"]
 		);
 		$update = array(
 			"remote_address" => $_SERVER["REMOTE_ADDR"],
@@ -769,7 +769,7 @@ class core_session extends wf_agg {
 		/* update les informations dans la bdd */
 		$q = new core_db_update("core_session");
 		$where = array(
-			"id" => $this->me["id"]
+			"id" => (int)$this->me["id"]
 		);
 		$update = array(
 			"session_data" => serialize($this->data)
