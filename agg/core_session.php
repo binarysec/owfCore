@@ -68,7 +68,7 @@ class core_session extends wf_agg {
 	
 		$struct = array(
 			"id" => WF_PRI,
-			"core_session_id" => WF_VARCHAR,
+			"core_session_id" => WF_INT,
 			"perm_name" => WF_VARCHAR,
 			"perm_value" => WF_VARCHAR
 		);
@@ -595,7 +595,7 @@ class core_session extends wf_agg {
 		$q->alias('a', 'core_session');
 		$q->alias('b', 'core_session_perm');
 		
-		$q->do_comp('a.id', '=', (int)$uid);
+		$q->do_comp('a.id', '==', (int)$uid);
 		$q->do_comp('a.id', '==', 'b.core_session_id');
 		$q->do_comp('b.perm_name', '=', $perm);
 		
@@ -644,7 +644,7 @@ class core_session extends wf_agg {
 		$q->fields("b.perm_name");
 		$q->fields("b.perm_value");
 		
-		$q->do_comp('a.id', '=', (int)$uid);
+		$q->do_comp('a.id', '==', (int)$uid);
 		$q->do_comp('a.id', '==', 'b.core_session_id');
 		
 		/* identifying the request */
