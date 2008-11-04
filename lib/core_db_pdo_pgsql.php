@@ -66,7 +66,7 @@ class core_db_pdo_pgsql extends core_db {
 			$user = $dbconf["user"];
 			$pass = $dbconf["pass"];
 			
-			$this->hdl = new PDO($dsn, $user, $pass);	
+			$this->hdl = new PDO($dsn, $user, $pass);
 		} 
 		catch (PDOException $e) {
 			print "PgSQL: " . $e->getMessage() . "<br/>";
@@ -284,6 +284,16 @@ class core_db_pdo_pgsql extends core_db {
 				
 			$res = $this->sql_query($query, $prepare_value);
 			$query_obj->result = $this->fetch_result($res);
+			
+#			$i = 0;
+#			foreach($query_obj->result as $result) {
+#				foreach($result as $k => $v) {
+#					if(gettype($v) == "resource") {
+#						$query_obj->result[$i][$k] = stream_get_contents($v);
+#					}
+#				}
+#				$i++;
+#			}
 		}
 		/* Select query */
 		if($query_obj->type == WF_ADV_SELECT) {
@@ -407,6 +417,16 @@ class core_db_pdo_pgsql extends core_db {
 			
 			$res = $this->sql_query($query, $prepare_value);
 			$query_obj->result = $this->fetch_result($res);
+			
+#			$i = 0;
+#			foreach($query_obj->result as $result) {
+#				foreach($result as $k => $v) {
+#					if(gettype($v) == "resource") {
+#						$query_obj->result[$i][$k] = stream_get_contents($v);
+#					}
+#				}
+#				$i++;
+#			}
 		}
 		/* Insert query */
 		else if($query_obj->type == WF_INSERT) {
@@ -428,7 +448,6 @@ class core_db_pdo_pgsql extends core_db {
 				array_push($prepare_value, $v);
 			}
 			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES ($val);";
-			
 			$this->sql_query($query, $prepare_value);
 		}
 		/* Insert query with ID */
@@ -775,7 +794,7 @@ class core_db_pdo_pgsql extends core_db {
 			$vir = TRUE;
 		}
 		
-		$query .= ") WITH OIDS";
+		$query .= ")";
 		
 		$this->sql_query($query);
 	}
