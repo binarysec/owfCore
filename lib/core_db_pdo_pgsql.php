@@ -60,8 +60,6 @@ class core_db_pdo_pgsql extends core_db {
 				$dsn .= ";host=".$dbconf["host"];
 			if($dbconf["port"])
 				$dsn .= ";port=".$dbconf["port"];
-			if($dbconf["unix_socket"])
-				$dsn .= ";unix_socket=".$dbconf["unix_socket"];
 				
 			$user = $dbconf["user"];
 			$pass = $dbconf["pass"];
@@ -252,7 +250,7 @@ class core_db_pdo_pgsql extends core_db {
 			if($query_obj->order != NULL) {
 				foreach($query_obj->order as $k => $v) {
 					if(!$order) {
-						$order = 'ORDER BY '.$k.'';
+						$order = 'ORDER BY '.$k;
 						if($v == WF_ASC)
 							$order .= ' ASC';
 						else
@@ -385,7 +383,7 @@ class core_db_pdo_pgsql extends core_db {
 			if($query_obj->order != NULL) {
 				foreach($query_obj->order as $k => $v) {
 					if(!$order) {
-						$order = 'ORDER BY '.$k.'';
+						$order = 'ORDER BY '.$k;
 						if($v == WF_ASC)
 							$order .= " ASC";
 						else
@@ -438,11 +436,11 @@ class core_db_pdo_pgsql extends core_db {
 			foreach($query_obj->arr as $k => $sv) {
 				$v = $this->safe_input($sv);
 				if(!$key) {
-					$key = ''.$k.'';
+					$key = $k;
 					$val .= '?';
 				}
 				else {
-					$key .= ', '.$k.'';
+					$key .= ', '.$k;
 					$val .= ', ?';
 				}
 				array_push($prepare_value, $v);
@@ -460,11 +458,11 @@ class core_db_pdo_pgsql extends core_db {
 			foreach($query_obj->arr as $k => $sv) {
 				$v = $this->safe_input($sv);
 				if(!$key) {
-					$key = ''.$k.'';
+					$key = $k;
 					$val .= '?';
 				}
 				else {
-					$key .= ', '.$k.'';
+					$key .= ', '.$k;
 					$val .= ', ?';
 				}
 				array_push($prepare_value, $v);
@@ -498,7 +496,7 @@ class core_db_pdo_pgsql extends core_db {
 			foreach($query_obj->arr as $k => $sv) {
 				$v = $this->safe_input($sv);
 				if(!$set)
-					$set .= ''.$k.' = ?';
+					$set .= $k.' = ?';
 				else
 					$set .= ', '.$k.' = ?';
 				array_push($prepare_value, $v);
@@ -614,7 +612,7 @@ class core_db_pdo_pgsql extends core_db {
 			if($query_obj->order != NULL) {
 				foreach($query_obj->order as $k => $v) {
 					if(!$order) {
-						$order = 'ORDER BY '.$k.'';
+						$order = 'ORDER BY '.$k;
 						if($v == WF_ASC)
 							$order .= ' ASC';
 						else
@@ -635,10 +633,10 @@ class core_db_pdo_pgsql extends core_db {
 			if($query_obj->group != NULL) {
 				foreach($query_obj->group as $k) {
 					if(!$group) {
-						$group = 'GROUP BY '.$k.'';
+						$group = 'GROUP BY '.$k;
 					}
 					else {
-						$group .= ', '.$k.'';
+						$group .= ', '.$k;
 					}
 				}
 			}
@@ -790,7 +788,7 @@ class core_db_pdo_pgsql extends core_db {
 				$pri_list[] = $k;
 					
 			if($vir == TRUE) $query .= ",";
-			$query .= ''.$k.' '.$this->get_struct_type($v);
+			$query .= $k.' '.$this->get_struct_type($v);
 			$vir = TRUE;
 		}
 		
@@ -813,7 +811,7 @@ class core_db_pdo_pgsql extends core_db {
 	}
 	
 	private function drop_table($name) {
-		$query = 'DROP TABLE '.$name.'';
+		$query = 'DROP TABLE '.$name;
 		$this->sql_query($query);
 		
 		/* remove the cache */
