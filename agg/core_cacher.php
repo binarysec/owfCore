@@ -92,8 +92,7 @@ class core_cacher_group {
 		$this->wf = $wf;
 		$this->name = $name;
 		$this->core_cacher = $this->wf->core_cacher();
-		
-		
+
 		/* load group */
 		$this->ref = $this->core_cacher->get(
 			"core_cacher_group_".$this->name
