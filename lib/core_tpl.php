@@ -134,9 +134,9 @@ class core_tpl {
 		
 		if(!$this->tpl_file)
 			return;
-		
+
 		if (!file_exists($this->cache_file) ||
-		     filemtime($this->tpl_file) > filemtime($this->cache_file)) {
+		     filemtime($this->tpl_file) >= filemtime($this->cache_file)) {
 				
 			$this->wf->create_dir($this->cache_file);
 			
