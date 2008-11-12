@@ -331,7 +331,7 @@ class web_framework {
 	 *
 	 * Function used to execute a share event
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function execute_hook($name, $args, $result=NULL) {
+	public function execute_hook($name, $args=NULL, $result=NULL) {
 		if(!$this->events[$name])
 			return(FALSE);
 			
