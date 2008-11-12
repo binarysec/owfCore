@@ -92,6 +92,7 @@ class core_tpl_compiler extends wf_agg {
 		'class_name'   => 'get_class',
 		'count'        => 'count',
 		'b64_dcode'    => 'base64_decode',
+		'escxml'       => 'htmlspecialchars'
 	);
 
 	private $allowed_in_var;
@@ -121,6 +122,10 @@ class core_tpl_compiler extends wf_agg {
 
 	public function register($name, $callback) {
 		$this->registered_generator[$name] = $callback;
+	}
+
+	public function add_modifier($name, $func) {
+		$this->modifiers[$name] = $func;
 	}
 
 	public function compile($tpl_name, $tpl_file, $tpl_cache, $ld=null, $rd=null, $php_exec, $allowed_func, $registered_generator) {
