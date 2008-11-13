@@ -781,7 +781,7 @@ class core_db_pdo_mysql extends core_db {
 			case WF_TIME:
 				return("INT NULL");
 			case WF_DATA:
-				return("BLOB");
+				return("LONGBLOB");
 			case WF_PRI:
 				return("INT NULL AUTO_INCREMENT");
 		}
