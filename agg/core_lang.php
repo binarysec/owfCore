@@ -117,6 +117,8 @@ class core_lang extends wf_agg {
 
 		$this->_core_session = $this->wf->core_session();
 		$this->_core_cacher = $this->wf->core_cacher();
+
+		$this->default = $this->resolv($this->wf->ini_arr["lang"]["default"]);
 	}
 	
 	public function set($lang) {
@@ -257,6 +259,22 @@ class core_lang extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_code() {
 		return($this->current["code"]);
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get default lang information
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_default() {
+		return($this->default);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get current code
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_default_code() {
+		return($this->default["code"]);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
