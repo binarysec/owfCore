@@ -86,11 +86,12 @@ class core_tpl_compiler extends wf_agg {
 		'escurl'       => 'rawurlencode',
 		'capitalize'   => 'ucwords',
 		'stripslashes' => 'stripslashes',
-		'entities'     => 'htmlentities',
+		'entities'     =>  array('htmlentities', 'ENT_COMPAT', '"UTF-8"'),
 		'type'         => 'gettype',
 		'nl2br'        => 'nl2br',
 		'class_name'   => 'get_class',
 		'count'        => 'count',
+		'b64_encode'   => 'base64_encode',
 		'b64_dcode'    => 'base64_decode',
 		'escxml'       => 'htmlspecialchars'
 	);
@@ -382,9 +383,19 @@ class core_tpl_compiler extends wf_agg {
 			}
 			
 			$targs = array($res);
-			
-			if(isset($this->modifiers[$m[1]])) {
-				$res = $this->modifiers[$m[1]].'('.$res.')';
+
+			$mod = $this->modifiers[$m[1]];
+			if(isset($mod) && (is_array($mod) && count($mod) > 0 || !is_array($mod))) {
+				if(is_array($mod)) {
+					$res = $mod[0].'('.$res;
+					for($i=1; $i<count($mod); $i++) {
+						$res .= ', '.$mod[$i];
+					}
+					$res .= ')';
+				}
+				else {
+					$res = $this->modifiers[$m[1]].'('.$res.')';
+				}
 			}
 			else {
 				throw new wf_exception(

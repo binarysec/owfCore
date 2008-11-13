@@ -434,7 +434,7 @@ class web_framework {
 		$n_route = "/$lang_code$route";
 	
 		return(
-			"/index.php".
+			$this->ini_arr["common"]["base"]."/index.php".
 			$n_route
 		);
 	}
