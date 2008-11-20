@@ -93,7 +93,12 @@ class core_tpl_compiler extends wf_agg {
 		'count'        => 'count',
 		'b64_encode'   => 'base64_encode',
 		'b64_dcode'    => 'base64_decode',
-		'escxml'       => 'htmlspecialchars'
+		'escxml'       => 'htmlspecialchars',
+		'utf8_decode'  => 'utf8_decode',
+		'strlen'       => 'strlen',
+		'ts2datetime'  => array('$t->wf->core_datetime()->convert', 'CORE_DATETIME_TIMESTAMP', 'CORE_DATETIME_DB_DT'),
+		'ts2date'      => array('$t->wf->core_datetime()->convert', 'CORE_DATETIME_TIMESTAMP', 'CORE_DATETIME_DB_D'),
+		'ts2time'      => array('$t->wf->core_datetime()->convert', 'CORE_DATETIME_TIMESTAMP', 'CORE_DATETIME_DB_T')
 	);
 
 	private $allowed_in_var;
@@ -113,9 +118,11 @@ class core_tpl_compiler extends wf_agg {
 		$this->wf = $wf;
 		
 		$this->allowed_in_var  = array_merge($this->vartype, $this->op);
-		$this->allowed_in_expr = array_merge($this->vartype, $this->op);
+		$this->allowed_in_expr = array_merge($this->vartype, $this->assign_op, $this->op);
 		$this->allowed_in_foreach = array_merge($this->vartype, array(T_AS, T_DOUBLE_ARROW));
 		$this->alowed_assign = array_merge($this->vartype, $this->assign_op, $this->op);
+
+		$this->register('ts2datetime', array($this, 'tpl_ts2datetime'));
 	}
 
 
@@ -513,6 +520,32 @@ class core_tpl_compiler extends wf_agg {
 
 	public function func_assign(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$t->vars[\''.$argv[0].'\'] = '.$argv[1].';');
+	}
+
+	public function tpl_ts2datetime($args) {
+		$a = $this->parse_tpl_args($args);
+		$ts     = $args[0];
+		$format = $args[1];
+		return('<?php echo date('.$format.', '.$ts.'); ?>');
+	}
+
+	private function parse_tpl_var($var) {
+		return(trim($var, '"\' '));
+	}
+
+	public function parse_tpl_args($args) {
+		$params = array();
+		foreach($args as $arg) {
+			$parts = explode(',', $arg);
+			foreach($parts as $part) {
+				$atoms = explode('=', $part);
+				if(count($atoms) == 1)
+					$params[] = $this->parse_tpl_var($atoms[0]);
+				else if(count($atoms) == 2)
+					$params[$this->parse_tpl_var($atoms[0])] = $this->parse_tpl_var($atoms[1]);
+			}
+		}
+		return($params);
 	}
 	
 	public function generator(core_tpl_compiler $tpl_compiler, $name, $argv) {

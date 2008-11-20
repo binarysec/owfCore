@@ -424,7 +424,7 @@ class core_session extends wf_agg {
 				&$data["permissions"]
 			);
 		}
-		
+		return(TRUE);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -455,6 +455,7 @@ class core_session extends wf_agg {
 		/* sinon on ajoute l'utilisateur */
 		$q = new core_db_insert("core_session", $insert);
 		$this->wf->db->query($q);
+		$uid = $this->wf->db->get_last_insert_id('core_session_id_seq');
 
 		/* remove the user search cache */
 		$cvar = "core_session_user_email_".$data["email"];
@@ -470,8 +471,9 @@ class core_session extends wf_agg {
 				&$data["permissions"]
 			);
 		}
-		
-		return(TRUE);
+
+		/* retourne l'identifiant de l'utisateur créé */
+		return($uid);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
