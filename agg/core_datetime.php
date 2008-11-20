@@ -61,6 +61,13 @@ class core_datetime extends wf_agg {
 		return($this->format($fout));
 	}
 
+	public function daydiff($str, $fin) {
+		$ts = $this->convert($str, $fin, CORE_DATETIME_TIMESTAMP);
+		if(!$ts)
+			return(null);
+		return(intval((time() - $ts) / 3600 / 24));
+	}
+
 	public function read($str, $format) {
 		$this->year   = 0;
 		$this->month  = 0;
