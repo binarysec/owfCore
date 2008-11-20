@@ -122,6 +122,8 @@ class core_tpl_compiler extends wf_agg {
 		$this->allowed_in_foreach = array_merge($this->vartype, array(T_AS, T_DOUBLE_ARROW));
 		$this->alowed_assign = array_merge($this->vartype, $this->assign_op, $this->op);
 
+		/* load global tpl functions */
+		$this->load_tpl_funcs();
 		$this->register('ts2datetime', array($this, 'tpl_ts2datetime'));
 	}
 
@@ -560,4 +562,25 @@ class core_tpl_compiler extends wf_agg {
 		}
 	}
 
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * This function will load global tpl functions
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private function load_tpl_funcs() {
+		foreach($this->wf->modules as $mod => $mod_infos) {
+
+			/* check if module has hookable event */
+			if(method_exists($mod_infos[8], "core_tpl_generator")) {
+				$funcs = $mod_infos[8]->core_tpl_generator();
+
+				foreach($funcs as $name => $func) {
+					$insert = array(
+						$func["agg"],
+						$func["method"]
+					);
+					$this->registered_generator[$name] = $insert;
+				}
+			}
+		}
+	}
 }

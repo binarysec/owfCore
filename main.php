@@ -290,7 +290,7 @@ class web_framework {
 				$obj->get_version(),
 				$obj->get_authors(),
 				$obj->get_depends(),
-				&$obj
+				$obj
 			);
 			
 			/* check if module has hookable event */
@@ -304,7 +304,6 @@ class web_framework {
 					}
 				}
 			}
-			
 		}
 	}
 	
