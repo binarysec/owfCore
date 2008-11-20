@@ -352,16 +352,18 @@ class core_pref extends wf_agg {
 			
 		}
 		else {
-			$q = new core_db_update("core_pref_group");
-			$where = array();
-			$where["name"] = $name;
-			$insert = array();
-			if($description)
+			if($description) {
+				$q = new core_db_update("core_pref_group");
+				$where = array();
+				$where["name"] = $name;
+				$insert = array();
+			
 				$insert["description"] = base64_encode($description);
-			$q->where($where);
-			$q->insert($insert);
-			$this->wf->db->query($q);
-
+				$q->where($where);
+				$q->insert($insert);
+				$this->wf->db->query($q);
+			}
+			
 			$id = $data[0]["id"];
 
 			/* store into the short cache */
@@ -380,6 +382,8 @@ class core_pref extends wf_agg {
 					$insert["description"] :
 					$data[0]["description"]
 			);
+			
+			
 		}
 
 		$this->store_context($this->contexts[$name], &$name);
