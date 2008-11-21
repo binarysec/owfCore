@@ -95,10 +95,7 @@ class core_tpl_compiler extends wf_agg {
 		'b64_dcode'    => 'base64_decode',
 		'escxml'       => 'htmlspecialchars',
 		'utf8_decode'  => 'utf8_decode',
-		'strlen'       => 'strlen',
-		'ts2datetime'  => array('$t->wf->core_datetime()->convert', 'CORE_DATETIME_TIMESTAMP', 'CORE_DATETIME_DB_DT'),
-		'ts2date'      => array('$t->wf->core_datetime()->convert', 'CORE_DATETIME_TIMESTAMP', 'CORE_DATETIME_DB_D'),
-		'ts2time'      => array('$t->wf->core_datetime()->convert', 'CORE_DATETIME_TIMESTAMP', 'CORE_DATETIME_DB_T')
+		'strlen'       => 'strlen'
 	);
 
 	private $allowed_in_var;
@@ -124,7 +121,7 @@ class core_tpl_compiler extends wf_agg {
 
 		/* load global tpl functions */
 		$this->load_tpl_funcs();
-		$this->register('ts2datetime', array($this, 'tpl_ts2datetime'));
+		$this->register('date', array($this, 'tpl_date'));
 	}
 
 
@@ -524,7 +521,7 @@ class core_tpl_compiler extends wf_agg {
 		return('$t->vars[\''.$argv[0].'\'] = '.$argv[1].';');
 	}
 
-	public function tpl_ts2datetime($args) {
+	public function tpl_date($args) {
 		$a = $this->parse_tpl_args($args);
 		$ts     = $args[0];
 		$format = $args[1];
