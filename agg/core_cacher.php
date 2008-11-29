@@ -177,7 +177,7 @@ class core_cacher extends wf_agg {
 		$this->namespace = $this->wf->modkey;
 
 		/* enable the cache if possible */
-		$this->enable();
+		$this->enable();$this->clear();
 	}
 
 	/**
@@ -263,14 +263,16 @@ class core_cacher extends wf_agg {
 	public function enable() {
 		/* check if APC is available */
 		if(function_exists("apc_sma_info")) {
-			$this->system = new core_cacher_apc(&$wf);
+			/* edited by keo on 29/11/2008 15/44 : $this->wf instead of &$wf */
+			$this->system = new core_cacher_apc($this->wf);
 		}
 		/* check if eAccelerator is available
 		   eAccelerator can have been compiled without the shared memory
 		   support (by default for security purpose), so we test
 		   eaccelerator_get */
 		else if(function_exists("eaccelerator_get")) {
-			$this->system = new core_cacher_eaccelerator(&$wf);
+			/* edited by keo on 29/11/2008 15/44 : $this->wf instead of &$wf */
+			$this->system = new core_cacher_eaccelerator($this->wf);
 		}
 		/* no cache system driver */
 		else {
