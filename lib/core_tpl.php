@@ -153,9 +153,10 @@ class core_tpl {
 		}
 		
 		$t = $this;
-		$t->vars['_URI']      = $this->a_core_request->get_uri();
-		$t->vars['_GHOST']    = $this->a_core_request->get_ghost();
-		$t->vars['_BACK_URL'] = base64_encode($_SERVER["REQUEST_URI"]);
+		$t->vars['_URI']          = $this->a_core_request->get_uri();
+		$t->vars['_GHOST']        = $this->a_core_request->get_ghost();
+		$t->vars['_BACK_URL']     = base64_encode($_SERVER["REQUEST_URI"]);
+		$t->vars['_CURRENT_TIME'] = time();
 		require($this->cache_file);
 	}
 

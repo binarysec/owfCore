@@ -79,7 +79,7 @@ class core_request extends wf_agg {
 				"Session destroyed"
 			);
 		}
-		
+
 		/* chargement du canal et des filtres */
 		$this->filters = $_GET["f"];
 		
@@ -89,7 +89,7 @@ class core_request extends wf_agg {
 		
 		/* get uid */
 		$uid = &$this->a_core_session->me["id"];
-	
+
 		/* special handle form anon session */
 		if($uid == -1) {
 			$display_login = FALSE;
@@ -99,17 +99,18 @@ class core_request extends wf_agg {
 						$display_login = TRUE;
 				}
 			}
+
 			/* do we need to display login ? */
 			if($display_login)
 				$this->wf->display_login(
 					"You don't have enought of permissions"
 				);
 		}
-		
+
 		$display_login = $this->a_core_session->check_permissions(
 			$need, NULL, NULL, &$need_arranged
 		);
-		
+
 		/* do we need to display login ? */
 		if(!$display_login)
 			$this->wf->display_login(

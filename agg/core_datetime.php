@@ -24,7 +24,7 @@
 define('CORE_DATETIME_DB_D',      1);
 define('CORE_DATETIME_DB_T',      2);
 define('CORE_DATETIME_DB_DT',     3);
-define('CORE_DATETIME_TIMESTAMP', 4);
+define('CORE_DATETIME_TS',        4);
 
 class core_datetime extends wf_agg {
 
@@ -65,7 +65,7 @@ class core_datetime extends wf_agg {
 		$ts = $this->convert($str, $fin, CORE_DATETIME_TIMESTAMP);
 		if(!$ts)
 			return(null);
-		return(intval((time() - $ts) / 3600 / 24));
+		return(floor((time() - $ts) / 3600 / 24));
 	}
 
 	public function read($str, $format) {
@@ -111,7 +111,7 @@ class core_datetime extends wf_agg {
 				break;
 
 			/* TIMESTAMP */
-			case CORE_DATETIME_TIMESTAMP:
+			case CORE_DATETIME_TS:
 				$ok = true;
 				$t = getdate(intval($str));
 				$this->year   = $t['year'];
@@ -162,7 +162,7 @@ class core_datetime extends wf_agg {
 				break;
 
 			/* TIMESTAMP */
-			case CORE_DATETIME_TIMESTAMP:
+			case CORE_DATETIME_TS:
 				$str = (string) mktime(
 					$this->hour,
 					$this->minute,

@@ -565,7 +565,6 @@ class core_tpl_compiler extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function load_tpl_funcs() {
 		foreach($this->wf->modules as $mod => $mod_infos) {
-
 			/* check if module has hookable event */
 			if(method_exists($mod_infos[8], "core_tpl_generator")) {
 				$funcs = $mod_infos[8]->core_tpl_generator();
