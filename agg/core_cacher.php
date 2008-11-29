@@ -177,7 +177,7 @@ class core_cacher extends wf_agg {
 		$this->namespace = $this->wf->modkey;
 
 		/* enable the cache if possible */
-		$this->enable();$this->clear();
+		$this->enable();
 	}
 
 	/**
