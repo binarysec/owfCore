@@ -84,45 +84,45 @@ class core_session extends wf_agg {
 			"core_session"
 		);
 		
-		$this->user_add(array(
-			"email" => "mv@binarysec.com",
-			"name" => "Michael VERGOZ",
-			"password" => "lala",
-			"permissions" => array("session:god"),
-			"data" => array(),
-		));
-		
-		$this->user_add(array(
-			"email" => "td@binarysec.com",
-			"name" => "Thomas DIJOUX",
-			"password" => "lala",
-			"permissions" => array("session:god"),
-			"data" => array(),
-		));
-		
-		$this->user_add(array(
-			"email" => "op@binarysec.com",
-			"name" => "Olivier PASCAL",
-			"password" => "lala",
-			"permissions" => array("session:god"),
-			"data" => array(),
-		));
-
-		$this->user_add(array(
-			"email" => "cg@binarysec.com",
-			"name" => "Christelle Grimaud",
-			"password" => "lala",
-			"permissions" => array("session:god"),
-			"data" => array(),
-		));
-
-		$this->user_add(array(
-			"email" => "mp@binarysec.com",
-			"name" => "Martial Padié",
-			"password" => "lala",
-			"permissions" => array("session:god"),
-			"data" => array(),
-		));
+// 		$this->user_add(array(
+// 			"email" => "mv@binarysec.com",
+// 			"name" => "Michael VERGOZ",
+// 			"password" => "lala",
+// 			"permissions" => array("session:god"),
+// 			"data" => array(),
+// 		));
+// 		
+// 		$this->user_add(array(
+// 			"email" => "td@binarysec.com",
+// 			"name" => "Thomas DIJOUX",
+// 			"password" => "lala",
+// 			"permissions" => array("session:god"),
+// 			"data" => array(),
+// 		));
+// 		
+// 		$this->user_add(array(
+// 			"email" => "op@binarysec.com",
+// 			"name" => "Olivier PASCAL",
+// 			"password" => "lala",
+// 			"permissions" => array("session:god"),
+// 			"data" => array(),
+// 		));
+// 
+// 		$this->user_add(array(
+// 			"email" => "cg@binarysec.com",
+// 			"name" => "Christelle Grimaud",
+// 			"password" => "lala",
+// 			"permissions" => array("session:god"),
+// 			"data" => array(),
+// 		));
+// 
+// 		$this->user_add(array(
+// 			"email" => "mp@binarysec.com",
+// 			"name" => "Martial Padié",
+// 			"password" => "lala",
+// 			"permissions" => array("session:god"),
+// 			"data" => array(),
+// 		));
 		
 		/* registre session preferences group */
 		$this->pref_session = $this->_core_pref->register_group(
@@ -161,15 +161,31 @@ class core_session extends wf_agg {
 		if($data)
 			$this->me = $data;
 		else {
+			/* begin: added by keo on 29/11/2008 10:17 */
+			/* bug when no session id is found */
+			if(!$session) {
+				if($this->wf->ini_arr["session"]["allow_anonymous"]) {
+					$this->me = array(
+						"id" => -1,
+						"remote_address" => $_SERVER["REMOTE_ADDR"]
+					);
+					return(CORE_SESSION_VALID);
+				}
+				else {
+					return(CORE_SESSION_USER_UNKNOWN);
+				}
+			}
+			/* end: added by keo */
+
 			$q = new core_db_select("core_session");
 			$where = array(
 				"session_id" => $session
 			);
-	
+
 			$q->where($where);
 			$this->wf->db->query($q);
 			$res = $q->get_result();
-			
+
 			/* aucune session de disponible */
 			if(!$res[0]) {
 				if($this->wf->ini_arr["session"]["allow_anonymous"]) {
@@ -323,6 +339,10 @@ class core_session extends wf_agg {
 		$this->data = unserialize($this->me["session_data"]);
 		if(!$this->data)
 			$this->data = array();
+
+		/* invalide user session cache */
+		$this->cache->delete("user_by_session_".$this->me["session_id"]);
+		$this->cache->delete("user_perms_".(int)$this->me["id"]);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -640,22 +660,31 @@ class core_session extends wf_agg {
 			$uid = $this->me["id"];
 		if(!is_array($ask))
 			$ask = array();
-		
+
 		/* cache variable */
 		$cvar = "user_perms_$uid";
 		$used = array();
 		
 		/* create the request object */
 		$q = new core_db_adv_select();
-		
-		$q->alias('a', 'core_session');
+
+		/* begin: added by keo on 29/11/2008 12:08 */
+		/* anonymous sessions don't have session in db */
+		if($uid != -1)
+			$q->alias('a', 'core_session');
+		/* end: added by keo */
 		$q->alias('b', 'core_session_perm');
-		
+
 		$q->fields("b.perm_name");
 		$q->fields("b.perm_value");
-		
-		$q->do_comp('a.id', '==', (int)$uid);
-		$q->do_comp('a.id', '==', 'b.core_session_id');
+
+		/* begin: added by keo on 29/11/2008 12:08 */
+		/* anonymous sessions don't have session in db */
+		if($uid != -1) {
+			$q->do_comp('a.id', '==', (int)$uid);
+			$q->do_comp('a.id', '==', 'b.core_session_id');
+		}
+		/* end: added by keo */
 		
 		/* identifying the request */
 		$request = NULL;
@@ -666,6 +695,9 @@ class core_session extends wf_agg {
 			$request .= $perms;
 		}
 		else if(is_array($perms)) {
+			/* begin: added by keo on 29/11/2008 11:39 */
+			$q->do_open();
+			/* end: added by keo */
 			for($a=0; $a<count($perms); $a++) {
 				$kp = &$perms[$a];
 				if($a > 0 && !$use_and)
@@ -676,6 +708,9 @@ class core_session extends wf_agg {
 				$used[$kp] = FALSE;
 				$request .= $kp;
 			}
+			/* begin: added by keo on 29/11/2008 11:39 */
+			$q->do_close();
+			/* end: added by keo */
 		}
 
 		/* generate the cvar corresponding to the request */
@@ -693,7 +728,7 @@ class core_session extends wf_agg {
 		/* execute request */
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		
+
 		$tab = array();
 		
 		/* construct tab perm */
@@ -701,10 +736,10 @@ class core_session extends wf_agg {
 			$tab[$lres["b.perm_name"]] = $lres["b.perm_value"] == NULL ? 
 				TRUE : $lres["b.perm_value"];
 		}
-		
+
 		/* merge known & unknown */
 		$data = array_merge($used, $tab);
-		
+
 		/* merge information */
 		if(!is_array($this->perms_cache[$cvar]))
 			$this->perms_cache[$cvar] = &$data;
@@ -722,7 +757,7 @@ class core_session extends wf_agg {
 		
 		if(count($res) <= 0)
 			return(NULL);
-			
+
 		return($this->perms_cache[$cvar]);
 	}
 
@@ -733,7 +768,7 @@ class core_session extends wf_agg {
 	public function check_permissions($need, $uid=NULL, $is=NULL, $need_arranged=NULL) {
 		if(!is_array($need_arranged))
 			$need_arranged = array();
-			
+
 		/* Get information to if user is privileged */
 		$perm = $this->user_get_permissions(
 			&$uid,
@@ -741,7 +776,7 @@ class core_session extends wf_agg {
 			TRUE,
 			&$need_arranged
 		);
-		
+
 		if(!$perm) {
 			$is = $this->user_get_permissions(
 				&$uid, 

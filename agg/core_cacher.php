@@ -82,6 +82,7 @@ class core_cacher_group {
 	private $ref = array();
 	private $ref_update = FALSE;
 	private $core_cacher;
+	private $group;
 	
 	/**
 	 * Constructor
@@ -92,11 +93,10 @@ class core_cacher_group {
 		$this->wf = $wf;
 		$this->name = $name;
 		$this->core_cacher = $this->wf->core_cacher();
+		$this->group = "core_cacher_group_".$this->name;
 
 		/* load group */
-		$this->ref = $this->core_cacher->get(
-			"core_cacher_group_".$this->name
-		);
+		$this->ref = $this->core_cacher->get($this->group);
 	}
 	
 	/**
@@ -107,7 +107,7 @@ class core_cacher_group {
 	public function __destruct() {
 		if($this->ref_update) {
 			$this->core_cacher->store(
-				"core_cacher_group_".$this->name,
+				$this->group,
 				$this->ref
 			);
 		}
@@ -122,7 +122,7 @@ class core_cacher_group {
 	public function store($var, $val, $timeout=NULL) {
 		$this->ref[$var] = TRUE;
 		$this->ref_update = TRUE;
-		return($this->core_cacher->store($var, $val, $timeout));
+		return($this->core_cacher->store($this->group.'_'.$var, $val, $timeout));
 	}
 
 	/**
@@ -132,7 +132,7 @@ class core_cacher_group {
 	 * @return The cached value
 	 */
 	public function get($var) {
-		return($this->core_cacher->get($var));
+		return($this->core_cacher->get($this->group.'_'.$var));
 	}
 
 	/**
@@ -140,7 +140,7 @@ class core_cacher_group {
 	 * @param $var The key
 	 */
 	public function delete($var) {
-		return($this->core_cacher->delete($var));
+		return($this->core_cacher->delete($this->group.'_'.$var));
 	}
 
 	/**
@@ -148,7 +148,7 @@ class core_cacher_group {
 	 */
 	public function clear() {
 		foreach($this->ref as $key => $val) {
-			$this->core_cacher->delete($key);
+			$this->core_cacher->delete($this->group.'_'.$key);
 		}
 		$this->ref_update = TRUE;
 		return(TRUE);
@@ -177,7 +177,7 @@ class core_cacher extends wf_agg {
 		$this->namespace = $this->wf->modkey;
 
 		/* enable the cache if possible */
-		$this->enable();
+		$this->enable();$this->clear();
 	}
 
 	/**
