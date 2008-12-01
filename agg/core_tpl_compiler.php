@@ -121,7 +121,6 @@ class core_tpl_compiler extends wf_agg {
 
 		/* load global tpl functions */
 		$this->load_tpl_funcs();
-		$this->register('date', array($this, 'tpl_date'));
 	}
 
 
@@ -491,20 +490,24 @@ class core_tpl_compiler extends wf_agg {
 		return('$_lang = $t->wf->core_lang()->get_context("tpl/'.$tpl_name.'");');
 	}
 
+	/* add js file */
 	public function func_js(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$this->wf->core_html()->add_js('.$argv[0].');');
 	}
 
+	/* add css file */
 	public function func_css(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$this->wf->core_html()->add_css('.$argv[0].');');
 	}
 
+	/* linker */
 	public function func_link(core_tpl_compiler $tpl_compiler, $argv) {
 		$args = $argv[0];
 		if(isset($argv[1])) $args .= ', null, '.$argv[1];
 		return('echo $this->wf->linker('.$args.');');
 	}
-	
+
+	/* translate */
 	public function func_lang(core_tpl_compiler $tpl_compiler, $argv) {
 		$buf_args = 'array(';
 		foreach($argv as $v)
@@ -513,19 +516,35 @@ class core_tpl_compiler extends wf_agg {
 		return('echo $_lang->ts('.$buf_args.');');
 	}
 
+	/* alternating text */
 	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
 	}
 
-	public function func_assign(core_tpl_compiler $tpl_compiler, $argv) {
+	/* assign */
+	public function func_set(core_tpl_compiler $tpl_compiler, $argv) {
 		return('$t->vars[\''.$argv[0].'\'] = '.$argv[1].';');
 	}
 
-	public function tpl_date($args) {
-		$a = $this->parse_tpl_args($args);
-		$ts     = $args[0];
-		$format = $args[1];
-		return('<?php echo date('.$format.', '.$ts.'); ?>');
+	/* format date */
+	public function func_date(core_tpl_compiler $tpl_compiler, $argv) {
+		return('echo date('.$argv[1].', '.$argv[0].');');
+	}
+
+	/* increment var */
+	public function func_inc(core_tpl_compiler $tpl_compiler, $argv) {
+		return('$t->vars['.$argv[0].']++;');
+	}
+
+	/* cut var */
+	public function func_cut(core_tpl_compiler $tpl_compiler, $argv) {
+		$etc = !$argv[2] ? 'if(strlen('.$argv[0].') > '.$argv[1].') echo \'(...)\';' : '';
+		return('echo substr('.$argv[0].', 0, '.$argv[1].'); '.$etc);
+	}
+
+	/* random value */
+	public function func_rand(core_tpl_compiler $tpl_compiler, $argv) {
+		return('echo rand('.$argv[0].', '.$argv[1].')');
 	}
 
 	private function parse_tpl_var($var) {
@@ -579,4 +598,5 @@ class core_tpl_compiler extends wf_agg {
 			}
 		}
 	}
+
 }
