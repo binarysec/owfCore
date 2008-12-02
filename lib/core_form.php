@@ -190,7 +190,7 @@ abstract class core_form_element {
 
 class core_form_hidden extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'hidden';
 		$this->required = true;
@@ -212,7 +212,7 @@ class core_form_hidden extends core_form_element {
 
 class core_form_submit extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'submit';
 	}
@@ -238,7 +238,7 @@ class core_form_submit extends core_form_element {
 
 class core_form_reset extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'reset';
 	}
@@ -264,7 +264,7 @@ class core_form_reset extends core_form_element {
 
 class core_form_text extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'text';
 		$this->required = true;
@@ -293,7 +293,7 @@ class core_form_text extends core_form_element {
 
 class core_form_password extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'password';
 		$this->required = true;
@@ -322,7 +322,7 @@ class core_form_password extends core_form_element {
 
 class core_form_textarea extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->required = true;
 	}
@@ -348,7 +348,7 @@ class core_form_textarea extends core_form_element {
 
 class core_form_button extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'button';
 	}
@@ -374,7 +374,7 @@ class core_form_button extends core_form_element {
 
 class core_form_select extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->required = true;
 	}
@@ -400,7 +400,8 @@ class core_form_select extends core_form_element {
 			if(is_array($group)) {
 				$buf .= '<optgroup label="'.$label.'">';	
 				foreach($group as $value => $name) {
-					if($value == $this->selected)
+					if(!is_array($this->selected) && $value == $this->selected
+					||  is_array($this->selected) && in_array($value, $this->selected))
 						$selected = ' selected="selected"';
 					else
 						$selected = '';
@@ -415,10 +416,11 @@ class core_form_select extends core_form_element {
 				$buf .= '</optgroup>';
 			}
 			else {
-				if($label == $this->selected)
+				if(!is_array($this->selected) && $label == $this->selected
+				||  is_array($this->selected) && in_array($label, $this->selected))
 					$selected = ' selected="selected"';
 				else
-						$selected = '';
+					$selected = '';
 				$buf .= '<option
 				  name="'.$this->name.'[]"
 				  value="'.$label.'"
@@ -437,7 +439,7 @@ class core_form_select extends core_form_element {
 
 class core_form_multiselect extends core_form_select {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->multiple = 'multiple';
 	}
@@ -447,7 +449,7 @@ class core_form_multiselect extends core_form_select {
 
 class core_form_radio extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'radio';
 		$this->required = true;
@@ -471,19 +473,21 @@ class core_form_radio extends core_form_element {
 			$name .= '[]';
 
 		$buf = '';
-		foreach($this->options as $value => $label) {
-			if(is_array($this->selected)
-			&& in_array($value, $this->selected)
-			|| !is_array($this->selected)
-			&& $value == $this->selected)
-				$checked = ' checked="checked"';
-			else
-				$checked = '';
-			$buf .= '<input'.$attribs.'
-			  name="'.$name.'"
-			  value="'.$value.'"
-			  '.$checked.' />';
-			$buf .= $label;	
+		if($this->options) {
+			foreach($this->options as $value => $label) {
+				if(is_array($this->selected)
+				&& in_array($value, $this->selected)
+				|| !is_array($this->selected)
+				&& $value == $this->selected)
+					$checked = ' checked="checked"';
+				else
+					$checked = '';
+				$buf .= '<input'.$attribs.'
+				name="'.$name.'"
+				value="'.$value.'"
+				'.$checked.' />';
+				$buf .= $label.'<br />';	
+			}
 		}
 		return($buf);
 	}
@@ -493,7 +497,7 @@ class core_form_radio extends core_form_element {
 
 class core_form_checkbox extends core_form_radio {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->type = 'checkbox';
 	}
@@ -503,7 +507,7 @@ class core_form_checkbox extends core_form_radio {
 
 class core_form_ext extends core_form_element {
 
-	public function __construct($id) {
+	public function __construct($id = null) {
 		parent::__construct($id);
 		$this->required = true;
 	}
