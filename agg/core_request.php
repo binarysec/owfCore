@@ -103,7 +103,7 @@ class core_request extends wf_agg {
 			/* do we need to display login ? */
 			if($display_login)
 				$this->wf->display_login(
-					"You don't have enought of permissions"
+					"You don't have enough permissions"
 				);
 		}
 
@@ -114,7 +114,7 @@ class core_request extends wf_agg {
 		/* do we need to display login ? */
 		if(!$display_login)
 			$this->wf->display_login(
-				"You don't have enought of permissions"
+				"You don't have enough permissions"
 			);
 
 		/* terminate */
