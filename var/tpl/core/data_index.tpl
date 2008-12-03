@@ -12,7 +12,7 @@
 	<tbody>
 		{if $up_dir}
 			<tr class="cat">
-				<td class="icon"><img src="{link '/data/admin/img/icons/16x16/cat_open.png'}" alt="[FILE]" /></td>
+				<td class="icon"><img src="{link '/data/icons/16x16/cat_open.png'}" alt="[FILE]" /></td>
 					<td class="id title"><a href="{$up_dir}">..</a></td>
 					<td>-</td>
 					<td>-</td>
@@ -23,11 +23,11 @@
 			<tr class="cat">
 				<td class="icon">
 					{if $data['mimetype'] == 'httpd/unix-directory'}
-						<img src="{link '/data/admin/img/icons/16x16/cat_close.png'}" alt="[DIR]" />
+						<img src="{link '/data/icons/16x16/cat_close.png'}" alt="[DIR]" />
 					{elseif $data['mimetype'] == 'image/png' || $data['mimetype'] == 'image/gif' || $data['mimetype'] == 'image/jpeg'}
-						<img src="{link '/data/admin/img/icons/16x16/mime_image.png'}" alt="[DIR]" />
+						<img src="{link '/data/icons/16x16/mime_image.png'}" alt="[DIR]" />
 					{else}
-						<img src="{link '/data/admin/img/icons/16x16/mime_unknown.png'}" alt="[FILE]" />
+						<img src="{link '/data/icons/16x16/mime_unknown.png'}" alt="[FILE]" />
 					{/if}
 				</td>
 				<td class="id title"><a href="{$data['link']}">{$file}</a></td>
