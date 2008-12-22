@@ -290,7 +290,6 @@ class core_form_text extends core_form_element {
 
 }
 
-
 class core_form_password extends core_form_element {
 
 	public function __construct($id = null) {
@@ -486,7 +485,8 @@ class core_form_radio extends core_form_element {
 				name="'.$name.'"
 				value="'.$value.'"
 				'.$checked.' />';
-				$buf .= $label.'<br />';	
+				$buf .= $label;
+				$nuf .= ($this->orientation == 'horizontal') ? ' ' : '<br />';
 			}
 		}
 		return($buf);
