@@ -178,6 +178,7 @@ class core_cacher extends wf_agg {
 
 		/* enable the cache if possible */
 		$this->enable();
+		//$this->clear();
 	}
 
 	/**

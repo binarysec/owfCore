@@ -11,7 +11,7 @@
  *  passible des sanctions pénales prévues par la loi.   *
  *  Il est notamment strictement interdit de décompiler, *
  *  désassembler ce logiciel ou de procèder à des        *
- *  opération de "reverse engineering".                  *
+ *  opération de 'reverse engineering'.                  *
  *                                                       *
  *  Warning : this software product is protected by      *
  *  copyright law and international copyright treaties   *
@@ -21,64 +21,65 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-define("CORE_PROFILE_NUM",     900);
-define("CORE_PROFILE_BOOL",    902);
-define("CORE_PROFILE_VARCHAR", 903);
-define("CORE_PROFILE_DATA",    904);
-define("CORE_PROFILE_SELECT",  905);
+define('CORE_PROFILE_NUM',     900);
+define('CORE_PROFILE_BOOL',    902);
+define('CORE_PROFILE_VARCHAR', 903);
+define('CORE_PROFILE_DATA',    904);
+define('CORE_PROFILE_SELECT',  905);
 
 class core_profile_context {
 	public $wf;
-	
+
 	public $id;
 	public $create_time;
 	public $name;
 	public $description;
 	
-	private $variables = array();
+	private $fields = array();
+	private $values = array();
 	private $need_up = FALSE;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
 
 		$struct = array(
-			"id" => WF_PRI,
-			"create_time" => WF_INT,
-			"name" => WF_VARCHAR,
-			"description" => WF_VARCHAR
+			'id' => WF_PRI,
+			'create_time' => WF_INT,
+			'name' => WF_VARCHAR,
+			'description' => WF_VARCHAR
 		);
 		$this->wf->db->register_zone(
-			"core_profile",
-			"Profile",
+			'core_profile',
+			'Profile',
 			$struct
 		);
 		
 		$struct = array(
-			"id" => WF_PRI,
-			"create_time" => WF_INT,
-			"variable" => WF_VARCHAR,
-			"description" => WF_VARCHAR,
-			"profile_id" => WF_INT,
-			"type" => WF_INT,
-			"dft" => WF_DATA,
-			"serial" => WF_DATA
+			'id' => WF_PRI,
+			'create_time' => WF_INT,
+			'field' => WF_VARCHAR,
+			'description' => WF_VARCHAR,
+			'profile_id' => WF_INT,
+			'type' => WF_INT,
+			'dft' => WF_DATA,
+			'serial' => WF_DATA
 		);
 		$this->wf->db->register_zone(
-			"core_profile_field",
-			"Profile fields",
+			'core_profile_field',
+			'Profile fields',
 			$struct
 		);
 
 		$struct = array(
-			"id" => WF_PRI,
-			"variable" => WF_VARCHAR,
-			"profile_id" => WF_INT,
-			"session_id" => WF_INT,
-			"value" => WF_DATA
+			'id' => WF_PRI,
+			'field' => WF_VARCHAR,
+			'profile_id' => WF_INT,
+			'user_id' => WF_INT,
+			'value' => WF_DATA
 		);
 		$this->wf->db->register_zone(
-			"core_profile_value",
-			"Profile values",
+			'core_profile_value',
+			'Profile values',
 			$struct
 		);
 	}
@@ -98,120 +99,118 @@ class core_profile_context {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Register a new variable 
+	 * Register a new field 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function register($var, $description, $type, $dft, $serial=NULL) {
-		if($this->variables[$var])
-			return($this->variables[$var]["value"]);
+	public function register($field, $desc, $type, $dft, $serial=NULL) {
+		if($this->fields[$field])
+			return(true);
 			
-		$data = $this->db_find($var);
+		$data = $this->db_find_field($field);
 		if(!$data) {
 			$insert = array(
-				"create_time" => time(),
-				"variable" => $var,
-				"description" => base64_encode($description),
-				"profile_id" => $this->id
+				'create_time' => time(),
+				'field'       => $field,
+				'description' => base64_encode($desc),
+				'profile_id'  => $this->id
 			);
 
 			switch($type) {
 				case CORE_PROFILE_NUM:
-					$insert["type"] = CORE_PROFILE_NUM;
-					$insert["dft"] = $dft;
+					$insert['type'] = CORE_PROFILE_NUM;
+					$insert['dft']  = $dft;
 					break;
 					
 				case CORE_PROFILE_BOOL:
-					$insert["type"] = CORE_PROFILE_BOOL;
-					$insert["dft"] = $dft;
+					$insert['type'] = CORE_PROFILE_BOOL;
+					$insert['dft']  = $dft;
 					break;
 					
 				case CORE_PROFILE_VARCHAR:
-					$insert["type"] = CORE_PROFILE_VARCHAR;
-					$insert["dft"] = $dft;
+					$insert['type'] = CORE_PROFILE_VARCHAR;
+					$insert['dft']  = $dft;
 					break;
 				
 				case CORE_PROFILE_DATA:
-					$insert["type"] = CORE_PROFILE_DATA;
-					$insert["dft"] = $dft;
+					$insert['type'] = CORE_PROFILE_DATA;
+					$insert['dft']  = $dft;
 					break;
 				
 				default:
 					throw new wf_exception(
 						$this,
 						WF_EXC_PRIVATE,
-						"Preference type unknown for ".
-						$this->name.
-						"::$var"
+						'Preference type unknown for '.
+						$this->name.'::'.$field
 					);
 			}
-		
-			$q = new core_db_insert("core_profile_field", $insert);
+
+			$q = new core_db_insert('core_profile_field', $insert);
 			$this->wf->db->query($q);
 			
-			//$this->variables[$var] = $insert;
-			
+			$this->fields[$field] = $insert;
+
 			/* need cacher update */
 			$this->need_up = TRUE;
 		}
-		else if($description != $data["description"]) {
-			$q = new core_db_update("core_profile_field");
-			$where = array();
-			$where["variable"] = $var;
-			$where["profile_id"] = $this->id;
-			
+		else if($desc != $data['description']) {
+			$q = new core_db_update('core_profile_field');
+			$where = array(
+				'field'       => $field,
+				'profile_id'  => $this->id
+			);
+
 			$insert = array(
-				"description" => base64_encode($description)
+				'description' => base64_encode($desc)
 			);
 
 			$q->where($where);
 			$q->insert($insert);
 			$this->wf->db->query($q);
-			
-// 			if(!is_array($this->variables[$var]))
-// 				$this->variables[$var] = array();
-// 				
-// 			$this->variables[$var] = array_merge(
-// 				&$data,
-// 				&$insert
-// 			);
-// 
-// 			/* need cacher update */
-// 			$this->need_up = TRUE;
+
+			if(!is_array($this->fields[$field]))
+				$this->fields[$field] = array();
+
+			$this->fields[$field] = array_merge(
+				&$data,
+				&$insert
+			);
+
+ 			/* need cacher update */
+ 			$this->need_up = TRUE;
 		}
 		
-		//return($this->variables[$var]["value"]);
 		return(true);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Change the value of a variable 
+	 * Change the value of a field 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function set_value($var, $uid, $value) {
-		$ret = $this->db_find($var, $uid);
+	public function set_value($field, $uid, $value) {
+		$ret = $this->db_find_value($field, $uid);
 
 		$where = array(
-			"variable" => $var,
-			"profile_id" => $this->id,
-			"session_id" => $uid
+			'field'      => $field,
+			'profile_id' => $this->id,
+			'user_id'    => $uid
 		);
 
 		/* update database */
 		if($ret) {
-			$q = new core_db_update("core_profile_value");
-			$insert = array("value" => $value);
+			$q = new core_db_update('core_profile_value');
 			$q->where($where);
-			$q->insert($insert);
+			$q->insert(array('value' => $value));
 		}
 		else {
 			$q = new core_db_insert(
-				"core_profile_value",
-				array_merge($where, array("value" => $value))
+				'core_profile_value',
+				array_merge($where, array('value' => $value))
 			);
 		}
 		$this->wf->db->query($q);
 	
 		/* update short cache */
-		//$this->variables[$var]["value"] = $value;
+		$this->values[$field][$uid]['value'] = $value;
 		
 		/* need cacher update */
 		$this->need_up = TRUE;
@@ -223,68 +222,87 @@ class core_profile_context {
 	 *
 	 * Get a value
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function get_value($var, $uid) {
-		$ret = $this->db_find($var, $uid);
-		return($ret["value"]);
+	public function get_value($field, $uid) {
+		$ret = $this->db_find_value($field, $uid);
+		return($ret['value']);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Get the default value
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function get_default($var, $uid) {
-		$ret = $this->db_find($var, $uid);
-		return($ret["dft"]);
+	public function get_default($field, $uid) {
+		$ret = $this->db_find_value($field, $uid);
+		return($ret['dft']);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Get/load all fields
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function get_all() {
-		$q = new core_db_select("core_profile_field");
-		$where = array("profile_id" => (int)$this->id);
-		$q->where($where);
+	public function get_all_fields() {
+		$q = new core_db_select('core_profile_field');
+		$q->where(array('profile_id' => $this->id));
 		$this->wf->db->query($q);
 		$res = $q->get_result();
 
-// 		foreach($res as $info)
-// 			$this->variables[$info["variable"]] = $info;
+		foreach($res as $info) {
+			$this->fields[$info['field']] = $info;
+		}
 
 		/* need cacher update */
-// 		$this->need_up = TRUE;
+		$this->need_up = TRUE;
 		
-// 		return($this->variables);
+		return($this->fields);
+	}
 
-		$vars = array();
-		foreach($res as $info) {
-			$vars[$info["variable"]] = $info;
-		}
-		return($vars);
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Low level function to find a field
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private function db_find_field($field) {
+		if(is_array($this->fields[$field]))
+			return($this->fields[$field]);
+			
+		$q = new core_db_select('core_profile_field');
+		$q->where(array(
+			'field' => $field,
+			'profile_id' => $this->id
+		));
+		$this->wf->db->query($q);
+		$res = $q->get_result();
+
+		/* store short cache */
+		$this->fields[$field] = $res[0];
+
+		/* need cacher update */
+		$this->need_up = TRUE;
+
+		return($res[0]);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Low level function to find variable
+	 * Low level function to find a value
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function db_find($var, $uid = NULL) {
-// 		if(is_array($this->variables[$var]))
-// 			return($this->variables[$var]);
-			
-		$q = new core_db_select("core_profile_value");
-		$where = array();
-		$where["variable"] = $var;
-		$where["profile_id"] = $this->id;
-		if($uid) $where["session_id"] = $uid;
-		$q->where($where);
+	private function db_find_value($field, $uid) {
+		if(is_array($this->values[$field][$uid]))
+			return($this->values[$field][$uid]);
+
+		$q = new core_db_select('core_profile_value');
+		$q->where(array(
+			'field' => $field,
+			'profile_id' => $this->id,
+			'user_id' => $uid
+		));
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		
+
 		/* store short cache */
-// 		$this->variables[$var] = $res[0];
-// 		
-// 		/* need cacher update */
-// 		$this->need_up = TRUE;
+		$this->values[$field][$uid] = $res[0];
+
+		/* need cacher update */
+		$this->need_up = TRUE;
 
 		return($res[0]);
 	}
@@ -299,43 +317,43 @@ class core_profile extends wf_agg {
 		$this->_core_cacher = $wf->core_cacher();
 		
 		$struct = array(
-			"id" => WF_PRI,
-			"create_time" => WF_INT,
-			"name" => WF_VARCHAR,
-			"description" => WF_VARCHAR
+			'id' => WF_PRI,
+			'create_time' => WF_INT,
+			'name' => WF_VARCHAR,
+			'description' => WF_VARCHAR
 		);
 		$this->wf->db->register_zone(
-			"core_profile",
-			"Profile",
+			'core_profile',
+			'Profile',
 			$struct
 		);
 		
 		$struct = array(
-			"id" => WF_PRI,
-			"create_time" => WF_INT,
-			"variable" => WF_VARCHAR,
-			"description" => WF_VARCHAR,
-			"profile_id" => WF_INT,
-			"type" => WF_INT,
-			"dft" => WF_DATA,
-			"serial" => WF_DATA
+			'id' => WF_PRI,
+			'create_time' => WF_INT,
+			'field' => WF_VARCHAR,
+			'description' => WF_VARCHAR,
+			'profile_id' => WF_INT,
+			'type' => WF_INT,
+			'dft' => WF_DATA,
+			'serial' => WF_DATA
 		);
 		$this->wf->db->register_zone(
-			"core_profile_field",
-			"Profile fields",
+			'core_profile_field',
+			'Profile fields',
 			$struct
 		);
 
 		$struct = array(
-			"id" => WF_PRI,
-			"variable" => WF_VARCHAR,
-			"profile_id" => WF_INT,
-			"session_id" => WF_INT,
-			"value" => WF_DATA
+			'id' => WF_PRI,
+			'field' => WF_VARCHAR,
+			'profile_id' => WF_INT,
+			'user_id' => WF_INT,
+			'value' => WF_DATA
 		);
 		$this->wf->db->register_zone(
-			"core_profile_value",
-			"Profile values",
+			'core_profile_value',
+			'Profile values',
 			$struct
 		);
 	}
@@ -347,7 +365,7 @@ class core_profile extends wf_agg {
 	 * Register a new profile and return the object
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register_profile($name, $description=NULL, $lang_ctx=NULL) {
-		$cvar = "core_profile_RG_$name";
+		$cvar = 'core_profile_RG_'.$name;
 		
 		/* local and short cache */
 		if(is_object($this->contexts[$name]))
@@ -364,15 +382,15 @@ class core_profile extends wf_agg {
 		$data = $this->group_find($name);
 		if(!$data) {
 			$insert = array(
-				"create_time" => time(),
-				"name" => $name,
-				"description" => base64_encode($description),
+				'create_time' => time(),
+				'name' => $name,
+				'description' => base64_encode($description),
 			);
 		
-			$q = new core_db_insert_id("core_profile", "id", $insert);
+			$q = new core_db_insert_id('core_profile', 'id', $insert);
 			$this->wf->db->query($q);
 			$res = $q->get_result();
-			$id = $res["id"];
+			$id = $res['id'];
 			
 			$this->contexts[$name] = new core_profile_context(
 				$this->wf
@@ -380,26 +398,26 @@ class core_profile extends wf_agg {
 			
 			$this->contexts[$name]->id = (int)$id;
 			$this->contexts[$name]->create_time = 
-				(int)$insert["create_time"];
-			$this->contexts[$name]->name = $insert["name"];
+				(int)$insert['create_time'];
+			$this->contexts[$name]->name = $insert['name'];
 			$this->contexts[$name]->description = base64_decode(
-				$insert["description"]
+				$insert['description']
 			);
 		}
 		else {
 			if($description) {
-				$q = new core_db_update("core_profile");
+				$q = new core_db_update('core_profile');
 				$where = array();
-				$where["name"] = $name;
+				$where['name'] = $name;
 				$insert = array();
 			
-				$insert["description"] = base64_encode($description);
+				$insert['description'] = base64_encode($description);
 				$q->where($where);
 				$q->insert($insert);
 				$this->wf->db->query($q);
 			}
 			
-			$id = $data[0]["id"];
+			$id = $data[0]['id'];
 
 			/* store into the short cache */
 			$this->contexts[$name] = new core_profile_context(
@@ -409,13 +427,13 @@ class core_profile extends wf_agg {
 			/* update object information */
 			$this->contexts[$name]->id = (int)$id;
 			$this->contexts[$name]->create_time = 
-				(int)$data[0]["create_time"];
-			$this->contexts[$name]->name = $data[0]["name"];
+				(int)$data[0]['create_time'];
+			$this->contexts[$name]->name = $data[0]['name'];
 			
 			$this->contexts[$name]->description = base64_decode(
-				$insert["description"] ?
-					$insert["description"] :
-					$data[0]["description"]
+				$insert['description'] ?
+					$insert['description'] :
+					$data[0]['description']
 			);
 			
 			
@@ -431,7 +449,7 @@ class core_profile extends wf_agg {
 	 * Opaque function to store the cache context
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function store_context($obj, $name) {
-		$cvar = "core_profile_RG_$name";
+		$cvar = 'core_profile_RG_'.$name;
 		
 		/* store the objet into the cache */
 		unset($obj->wf);
@@ -449,13 +467,13 @@ class core_profile extends wf_agg {
 	 * Function used to find group
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function group_find($name=NULL, $id=NULL) {
-		$q = new core_db_select("core_profile");
+		$q = new core_db_select('core_profile');
 		$where = array();
 	
 		if($name)
-			$where["name"] = $name;
+			$where['name'] = $name;
 		if($id)
-			$where["id"] = $id;
+			$where['id'] = $id;
 			
 		$q->where($where);
 		$this->wf->db->query($q);
