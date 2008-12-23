@@ -98,8 +98,7 @@ class wfr_core_data extends wf_route_request {
 		if($file_time == $requested_time) {
 			$this->a_core_request->set_header(
 				$_SERVER['SERVER_PROTOCOL'].
-				" 304 Not Modified", 
-				$file_time
+				" 304 Not Modified"
 			);
 			$this->a_core_request->send_headers();
 			exit(0);
@@ -110,6 +109,7 @@ class wfr_core_data extends wf_route_request {
 			"Last-modified",
 			$file_time
 		);
+
 		$this->a_core_request->set_header(
 			"Content-type", 
 			$mime
@@ -118,11 +118,19 @@ class wfr_core_data extends wf_route_request {
 			"Content-length", 
 			filesize($used_file)
 		);
-// 		$this->a_core_request->set_header(
-// 			'Expires',
-// 			'Thu, 15 Apr 2010 20:00:00 GMT'
-// 		);
-
+		
+		/* Cache control by expires */
+		$mtime = filemtime($used_file)+3600;
+		$expires = date("D, d M Y H:i:s \G\M\T", $mtime);
+		$this->a_core_request->set_header(
+			"Expires",
+			$expires
+		);
+		$this->a_core_request->set_header(
+			"Cache-Control",
+			"max-age=3600"
+		);
+		
 		$this->a_core_request->send_headers();
 		
 		/* envoi le fichier */
