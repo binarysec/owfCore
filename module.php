@@ -65,7 +65,7 @@ class wfm_core extends wf_module {
 				WF_ROUTE_ACTION,
 				"data",
 				"show_data",
-				"Listing des données",
+				"Données statiques",
 				WF_ROUTE_HIDE,
 				array("session:anon")
 			),

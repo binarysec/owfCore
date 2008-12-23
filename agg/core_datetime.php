@@ -35,8 +35,11 @@ class core_datetime extends wf_agg {
 	public $minute;
 	public $second;
 
+	private $a_lang;
+
 	public function loader($wf) {
 		$this->wf = $wf;
+		$this->a_lang = $this->wf->core_lang()->get_context('core/datetime');
 	}
 
 	public function is_valid() {
@@ -174,6 +177,10 @@ class core_datetime extends wf_agg {
 				break;
 		}
 		return($str);
+	}
+
+	public function translate($str) {
+		return($this->a_lang->get($str));
 	}
 
 }

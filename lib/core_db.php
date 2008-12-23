@@ -181,7 +181,9 @@ class core_db_adv_select extends core_db_query {
 	public function do_and() {
 		array_push($this->cond_matrix, array(4));
 	}
-	public function do_comp($var, $sign, $val) {
+	/* keo on 11/12/2008 : param $val no longer required
+	   cause condition IS [NOT] NULL doens't require value */
+	public function do_comp($var, $sign, $val=null) {
 		array_push($this->cond_matrix, array(5, $var, $sign, $val));
 	}
 }

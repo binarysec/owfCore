@@ -501,6 +501,9 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_del($uid) {
+		/* add by keo on 03/12/2008 to invalid cache */
+		$user = $this->user_info($uid);
+
 		$q = new core_db_delete(
 			"core_session", 
 			array("id" => (int)$uid)
@@ -512,8 +515,12 @@ class core_session extends wf_agg {
 			array("core_session_id" => (int)$uid)
 		);
 		$this->wf->db->query($q);
-		
+
 		$this->cache->delete("user_perms_".(int)$uid);
+
+		/* add by keo on 03/12/2008 to invalid cache */
+		$cvar = "core_session_user_email_".$user["email"];
+		$this->cache->delete($cvar);
 		
 		return(TRUE);
 	}

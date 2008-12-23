@@ -528,7 +528,8 @@ class core_tpl_compiler extends wf_agg {
 
 	/* format date */
 	public function func_date(core_tpl_compiler $tpl_compiler, $argv) {
-		return('echo date('.$argv[1].', '.$argv[0].');');
+		$time = $argv[1] ? ', '.$argv[1] : '';
+		return('echo date('.$argv[0].$time.');');
 	}
 
 	/* increment var */

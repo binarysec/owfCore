@@ -763,9 +763,16 @@ class core_db_pdo_mysql extends core_db {
 				$cond = "$var <= ?";
 				array_push($prepare_values, $val);
 				break;
-			case '!=' :
+			case '!=':
 				$cond = "$var <> ?";
 				array_push($prepare_values,$val);
+				break;
+			/* added by keo on 11/12/2008 : IS NULL and IS NOT NULL conditions */
+			case '!':
+				$cond = "$var IS NULL";
+				break;
+			case '!!':
+				$cond = "$var IS NOT NULL";
 				break;
 		}
 		
