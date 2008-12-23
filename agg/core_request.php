@@ -34,11 +34,17 @@ class core_request extends wf_agg {
 		$this->a_core_session = $this->wf->core_session();
 		$this->a_core_route = $this->wf->core_route();
 		$this->a_core_html = $this->wf->core_html();
+
 	}
 
 	var $channel;
 	var $filters;
 	var $permissions = array();
+	
+	
+	public function __destruct() {
+		$this->send_headers();
+	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
@@ -48,6 +54,11 @@ class core_request extends wf_agg {
 		/* chargement du canal */
 		$this->channel = $this->a_core_route->get_channel(
 			$this->wf->get_rail()
+		);
+		
+		$this->set_header(
+			base64_decode("Q29tcG9zZWQtQnk="),
+			base64_decode("T3BlbldG")
 		);
 		
 		/* Check for real anonymous */
@@ -89,7 +100,7 @@ class core_request extends wf_agg {
 		
 		/* get uid */
 		$uid = &$this->a_core_session->me["id"];
-
+		
 		/* special handle form anon session */
 		if($uid == -1) {
 			$display_login = FALSE;
@@ -117,6 +128,8 @@ class core_request extends wf_agg {
 				"You don't have enough permissions"
 			);
 
+
+		
 		/* terminate */
 		$this->a_core_route->execute_route(&$this->channel);
 	}
@@ -213,8 +226,16 @@ class core_request extends wf_agg {
 	}
 	
 	public function send_headers() {
-		foreach($this->headers as $k => $v)
-			header("$k: $v");
+		if(!is_array($this->headers))
+			return;
+			
+		foreach($this->headers as $k => $v) {
+			if($v)
+				header("$k: $v");
+			else
+				header($k);
+		}
+		unset($this->headers);
 	}
 	
 	
