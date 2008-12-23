@@ -40,12 +40,7 @@ class core_request extends wf_agg {
 	var $channel;
 	var $filters;
 	var $permissions = array();
-	
-	
-	public function __destruct() {
-		$this->send_headers();
-	}
-	
+		
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Master request processor
