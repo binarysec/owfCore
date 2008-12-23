@@ -105,7 +105,7 @@ class core_profile_context {
 		if($this->fields[$field])
 			return(true);
 			
-		$data = $this->db_find_field($field);
+		$data = $this->db_search_field($field);
 		if(!$data) {
 			$insert = array(
 				'create_time' => time(),
@@ -187,7 +187,7 @@ class core_profile_context {
 	 * Change the value of a field 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function set_value($field, $uid, $value) {
-		$ret = $this->db_find_value($field, $uid);
+		$ret = $this->db_search_value($field, $uid);
 
 		$where = array(
 			'field'      => $field,
@@ -223,7 +223,7 @@ class core_profile_context {
 	 * Get a value
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_value($field, $uid) {
-		$ret = $this->db_find_value($field, $uid);
+		$ret = $this->db_search_value($field, $uid);
 		return($ret['value']);
 	}
 
@@ -232,7 +232,7 @@ class core_profile_context {
 	 * Get the default value
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_default($field, $uid) {
-		$ret = $this->db_find_value($field, $uid);
+		$ret = $this->db_search_value($field, $uid);
 		return($ret['dft']);
 	}
 	
@@ -258,9 +258,9 @@ class core_profile_context {
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Low level function to find a field
+	 * Low level function to search a field
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function db_find_field($field) {
+	private function db_search_field($field) {
 		if(is_array($this->fields[$field]))
 			return($this->fields[$field]);
 			
@@ -283,9 +283,9 @@ class core_profile_context {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Low level function to find a value
+	 * Low level function to search a value
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function db_find_value($field, $uid) {
+	private function db_search_value($field, $uid) {
 		if(is_array($this->values[$field][$uid]))
 			return($this->values[$field][$uid]);
 
@@ -379,7 +379,7 @@ class core_profile extends wf_agg {
 			return($cache);
 		}
 
-		$data = $this->group_find($name);
+		$data = $this->search_profile($name);
 		if(!$data) {
 			$insert = array(
 				'create_time' => time(),
@@ -464,9 +464,9 @@ class core_profile extends wf_agg {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
-	 * Function used to find group
+	 * Function used to search profile
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function group_find($name=NULL, $id=NULL) {
+	public function search_profile($name=NULL, $id=NULL) {
 		$q = new core_db_select('core_profile');
 		$where = array();
 	
