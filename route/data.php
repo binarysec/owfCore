@@ -9,6 +9,7 @@ class wfr_core_data extends wf_route_request {
 	public function __construct($wf) {
 		$this->wf = $wf;
 		$this->a_core_request = $this->wf->core_request();
+		
 		$this->a_core_html = $this->wf->core_html();
 		$this->a_core_session = $this->wf->core_session();
 	}
@@ -94,7 +95,7 @@ class wfr_core_data extends wf_route_request {
 		
 		/* vérifie la requete */
 		$requested_time = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
-
+		
 		if($file_time == $requested_time) {
 			$this->a_core_request->set_header(
 				$_SERVER['SERVER_PROTOCOL'].
@@ -103,24 +104,20 @@ class wfr_core_data extends wf_route_request {
 			$this->a_core_request->send_headers();
 			exit(0);
 		}
-
+		
 		/* prepare les type de fichier */
 		$this->a_core_request->set_header(
 			"Last-modified",
 			$file_time
 		);
-
+		
 		$this->a_core_request->set_header(
 			"Content-type", 
 			$mime
 		);
-		$this->a_core_request->set_header(
-			"Content-length", 
-			filesize($used_file)
-		);
 		
 		/* Cache control by expires */
-		$mtime = filemtime($used_file)+3600;
+		$mtime = time()+3600;
 		$expires = date("D, d M Y H:i:s \G\M\T", $mtime);
 		$this->a_core_request->set_header(
 			"Expires",
@@ -129,6 +126,11 @@ class wfr_core_data extends wf_route_request {
 		$this->a_core_request->set_header(
 			"Cache-Control",
 			"max-age=3600"
+		);
+		
+		$this->a_core_request->set_header(
+			"Content-length", 
+			filesize($used_file)
 		);
 		
 		$this->a_core_request->send_headers();
