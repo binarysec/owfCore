@@ -604,10 +604,14 @@ class web_framework {
 			if(file_exists($tmp)) {
 				foreach($dirs as $dir) {
 					if(!$assoc[$dir]) {
-						$assoc[$dir] = 
-							$tmp;
+						$assoc[$dir] = $tmp;
 						$list[] = $dir;
 					}
+					else
+						$assoc[$dir] = array(
+							$assoc[$dir],
+							$tmp
+						);
 				}
 			}
 		}
