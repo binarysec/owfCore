@@ -272,8 +272,7 @@ class core_session extends wf_agg {
 			"remote_address"    => $_SERVER["REMOTE_ADDR"],
 			"remote_hostname"   => gethostbyaddr($_SERVER["REMOTE_ADDR"]),
 			"session_id"        => '',
-			"session_time"      => NULL,
-			"session_time_auth" => NULL
+			"session_time"      => NULL
 		);
 		$q->where($where);
 		$q->insert($update);
