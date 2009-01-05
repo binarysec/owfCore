@@ -666,7 +666,12 @@ class core_session extends wf_agg {
 
 		/* begin: added by keo on 05/01/2009 11:00 */
 		/* special case for anonymous user */
-		if($uid == -1) {
+		if($uid == -1 && (
+			is_null($perms) ||
+			$perms == 'session:anon' ||
+			(!$use_and && $perms['session:anon']) ||
+			($use_and && $perms == array('session:anon'))
+		)) {
 			return(array('session:anon' => TRUE));
 		}
 		/* end: added by keo */
