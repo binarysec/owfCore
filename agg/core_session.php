@@ -529,13 +529,13 @@ class core_session extends wf_agg {
 	 *
 	 * Function used to add a permission
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function user_insert_permission($uid, $name, $val=NULL) {
+	private function user_insert_permission($uid, $name, $value=NULL) {
 		$insert = array(
 			"core_session_id" => (int)$uid,
 			"perm_name" => trim($name)
 		);
 		if($value)
-			$insert["perm_value"] = $val;
+			$insert["perm_value"] = $value;
 		
 		$q = new core_db_insert("core_session_perm", $insert);
 		$this->wf->db->query($q);
@@ -547,12 +547,12 @@ class core_session extends wf_agg {
 	 *
 	 * Function used to update a permission
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function user_update_permission($uid, $name, $val=NULL) {
+	private function user_update_permission($uid, $name, $value=NULL) {
 		$q = new core_db_update("core_session_perm");
 		$where = array("core_session_id" => (int)$uid);
 		$update = array("perm_name" => trim($name));
 		if($value)
-			$update["perm_value"] = $val;
+			$update["perm_value"] = $value;
 			
 		$q->where($where);
 		$q->insert($update);
@@ -660,11 +660,17 @@ class core_session extends wf_agg {
 			$use_and=TRUE, 
 			$ask=NULL
 		) {
-		/*! \todo faire un faire */
-		
 		/* use current user ? */
 		if(!$uid)
 			$uid = $this->me["id"];
+
+		/* begin: added by keo on 05/01/2009 11:00 */
+		/* special case for anonymous user */
+		if($uid == -1) {
+			return(array('session:anon' => TRUE));
+		}
+		/* end: added by keo */
+
 		if(!is_array($ask))
 			$ask = array();
 
@@ -675,23 +681,14 @@ class core_session extends wf_agg {
 		/* create the request object */
 		$q = new core_db_adv_select();
 
-		/* begin: added by keo on 29/11/2008 12:08 */
-		/* anonymous sessions don't have session in db */
-		if($uid != -1)
-			$q->alias('a', 'core_session');
-		/* end: added by keo */
+		$q->alias('a', 'core_session');
 		$q->alias('b', 'core_session_perm');
 
 		$q->fields("b.perm_name");
 		$q->fields("b.perm_value");
 
-		/* begin: added by keo on 29/11/2008 12:08 */
-		/* anonymous sessions don't have session in db */
-		if($uid != -1) {
-			$q->do_comp('a.id', '==', (int)$uid);
-			$q->do_comp('a.id', '==', 'b.core_session_id');
-		}
-		/* end: added by keo */
+		$q->do_comp('a.id', '==', (int)$uid);
+		$q->do_comp('a.id', '==', 'b.core_session_id');
 		
 		/* identifying the request */
 		$request = NULL;
