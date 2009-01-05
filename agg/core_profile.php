@@ -43,10 +43,11 @@ class core_profile_context {
 		$this->wf = $wf;
 
 		$struct = array(
-			'id' => WF_PRI,
+			'id'          => WF_PRI,
 			'create_time' => WF_INT,
-			'name' => WF_VARCHAR,
-			'description' => WF_VARCHAR
+			'name'        => WF_VARCHAR,
+			'description' => WF_VARCHAR,
+			'perms'       => WF_VARCHAR
 		);
 		$this->wf->db->register_zone(
 			'core_profile',
@@ -55,14 +56,14 @@ class core_profile_context {
 		);
 		
 		$struct = array(
-			'id' => WF_PRI,
+			'id'          => WF_PRI,
 			'create_time' => WF_INT,
-			'field' => WF_VARCHAR,
+			'field'       => WF_VARCHAR,
 			'description' => WF_VARCHAR,
-			'profile_id' => WF_INT,
-			'type' => WF_INT,
-			'dft' => WF_DATA,
-			'serial' => WF_DATA
+			'profile_id'  => WF_INT,
+			'type'        => WF_INT,
+			'dft'         => WF_DATA,
+			'serial'      => WF_DATA
 		);
 		$this->wf->db->register_zone(
 			'core_profile_field',
@@ -71,11 +72,11 @@ class core_profile_context {
 		);
 
 		$struct = array(
-			'id' => WF_PRI,
-			'field' => WF_VARCHAR,
+			'id'         => WF_PRI,
+			'field'      => WF_VARCHAR,
 			'profile_id' => WF_INT,
-			'user_id' => WF_INT,
-			'value' => WF_DATA
+			'user_id'    => WF_INT,
+			'value'      => WF_DATA
 		);
 		$this->wf->db->register_zone(
 			'core_profile_value',
@@ -317,10 +318,11 @@ class core_profile extends wf_agg {
 		$this->_core_cacher = $wf->core_cacher();
 		
 		$struct = array(
-			'id' => WF_PRI,
+			'id'          => WF_PRI,
 			'create_time' => WF_INT,
-			'name' => WF_VARCHAR,
-			'description' => WF_VARCHAR
+			'name'        => WF_VARCHAR,
+			'description' => WF_VARCHAR,
+			'perms'       => WF_VARCHAR
 		);
 		$this->wf->db->register_zone(
 			'core_profile',
@@ -329,14 +331,14 @@ class core_profile extends wf_agg {
 		);
 		
 		$struct = array(
-			'id' => WF_PRI,
+			'id'          => WF_PRI,
 			'create_time' => WF_INT,
-			'field' => WF_VARCHAR,
+			'field'       => WF_VARCHAR,
 			'description' => WF_VARCHAR,
-			'profile_id' => WF_INT,
-			'type' => WF_INT,
-			'dft' => WF_DATA,
-			'serial' => WF_DATA
+			'profile_id'  => WF_INT,
+			'type'        => WF_INT,
+			'dft'         => WF_DATA,
+			'serial'      => WF_DATA
 		);
 		$this->wf->db->register_zone(
 			'core_profile_field',
@@ -345,11 +347,11 @@ class core_profile extends wf_agg {
 		);
 
 		$struct = array(
-			'id' => WF_PRI,
-			'field' => WF_VARCHAR,
+			'id'         => WF_PRI,
+			'field'      => WF_VARCHAR,
 			'profile_id' => WF_INT,
-			'user_id' => WF_INT,
-			'value' => WF_DATA
+			'user_id'    => WF_INT,
+			'value'      => WF_DATA
 		);
 		$this->wf->db->register_zone(
 			'core_profile_value',
@@ -364,7 +366,7 @@ class core_profile extends wf_agg {
 	 *
 	 * Register a new profile and return the object
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function register_profile($name, $description=NULL, $lang_ctx=NULL) {
+	public function register_profile($name, $description=NULL, $perms=NULL, $lang_ctx=NULL) {
 		$cvar = 'core_profile_RG_'.$name;
 		
 		/* local and short cache */
@@ -385,6 +387,7 @@ class core_profile extends wf_agg {
 				'create_time' => time(),
 				'name' => $name,
 				'description' => base64_encode($description),
+				'perms' => $perms
 			);
 		
 			$q = new core_db_insert_id('core_profile', 'id', $insert);
@@ -403,15 +406,19 @@ class core_profile extends wf_agg {
 			$this->contexts[$name]->description = base64_decode(
 				$insert['description']
 			);
+			$this->contexts[$name]->perms = $insert['perms'];
 		}
 		else {
-			if($description) {
+			if($description || $perms) {
 				$q = new core_db_update('core_profile');
 				$where = array();
 				$where['name'] = $name;
 				$insert = array();
-			
-				$insert['description'] = base64_encode($description);
+
+				if($description)
+					$insert['description'] = base64_encode($description);
+				if($perms)
+					$insert['perms'] = $perms;
 				$q->where($where);
 				$q->insert($insert);
 				$this->wf->db->query($q);
@@ -435,8 +442,10 @@ class core_profile extends wf_agg {
 					$insert['description'] :
 					$data[0]['description']
 			);
-			
-			
+			$this->contexts[$name]->perms = 
+				$insert['perms'] ?
+					$insert['perms'] :
+					$data[0]['perms'];
 		}
 
 		$this->store_context($this->contexts[$name], &$name);

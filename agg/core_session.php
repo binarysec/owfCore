@@ -341,20 +341,20 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_mod($uid, $data) {
-		/* sanatization */
-		if(!$data["email"])
-			return(FALSE);
-
 		/* input */
-		$insert = array(
-			"email" => $data["email"],
-			"name" => $data["name"]
-		);
+		$insert = array();
 
+		if($data["name"])
+			$insert["name"] = $data["name"];
+		if($data["email"])
+			$insert["email"] = $data["email"];
 		if($data['password'])
 			$insert['password'] = md5($data['password']);
 		if(array_key_exists('data', $data))
 			$insert['data'] = serialize($data['data']);
+
+		if(!$insert)
+			return(TRUE);
 
 		$q = new core_db_update("core_session");
 		$where = array("id" => $uid);
@@ -363,8 +363,8 @@ class core_session extends wf_agg {
 		$this->wf->db->query($q);
 		
 		/* ajoute les permissions*/
-		$this->user_del_permissions(&$uid);
 		if(is_array($data["permissions"])) {
+			$this->user_del_permissions(&$uid);
 			$this->user_set_permissions(
 				&$uid,
 				&$data["permissions"],
