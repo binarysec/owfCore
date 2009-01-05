@@ -33,7 +33,7 @@ class core_session extends wf_agg {
 	private $_core_pref;
 	
 	public $me = NULL;
-	var $data = array();
+	public $data = array();
 	
 	private $pref_session;
 	
@@ -104,7 +104,10 @@ class core_session extends wf_agg {
 			CORE_PREF_NUM,
 			3600
 		);
+	}
 
+	public function get_timeout() {
+		return($this->sess_timeout);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -112,40 +115,26 @@ class core_session extends wf_agg {
 	 * Vérification de la session
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function check_session() {
-		/* essaye de prendre un numéro de session */
-		$session = $_COOKIE[$this->sess_var];
-
-		/* begin: added by keo on 29/11/2008 10:17 */
-		/* bug when no session id is found */
-		if(!$session) {
-			if($this->wf->ini_arr["session"]["allow_anonymous"]) {
-				$this->me = array(
-					"id" => -1,
-					"remote_address" => $_SERVER["REMOTE_ADDR"]
-				);
-				return(CORE_SESSION_VALID);
-			}
-			else {
-				return(CORE_SESSION_USER_UNKNOWN);
-			}
+		/* try to get existing session */
+		if($session = $_COOKIE[$this->sess_var]) {
+			$q = new core_db_select("core_session");
+			$where = array(
+				"session_id" => $session
+			);
+	
+			$q->where($where);
+			$this->wf->db->query($q);
+			$res = $q->get_result();
 		}
-		/* end: added by keo */
 
-		$q = new core_db_select("core_session");
-		$where = array(
-			"session_id" => $session
-		);
-
-		$q->where($where);
-		$this->wf->db->query($q);
-		$res = $q->get_result();
-
-		/* aucune session de disponible */
-		if(!$res[0]) {
+		/* no existing session, open anonymous session */
+		if(!$session || !$res[0]) {
 			if($this->wf->ini_arr["session"]["allow_anonymous"]) {
 				$this->me = array(
-					"id" => -1,
-					"remote_address" => $_SERVER["REMOTE_ADDR"]
+					"id"              => -1,
+					"remote_address"  => $_SERVER["REMOTE_ADDR"],
+					"remote_hostname" => gethostbyaddr($_SERVER["REMOTE_ADDR"]),
+					"session_time"    => time()
 				);
 				return(CORE_SESSION_VALID);
 			}
@@ -153,23 +142,23 @@ class core_session extends wf_agg {
 				return(CORE_SESSION_TIMEOUT);
 			}
 		}
-		
+
 		$this->me = $res[0];
 
 		/* vérfication du timeout */
-		if(time()-$this->me["session_time"] > $this->sess_timeout) {
+		if(time() - $this->me["session_time"] > $this->sess_timeout) {
 			return(CORE_SESSION_TIMEOUT);
 		}
-			
+
 		/* modification de l'adresse en base + time update */
 		$q = new core_db_update("core_session");
 		$where = array(
 			"id" => (int)$this->me["id"]
 		);
 		$update = array(
-			"remote_address" => $_SERVER["REMOTE_ADDR"],
+			"remote_address"  => $_SERVER["REMOTE_ADDR"],
 			"remote_hostname" => gethostbyaddr($_SERVER["REMOTE_ADDR"]),
-			"session_time" => time()
+			"session_time"    => time()
 		);
 		$q->where($where);
 		$q->insert($update);
@@ -182,7 +171,7 @@ class core_session extends wf_agg {
 
 		/* merge data & update */
 		$this->me = array_merge($this->me, $update);
-		
+
 		return(CORE_SESSION_VALID);
 	}
 	
@@ -195,7 +184,7 @@ class core_session extends wf_agg {
 		$s2 = $this->wf->get_rand();
 		return("E".md5($s1).md5($s2));
 	}
-	
+
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Authenfication
@@ -222,11 +211,11 @@ class core_session extends wf_agg {
 			"id" => (int)$this->me["id"]
 		);
 		$update = array(
-			"session_id" => $this->generate_session_id(),
+			"session_id"        => $this->generate_session_id(),
 			"session_time_auth" => time(),
-			"session_time" => time(),
-			"remote_address" => $_SERVER["REMOTE_ADDR"],
-			"remote_hostname" => gethostbyaddr($_SERVER["REMOTE_ADDR"])
+			"session_time"      => time(),
+			"remote_address"    => $_SERVER["REMOTE_ADDR"],
+			"remote_hostname"   => gethostbyaddr($_SERVER["REMOTE_ADDR"])
 		);
 		$q->where($where);
 		$q->insert($update);
@@ -244,13 +233,18 @@ class core_session extends wf_agg {
 		);
 
 		/* !! attention redirection necessaire */
-		
 		return($this->me);
 	}
 
 	public function logout() {
 		/* essaye de prendre un numéro de session */
 		$session = $_COOKIE[$this->sess_var];
+
+		if(!$session) {
+			$this->me   = NULL;
+			$this->data = array();
+			return;
+		}
 
 		/* lancement de la recherche */
 		$q = new core_db_select("core_session");
@@ -263,10 +257,11 @@ class core_session extends wf_agg {
 		$res = $q->get_result();
 
 		/* aucune session de disponible */
-		if(!$res[0])
+		if(!$res[0]) {
+			$this->me   = NULL;
+			$this->data = array();
 			return;
-
-		$this->me = $res[0];
+		}
 
 		/* modification de l'adresse en base + time update */
 		$q = new core_db_update("core_session");
@@ -274,27 +269,28 @@ class core_session extends wf_agg {
 			"id" => (int)$this->me["id"]
 		);
 		$update = array(
-			"remote_address" => $_SERVER["REMOTE_ADDR"],
-			"session_id" => ''
+			"remote_address"    => $_SERVER["REMOTE_ADDR"],
+			"remote_hostname"   => gethostbyaddr($_SERVER["REMOTE_ADDR"]),
+			"session_id"        => '',
+			"session_time"      => NULL,
+			"session_time_auth" => NULL
 		);
 		$q->where($where);
 		$q->insert($update);
 		$this->wf->db->query($q);
 
-		/* chargement des données utilisateur */
-		$this->data = unserialize($this->me["session_data"]);
-		if(!$this->data)
-			$this->data = array();
+		$this->me   = NULL;
+		$this->data = array();
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function user_list($number_of_user=0, $offset=0) {
+	public function user_list($nb=0, $off=0) {
 		$q = new core_db_select("core_session");
-		if ($number_of_user)
-			$q->limit($number_of_user, $offset);
+		if($nb)
+			$q->limit($nb, $off);
 		$this->wf->db->query($q);
 		$res = $q->get_result();
 		return($res);
@@ -372,7 +368,8 @@ class core_session extends wf_agg {
 		if(is_array($data["permissions"])) {
 			$this->user_set_permissions(
 				&$uid,
-				&$data["permissions"]
+				&$data["permissions"],
+				&$data["values"]
 			);
 		}
 		return(TRUE);
@@ -415,7 +412,8 @@ class core_session extends wf_agg {
 		if(is_array($data["permissions"])) {
 			$this->user_set_permissions(
 				&$user["id"],
-				&$data["permissions"]
+				&$data["permissions"],
+				&$data["values"]
 			);
 		}
 
@@ -508,8 +506,7 @@ class core_session extends wf_agg {
 			for($a=0; $a<count($perms); $a++) {
 				$p = &$perms[$a];
 				$v = is_array($value) ? $value[$a] : NULL;
-				
-				
+
 				if(!$this->user_get_permissions(&$uid, &$p))
 					$this->user_insert_permission(
 						&$uid, 
