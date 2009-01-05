@@ -44,8 +44,14 @@ class wfr_core_data extends wf_route_request {
 			}
 			else {
 				/* autorisé à afficher listing ? */
-				$allowed = $this->wf->ini_arr["common"]
-					["allow_data_index"];
+				/* begin: added by keo on 31/12/2008 */
+				if(!$this->wf->ini_arr["common"]["allow_data_index"]) {
+					$this->wf->display_error(
+						403,
+						"You don't have permission to access this page on this server"
+					);
+				}
+				/* end: added by keo on 31/12/2008 */
 				
 				/* get permission */
 				$is = $this->a_core_session->user_get_permissions(
