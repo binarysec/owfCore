@@ -79,7 +79,7 @@ class core_session extends wf_agg {
 			"email" => "wf@binarysec.com",
 			"name" => "Web Framework",
 			"password" => "lala",
-			"permissions" => array("session:god"),
+			"permissions" => array(WF_USER_GOD),
 			"data" => array(),
 		));
 		
@@ -388,7 +388,7 @@ class core_session extends wf_agg {
 			return(FALSE);
 
 		if(count($data["permissions"]) <= 0)
-			$data["permissions"] = array("session:simple");
+			$data["permissions"] = array(WF_USER_SIMPLE);
 		
 		/* input */
 		$insert = array(
@@ -588,11 +588,11 @@ class core_session extends wf_agg {
 		/* special case for anonymous user */
 		if($uid == -1 && (
 			is_null($perms) ||
-			$perms == 'session:anon' ||
-			(!$use_and && $perms['session:anon']) ||
-			($use_and && $perms == array('session:anon'))
+			$perms == WF_USER_ANON ||
+			(!$use_and && $perms[WF_USER_ANON]) ||
+			($use_and && $perms == array(WF_USER_ANON))
 		)) {
-			return(array('session:anon' => TRUE));
+			return(array(WF_USER_ANON => TRUE));
 		}
 		/* end: added by keo */
 
@@ -663,10 +663,7 @@ class core_session extends wf_agg {
 	 *
 	 * Check permission and allow GOD and ADMIN if possible
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function check_permissions($need, $uid=NULL, $is=NULL, $need_arranged=NULL) {
-		if(!is_array($need_arranged))
-			$need_arranged = array();
-
+	public function check_permissions($need, $uid=NULL, $is=NULL, $need_arranged=array()) {
 		/* Get information to if user is privileged */
 		$perm = $this->user_get_permissions(
 			&$uid,
@@ -675,28 +672,38 @@ class core_session extends wf_agg {
 			&$need_arranged
 		);
 
+		$valid = FALSE;
+
 		if(!$perm) {
 			$is = $this->user_get_permissions(
-				&$uid, 
+				&$uid,
 				array(
+					WF_USER_SIMPLE,
 					WF_USER_GOD,
 					WF_USER_ADMIN
 				),
 				FALSE
 			);
 
-			$valid = FALSE;
-			if($is[WF_USER_GOD])
-				$valid = TRUE;
-			else if($is[WF_USER_ADMIN]) {
-				if($need_arranged[WF_USER_GOD]) 
-					$valid = FALSE;
-				else
+			if($need == WF_USER_ANON || $need == array(WF_USER_ANON)) {
+				if($is) {
 					$valid = TRUE;
+				}
+			}
+			else {
+				if($is[WF_USER_GOD]) {
+					$valid = TRUE;
+				}
+				else if($is[WF_USER_ADMIN]) {
+					if(!$need_arranged[WF_USER_GOD]) {
+						$valid = TRUE;
+					}
+				}
 			}
 		}
-		else
+		else {
 			$valid = TRUE;
+		}
 		
 		return($valid);
 	}
