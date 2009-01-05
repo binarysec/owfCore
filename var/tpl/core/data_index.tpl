@@ -17,6 +17,7 @@
 					<td>-</td>
 					<td>-</td>
 					<td>-</td>
+					<td>-</td>
 			</tr>
 		{/if}
 		{foreach $files as $file => $data}
@@ -34,7 +35,7 @@
 				<td>{$data['size']}</td>
 				<td>{$data['path']}</td>
 				<td>{$data['mimetype']}</td>
-				<td>{$data['last_mod']}</td>
+				<td>{date 'd/m/Y H:i', $data['lastmod']}</td>
 			</tr>
 		{/foreach}
 	</tbody>
