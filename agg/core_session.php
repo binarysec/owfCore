@@ -30,20 +30,17 @@ define("CORE_SESSION_AUTH_FAILED",  4);
 class core_session extends wf_agg {
 	private $sess_var;
 	private $sess_timeout;
+	private $_core_pref;
 	
 	public $me = NULL;
 	var $data = array();
 	
-	private $_core_cacher;
 	private $pref_session;
-	
-	private $cache = array();
 	
 	public function loader($wf) {
 		$this->wf = $wf;
-		$this->_core_cacher = $wf->core_cacher();
-		$this->_core_pref = $wf->core_pref();
-		
+		$this->_core_pref = $this->wf->core_pref();
+
 		$struct = array(
 			"id" => WF_PRI,
 			"email" => WF_VARCHAR,
@@ -77,52 +74,14 @@ class core_session extends wf_agg {
 			"Core session permission table", 
 			$struct
 		);
-		
-		
-		/* create cache group */
-		$this->cache = $this->wf->core_cacher()->create_group(
-			"core_session"
-		);
-		
-// 		$this->user_add(array(
-// 			"email" => "mv@binarysec.com",
-// 			"name" => "Michael VERGOZ",
-// 			"password" => "lala",
-// 			"permissions" => array("session:god"),
-// 			"data" => array(),
-// 		));
-// 		
-// 		$this->user_add(array(
-// 			"email" => "td@binarysec.com",
-// 			"name" => "Thomas DIJOUX",
-// 			"password" => "lala",
-// 			"permissions" => array("session:god"),
-// 			"data" => array(),
-// 		));
-// 		
-// 		$this->user_add(array(
-// 			"email" => "op@binarysec.com",
-// 			"name" => "Olivier PASCAL",
-// 			"password" => "lala",
-// 			"permissions" => array("session:god"),
-// 			"data" => array(),
-// 		));
-// 
-// 		$this->user_add(array(
-// 			"email" => "cg@binarysec.com",
-// 			"name" => "Christelle Grimaud",
-// 			"password" => "lala",
-// 			"permissions" => array("session:god"),
-// 			"data" => array(),
-// 		));
-// 
-// 		$this->user_add(array(
-// 			"email" => "mp@binarysec.com",
-// 			"name" => "Martial Padié",
-// 			"password" => "lala",
-// 			"permissions" => array("session:god"),
-// 			"data" => array(),
-// 		));
+
+		$this->user_add(array(
+			"email" => "wf@binarysec.com",
+			"name" => "Web Framework",
+			"password" => "lala",
+			"permissions" => array("session:god"),
+			"data" => array(),
+		));
 		
 		/* registre session preferences group */
 		$this->pref_session = $this->_core_pref->register_group(
@@ -156,52 +115,46 @@ class core_session extends wf_agg {
 		/* essaye de prendre un numéro de session */
 		$session = $_COOKIE[$this->sess_var];
 
-		/* use cache */
-		$data = $this->cache->get("user_by_session_$session");
-		if($data)
-			$this->me = $data;
-		else {
-			/* begin: added by keo on 29/11/2008 10:17 */
-			/* bug when no session id is found */
-			if(!$session) {
-				if($this->wf->ini_arr["session"]["allow_anonymous"]) {
-					$this->me = array(
-						"id" => -1,
-						"remote_address" => $_SERVER["REMOTE_ADDR"]
-					);
-					return(CORE_SESSION_VALID);
-				}
-				else {
-					return(CORE_SESSION_USER_UNKNOWN);
-				}
+		/* begin: added by keo on 29/11/2008 10:17 */
+		/* bug when no session id is found */
+		if(!$session) {
+			if($this->wf->ini_arr["session"]["allow_anonymous"]) {
+				$this->me = array(
+					"id" => -1,
+					"remote_address" => $_SERVER["REMOTE_ADDR"]
+				);
+				return(CORE_SESSION_VALID);
 			}
-			/* end: added by keo */
-
-			$q = new core_db_select("core_session");
-			$where = array(
-				"session_id" => $session
-			);
-
-			$q->where($where);
-			$this->wf->db->query($q);
-			$res = $q->get_result();
-
-			/* aucune session de disponible */
-			if(!$res[0]) {
-				if($this->wf->ini_arr["session"]["allow_anonymous"]) {
-					$this->me = array(
-						"id" => -1,
-						"remote_address" => $_SERVER["REMOTE_ADDR"]
-					);
-					return(CORE_SESSION_VALID);
-				}
-				else {
-					return(CORE_SESSION_TIMEOUT);
-				}
+			else {
+				return(CORE_SESSION_USER_UNKNOWN);
 			}
-			
-			$this->me = $res[0];
 		}
+		/* end: added by keo */
+
+		$q = new core_db_select("core_session");
+		$where = array(
+			"session_id" => $session
+		);
+
+		$q->where($where);
+		$this->wf->db->query($q);
+		$res = $q->get_result();
+
+		/* aucune session de disponible */
+		if(!$res[0]) {
+			if($this->wf->ini_arr["session"]["allow_anonymous"]) {
+				$this->me = array(
+					"id" => -1,
+					"remote_address" => $_SERVER["REMOTE_ADDR"]
+				);
+				return(CORE_SESSION_VALID);
+			}
+			else {
+				return(CORE_SESSION_TIMEOUT);
+			}
+		}
+		
+		$this->me = $res[0];
 
 		/* vérfication du timeout */
 		if(time()-$this->me["session_time"] > $this->sess_timeout) {
@@ -229,13 +182,6 @@ class core_session extends wf_agg {
 
 		/* merge data & update */
 		$this->me = array_merge($this->me, $update);
-		
-		/* store data into the cache for a short time */
-		$this->cache->store(
-			"user_by_session_$session", 
-			$this->me, 
-			5
-		);
 		
 		return(CORE_SESSION_VALID);
 	}
@@ -339,10 +285,6 @@ class core_session extends wf_agg {
 		$this->data = unserialize($this->me["session_data"]);
 		if(!$this->data)
 			$this->data = array();
-
-		/* invalide user session cache */
-		$this->cache->delete("user_by_session_".$this->me["session_id"]);
-		$this->cache->delete("user_perms_".(int)$this->me["id"]);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -365,23 +307,11 @@ class core_session extends wf_agg {
 	public function user_search_by_mail($mail) {
 		$cvar = "core_session_user_email_$mail";
 		
-		/* check the cache */
-		$cache = $this->cache->get($cvar);
-		if(is_array($cache))
-			return($cache);
-		else if($cache == TRUE)
-			return(NULL);
-		
 		$q = new core_db_select("core_session");
 		$q->where(array("email" => $mail));
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		
-		/* store the result we need */
-		$this->cache->store(
-			$cvar, 
-			count($res) <= 0 ? TRUE : $res[0]
-		);
+
 		return($res[0]);
 	}
 	
@@ -438,6 +368,7 @@ class core_session extends wf_agg {
 		$this->wf->db->query($q);
 		
 		/* ajoute les permissions*/
+		$this->user_del_permissions(&$uid);
 		if(is_array($data["permissions"])) {
 			$this->user_set_permissions(
 				&$uid,
@@ -456,6 +387,10 @@ class core_session extends wf_agg {
 		if(!$data["email"] || !$data["password"])
 			return(FALSE);
 
+		/* vérification si l'utilisateur existe */
+		if($this->user_search_by_mail($data["email"]))
+			return(FALSE);
+
 		if(count($data["permissions"]) <= 0)
 			$data["permissions"] = array("session:simple");
 		
@@ -467,20 +402,12 @@ class core_session extends wf_agg {
 			"create_time" => time(),
 			"data" => serialize($data["data"])
 		);
-		
-		/* vérification si l'utilisateur existe */
-		if($this->user_search_by_mail($data["email"]))
-			return(FALSE);
 
 		/* sinon on ajoute l'utilisateur */
 		$q = new core_db_insert("core_session", $insert);
 		$this->wf->db->query($q);
 		$uid = $this->wf->db->get_last_insert_id('core_session_id_seq');
 
-		/* remove the user search cache */
-		$cvar = "core_session_user_email_".$data["email"];
-		$this->cache->delete($cvar);
-		
 		/* reprend les informations */
 		$user = $this->user_search_by_mail($data["email"]);
 		
@@ -501,7 +428,6 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_del($uid) {
-		/* add by keo on 03/12/2008 to invalid cache */
 		$user = $this->user_info($uid);
 
 		$q = new core_db_delete(
@@ -516,12 +442,6 @@ class core_session extends wf_agg {
 		);
 		$this->wf->db->query($q);
 
-		$this->cache->delete("user_perms_".(int)$uid);
-
-		/* add by keo on 03/12/2008 to invalid cache */
-		$cvar = "core_session_user_email_".$user["email"];
-		$this->cache->delete($cvar);
-		
 		return(TRUE);
 	}
 
@@ -539,8 +459,6 @@ class core_session extends wf_agg {
 		
 		$q = new core_db_insert("core_session_perm", $insert);
 		$this->wf->db->query($q);
-		
-		$this->cache->delete("user_perms_$uid");
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -549,7 +467,10 @@ class core_session extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function user_update_permission($uid, $name, $value=NULL) {
 		$q = new core_db_update("core_session_perm");
-		$where = array("core_session_id" => (int)$uid);
+		/* begin: added by keo on 05/01/2009 14:25 */
+		/* perm_name added in where clause */
+		$where = array("core_session_id" => (int)$uid, "perm_name" => $name);
+		/* end: added by keo */
 		$update = array("perm_name" => trim($name));
 		if($value)
 			$update["perm_value"] = $value;
@@ -557,8 +478,6 @@ class core_session extends wf_agg {
 		$q->where($where);
 		$q->insert($update);
 		$this->wf->db->query($q);
-		
-		$this->cache->delete("user_perms_$uid");
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -617,28 +536,35 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_add_permissions($uid, $perm, $value=NULL) {
-		return(
-			$this->user_set_permissions(&$uid, &$perm, &$value)
-		);
+		return($this->user_set_permissions(&$uid, &$perm, &$value));
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function user_del_permissions($uid, $perm) { 
-		$q = new core_db_adv_delete();
-		
-		$q->alias('a', 'core_session');
-		$q->alias('b', 'core_session_perm');
-		
-		$q->do_comp('a.id', '==', (int)$uid);
-		$q->do_comp('a.id', '==', 'b.core_session_id');
-		$q->do_comp('b.perm_name', '=', $perm);
-		
-		$this->wf->db->query($q);
-		
-		$this->cache->delete("user_perms_$uid");
+	/* added by keo on 05/01/2009 14:41 */
+	/* perm parameter optional */
+	public function user_del_permissions($uid, $perm=NULL) { 
+		if($perm) {
+			$q = new core_db_adv_delete();
+			
+			$q->alias('a', 'core_session');
+			$q->alias('b', 'core_session_perm');
+			
+			$q->do_comp('a.id', '==', (int)$uid);
+			$q->do_comp('a.id', '==', 'b.core_session_id');
+			$q->do_comp('b.perm_name', '=', $perm);
+			
+			$this->wf->db->query($q);
+		}
+		else {
+			$q = new core_db_delete(
+				'core_session_perm',
+				array('core_session_id' => $uid)
+			);
+			$this->wf->db->query($q);
+		}
 		return(TRUE);
 	}
 	
@@ -652,8 +578,6 @@ class core_session extends wf_agg {
 	 * $perms as a mask.
 	 * $ask is $perms but arranged with key.
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private $perms_cache = array();
-	
 	public function user_get_permissions(
 			$uid=NULL, 
 			$perms=NULL, 
@@ -679,10 +603,6 @@ class core_session extends wf_agg {
 		if(!is_array($ask))
 			$ask = array();
 
-		/* cache variable */
-		$cvar = "user_perms_$uid";
-		$used = array();
-		
 		/* create the request object */
 		$q = new core_db_adv_select();
 
@@ -714,7 +634,6 @@ class core_session extends wf_agg {
 				$q->do_comp('b.perm_name', '=', $kp);
 
 				$ask[$kp] = TRUE;
-				$used[$kp] = FALSE;
 				$request .= $kp;
 			}
 			/* begin: added by keo on 29/11/2008 11:39 */
@@ -726,14 +645,6 @@ class core_session extends wf_agg {
 		$cvar = "core_session_preq_$uid".
 			"_$request";
 
-// 		/* load the cache */
-// 		$cache = $this->cache->get($cvar);
-// 		var_dump($cache);
-// 		if(is_array($cache))
-// 			return($cache);
-// 		else if(is_string($cache))
-// 			return(NULL);
-	
 		/* execute request */
 		$this->wf->db->query($q);
 		$res = $q->get_result();
@@ -746,28 +657,10 @@ class core_session extends wf_agg {
 				TRUE : $lres["b.perm_value"];
 		}
 
-		/* merge known & unknown */
-		$data = array_merge($used, $tab);
-
-		/* merge information */
-		if(!is_array($this->perms_cache[$cvar]))
-			$this->perms_cache[$cvar] = &$data;
-		else if(count($data) > 0)
-			$this->perms_cache[$cvar] = array_merge(
-				$this->perms_cache[$cvar], 
-				&$data
-			);
-
-		/* store the result we need */
-		$this->cache->store(
-			$cvar, 
-			count($res) <= 0 ? " " : $this->perms_cache[$cvar]
-		);
-		
 		if(count($res) <= 0)
 			return(NULL);
 
-		return($this->perms_cache[$cvar]);
+		return($tab);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -832,10 +725,6 @@ class core_session extends wf_agg {
 		$q->where($where);
 		$q->insert($update);
 		$this->wf->db->query($q);
-		
-		/* invalide user session cache */
-		$this->cache->delete("user_by_session_".$this->me["session_id"]);
-		$this->cache->delete("user_perms_".(int)$this->me["id"]);
 	}
 	
 	public function unset_data($list) {
