@@ -276,8 +276,8 @@ class core_cacher extends wf_agg {
 				$this->system = new core_cacher_apc($this->wf);
 				break;
 
-			case 'memcached':
-				$this->system = new core_cacher_memcached($this->wf);
+			case 'memcache':
+				$this->system = new core_cacher_memcache($this->wf);
 				break;
 
 			case 'eaccelerator':

@@ -22,7 +22,7 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class core_cacher_memcached extends core_cacher_lib {
+class core_cacher_memcache extends core_cacher_lib {
 	private $_core_pref;
 
 	private $host        = 'localhost';
@@ -46,7 +46,7 @@ class core_cacher_memcached extends core_cacher_lib {
 		if($conf['compression'])
 			$this->compression = $conf['compression'];
 
-		/* connect to memcached */
+		/* connect to memcache */
 		$this->memcache = new memcache;
 
 		if($this->persistant) {
@@ -66,7 +66,7 @@ class core_cacher_memcached extends core_cacher_lib {
 			throw new wf_exception(
 				$this,
 				WF_EXC_PRIVATE,
-				'Cannot connect to memcached server ('.$this->host.':'.$this->port.').'
+				'Cannot connect to memcache server ('.$this->host.':'.$this->port.').'
 			);
 		}
 	}
@@ -98,7 +98,7 @@ class core_cacher_memcached extends core_cacher_lib {
 	public function get_banner() {
 		$status = $this->memcache->getServerStatus($this->host);
 		return(
-			'memcached '.$this->memcache->getVersion().' '.
+			'memcache '.$this->memcache->getVersion().' '.
 			'('.(($status) ? 'online' : 'offline').')'
 		);
 	}
