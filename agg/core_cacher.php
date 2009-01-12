@@ -262,22 +262,31 @@ class core_cacher extends wf_agg {
 	 * Enable the cache system
 	 */
 	public function enable() {
-		/* check if APC is available */
-		if(function_exists("apc_sma_info")) {
-			/* edited by keo on 29/11/2008 15/44 : $this->wf instead of &$wf */
-			$this->system = new core_cacher_apc($this->wf);
-		}
-		/* check if eAccelerator is available
-		   eAccelerator can have been compiled without the shared memory
-		   support (by default for security purpose), so we test
-		   eaccelerator_get */
-		else if(function_exists("eaccelerator_get")) {
-			/* edited by keo on 29/11/2008 15/44 : $this->wf instead of &$wf */
-			$this->system = new core_cacher_eaccelerator($this->wf);
-		}
-		/* no cache system driver */
-		else {
+		/* get cache driver */
+		$cache_driver = $this->wf->ini_arr['common']['cache_driver'];
+
+		/* no cache driver */
+		if(!$cache_driver) {
 			$this->system = NULL;
+			return;
+		}
+
+		switch($cache_driver) {
+			case 'apc':
+				$this->system = new core_cacher_apc($this->wf);
+				break;
+
+			case 'memcached':
+				$this->system = new core_cacher_memcached($this->wf);
+				break;
+
+			case 'eaccelerator':
+				$this->system = new core_cacher_eaccelerator($this->wf);
+				break;
+
+			default:
+				$this->system = NULL;
+				break;
 		}
 	}
 	
