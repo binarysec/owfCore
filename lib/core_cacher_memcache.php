@@ -82,7 +82,7 @@ class core_cacher_memcache extends core_cacher_lib {
 	
 	public function store($var, $val, $timeout) {
 		if(!$this->conn) return;
-		return($this->memcache->set($var, $val, $this->compression, $timeout));
+		return($this->memcache->set($var, serialize($val), $this->compression, $timeout));
 	}
 	
 	public function get($var) {
