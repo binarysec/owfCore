@@ -31,6 +31,7 @@ class core_cacher_memcache extends core_cacher_lib {
 	private $compression = true;
 
 	private $memcache = null;
+	private $conn     = null;
 
 	public function __construct($wf) {
 		$this->wf = $wf;
@@ -50,19 +51,19 @@ class core_cacher_memcache extends core_cacher_lib {
 		$this->memcache = new memcache;
 
 		if($this->persistant) {
-			$conn = @$this->memcache->pconnect(
+			$this->conn = @$this->memcache->pconnect(
 				$this->host,
 				$this->port
 			);
 		}
 		else {
-			$conn = @$this->memcache->connect(
+			$this->conn = @$this->memcache->connect(
 				$this->host,
 				$this->port
 			);
 		}
 
-// 		if(!$conn) {
+// 		if(!$this->conn) {
 // 			throw new wf_exception(
 // 				$this,
 // 				WF_EXC_PRIVATE,
@@ -72,7 +73,7 @@ class core_cacher_memcache extends core_cacher_lib {
 	}
 
 	public function __destruct() {
-		if(!$conn) return;
+		if(!$this->conn) return;
 		/* close non-persistant connection */
 		if(!$this->persistant) {
 			$this->memcache->close();
@@ -80,28 +81,28 @@ class core_cacher_memcache extends core_cacher_lib {
 	}
 	
 	public function store($var, $val, $timeout) {
-		if(!$conn) return;
+		if(!$this->conn) return;
 		return($this->memcache->set($var, serialize($val), $this->compression, $timeout));
 	}
 	
 	public function get($var) {
-		if(!$conn) return;
+		if(!$this->conn) return;
 		/* auto deserialization */
  		return($this->memcache->get($var));
 	}
 	
 	public function delete($var) {
-		if(!$conn) return;
+		if(!$this->conn) return;
 		return($this->memcache->delete($var));
 	}
 
 	public function clear() {
-		if(!$conn) return;
+		if(!$this->conn) return;
 		return($this->memcache->flush());
 	}
 
 	public function get_banner() {
-		if(!$conn) return('memcache server unreachable on '.$this->host.':'.$this->port);
+		if(!$this->conn) return('memcache server unreachable on '.$this->host.':'.$this->port);
 		$status = $this->memcache->getServerStatus($this->host);
 		return(
 			'memcache '.$this->memcache->getVersion().' '.
