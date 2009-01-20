@@ -154,7 +154,8 @@ class core_tpl {
 		
 		$t = $this;
 		$l = $this->wf->core_lang()->get_code();
-		$t->vars['_LANG']          = $this->wf->core_lang()->get_code();
+		$t->vars['_LANG']         = $this->wf->core_lang()->get_code();
+		$t->vars['_AV_LANGS']     = $this->wf->core_lang()->get_list();
 		$t->vars['_URI']          = $this->a_core_request->get_uri();
 		$t->vars['_GHOST']        = $this->a_core_request->get_ghost();
 		$t->vars['_BACK_URL']     = base64_encode($_SERVER["REQUEST_URI"]);
