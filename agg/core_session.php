@@ -31,6 +31,7 @@ class core_session extends wf_agg {
 	private $sess_var;
 	private $sess_timeout;
 	private $_core_pref;
+	private $cache;
 	
 	public $me = NULL;
 	public $data = array();
@@ -40,7 +41,8 @@ class core_session extends wf_agg {
 	public function loader($wf) {
 		$this->wf = $wf;
 		$this->_core_pref = $this->wf->core_pref();
-
+		$this->cache = $this->wf->core_cacher();
+		
 		$struct = array(
 			"id" => WF_PRI,
 			"email" => WF_VARCHAR,
