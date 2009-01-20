@@ -239,19 +239,10 @@ class core_db_pdo_sqlite extends core_db {
 			if($query_obj->where != NULL) {
 				foreach($query_obj->where as $k => $sv) {
 					$v = $this->safe_input($sv);
-					if(!$where) {
-						if(core_gettype($v) == WF_T_STRING)
-							$where .= "WHERE `$k` LIKE ?";
-						else
-							$where .= "WHERE `$k` = ?";
-						
-					}
-					else {
-						if(core_gettype($v) == WF_T_STRING)
-							$where .= " AND `$k` LIKE ?";
-						else
-							$where .= " AND `$k` = ?";
-					}
+					if(!$where)
+						$where .= "WHERE `$k` = ?";
+					else 
+						$where .= " AND `$k` = ?";
 					
 					array_push($prepare_value, $v);
 				}
@@ -524,18 +515,10 @@ class core_db_pdo_sqlite extends core_db {
 			$where = NULL;
 			foreach($query_obj->where as $k => $sv) {
 				$v = $this->safe_input($sv);
-				if(!$where) {
-					if(core_gettype($v) == WF_T_STRING)
-						$where .= "WHERE `$k` LIKE ?";
-					else
-						$where .= "WHERE `$k` = ?";
-				}
-				else {
-					if(core_gettype($v) == WF_T_STRING)
-						$where .= " AND `$k` LIKE ?";
-					else
-						$where .= " AND `$k` = ?";
-				}
+				if(!$where) 
+					$where .= "WHERE `$k` = ?";
+				else 
+					$where .= " AND `$k` = ?";
 				array_push($prepare_value, $v);
 			}
 			
@@ -551,18 +534,10 @@ class core_db_pdo_sqlite extends core_db {
 			if($query_obj->where != NULL) {
 				foreach($query_obj->where as $k => $sv) {
 					$v = $this->safe_input($sv);
-					if(!$where) {
-						if(core_gettype($v) == WF_T_STRING)
-							$where .= "WHERE `$k` LIKE ?";
-						else
-							$where .= "WHERE `$k` = ?";
-					}
-					else {
-						if(core_gettype($v) == WF_T_STRING)
-							$where .= " AND `$k` LIKE ?";
-						else
-							$where .= " AND `$k` = ?";
-					}
+					if(!$where) 
+						$where .= "WHERE `$k` = ?";
+					else
+						$where .= " AND `$k` = ?";
 					array_push($prepare_value, $v);
 				}
 			}
@@ -708,14 +683,15 @@ class core_db_pdo_sqlite extends core_db {
 		$val = $this->safe_input($sval);
 		switch($sign) {
 			case '=':
-				if(core_gettype($val) == WF_T_STRING)
-					$cond = "$var LIKE ?";
-				else
-					$cond = "$var = ?";
+				$cond = "$var = ?";
 				array_push($prepare_values, $val);
 				break;
 			case '==':
 				$cond = "$var = $val";
+				break;
+			case '~=':
+				$cond = "$var LIKE ?";
+				array_push($prepare_values, $val);
 				break;
 			case '>':
 				$cond = "$var > ?";
