@@ -65,19 +65,27 @@ class core_html extends wf_agg {
 		$final = NULL;
 		
 		/* fait les meta equiv */
-		foreach($this->meta_equiv as $name => $value) {
-			$final .= "<meta http-equiv=\"$name\"";
-			foreach($value as $k => $v ) 
-				$final .= " $k=\"$v\"";
-			$final .= "/>\n";
+		if(is_array($this->meta_equiv)) {
+			foreach($this->meta_equiv as $name => $value) {
+				if(is_array($value)) {
+					$final .= "<meta http-equiv=\"$name\"";
+					foreach($value as $k => $v ) 
+						$final .= " $k=\"$v\"";
+					$final .= "/>\n";
+				}
+			}
 		}
 		
 		/* fait les meta name */
-		foreach($this->meta_name as $name => $value) {
-			$final .= "<meta name=\"$name\"";
-			foreach($value as $k => $v ) 
-				$final .= " $k=\"$v\"";
-			$final .= "/>\n";
+		if(is_array($this->meta_name)) {
+			foreach($this->meta_name as $name => $value) {
+				if(is_array($value)) {
+					$final .= "<meta name=\"$name\"";
+					foreach($value as $k => $v ) 
+						$final .= " $k=\"$v\"";
+					$final .= "/>\n";
+				}
+			}
 		}
 		
 		return($final);
