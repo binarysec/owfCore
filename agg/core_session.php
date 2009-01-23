@@ -174,6 +174,14 @@ class core_session extends wf_agg {
 		/* merge data & update */
 		$this->me = array_merge($this->me, $update);
 
+		/* utilisation d'un cookie */
+		setcookie(
+			$this->sess_var,
+			$session,
+			time()+$this->sess_timeout,
+			"/"
+		);
+		
 		return(CORE_SESSION_VALID);
 	}
 	
