@@ -518,6 +518,9 @@ class core_tpl_compiler extends wf_agg {
 
 	/* alternating text */
 	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
+		if($argv[1]) {
+			return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : '.$argv[1].';');
+		}
 		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
 	}
 
