@@ -469,11 +469,20 @@ class web_framework {
 	 * Get a variable
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_var($name) {
+		$var = null;
+
 		if($_GET[$name])
-			return($_GET[$name]);
+			$var = $_GET[$name];
 		else if($_POST[$name])
-			return($_POST[$name]);
-		return(NULL);
+			$var = $_POST[$name];
+		else if($_FILES[$name])
+			$var = $_FILES[$name];
+
+		if(is_array($var) && is_array($_FILES[$name])) {
+			$var = array_merge($var, $_FILES[$name]);
+		}
+
+		return($var);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
