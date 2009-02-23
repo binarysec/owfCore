@@ -426,10 +426,15 @@ class core_db_pdo_sqlite extends core_db {
 					$offset = "OFFSET ".intval($query_obj->offset);
 			}
 			
-			if($query_obj->req_fct == WF_REQ_FCT_COUNT)
+			if($query_obj->req_fct & WF_REQ_FCT_COUNT)
 				$fields = "COUNT(*)";
+			
+			if($query_obj->req_fct & WF_REQ_FCT_DISTINCT)
+				$select = "SELECT DISTINCT";
+			else
+				$select = "SELECT";
 				
-			$query = "SELECT $fields FROM $as $cond $group $order $limit $offset";
+			$query = "$select $fields FROM $as $cond $group $order $limit $offset";
 			
 			$res = $this->sql_query($query, $prepare_value);
 			$query_obj->result = $this->fetch_result($res);
