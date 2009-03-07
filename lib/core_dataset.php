@@ -58,23 +58,163 @@ champs de control = array()
 		
 */
 
+define('WF_CORE_DATASET_SELECT_FILTER',   1);
+define('WF_CORE_DATASET_SLIDE_FILTER',    2);
+define('WF_CORE_DATASET_ACTIVATE_FILTER', 3);
 
 class core_dataset {
 
-	public function __construct(
-			$zone, // nom de la zone
-			$filters, // filtre possible
-			$order, // organisation possible
-			$views, // vue des champs
-			$control, // champs de control (permet d'ajouter des champs)
-			$pager // nombre max d'element par page
-		) {
-	
+	private $wf      = null;
+	private $dsrc    = null;
+	private $filters = array();
+	private $order   = array();
+	private $fields  = array();
+	private $fields_callback = array();
+	private $form_filter     = array();
+
+	public function __construct($wf, $dsrc) {
+		$this->wf  = $wf;
+		$this->dsrc = $dsrc;
 	}
-	
-	
-	public function draw() {
-	
+
+	/* set filters */
+	public function set_filters($filters) {
+		$this->filters = $filters;
+
+		/* apply conditions */
+		$this->form_filter = $this->wf->get_var('filter');
+		$conds = array();
+		foreach($this->filters as $col => $conf) {
+			if($this->form_filter[$col]) {
+				if($conf['type'] == WF_CORE_DATASET_SELECT_FILTER) {
+					$conds[] = array($col, '==', $this->form_filter[$col]);
+				}
+			}
+		}
+		$this->dsrc->apply_conds($conds);
+	}
+
+	/* set order */
+	public function set_order($col, $crit) {
+		$this->order = array($col => $crit);
+	}
+
+	/* set fields (columns) */
+	public function set_fields($fields, $callback = array()) {
+		$this->fields = $fields;
+		$this->fields_callback = $callback;
+	}
+
+	/* gen filter list */
+	public function gen_filters() {
+		$struct  = $this->dsrc->get_struct();
+		$data    = $this->dsrc->get_rdata();
+
+		$filters = array();
+
+		/* consider filters */
+		foreach($this->filters as $col => $conf) {
+			if($struct[$col]) {
+				$filter = array(
+					'type'  => $conf['type'],
+					'label' => $conf['label'],
+				);
+
+				/* select filter */
+				if($conf['type'] == WF_CORE_DATASET_SELECT_FILTER) {
+					/* get uniq list values */
+					$options = array();
+					foreach($data as $row) {
+						$value = $row[$col];
+
+						/* consider callback */
+						$pvalue = $value;
+						if($conf['callback']) {
+							$pvalue = call_user_func($conf['callback'], $value);
+						}
+
+						$options[$value] = $pvalue;
+					}
+					$filter['options'] = $options;
+				}
+				/* slide filter */
+				else if($conf['type'] == WF_CORE_DATASET_SLIDE_FILTER) {
+					/* get min and max values */
+					$min =  PHP_INT_MAX;
+					$max = -PHP_INT_MAX;
+					foreach($data as $row) {
+						if($row[$col] < $min) {
+							$min = $row[$col];
+						}
+						if($row[$col] > $max) {
+							$max = $row[$col];
+						}
+					}
+					$filter['min'] = $min;
+					$filter['max'] = $max;
+				}
+
+				$filters[$col] = $filter;
+			}
+		}
+
+		return($filters);
+	}
+
+	/* gen data list */
+	public function gen_data() {
+		/* retrieve data from datasource */
+		$struct   = $this->dsrc->get_struct();
+		$in_data  = $this->dsrc->get_data();
+		$out_data = array();
+
+		/* consider order */
+		if($this->order) {
+			uasort($in_data, array($this, 'callback_sort_data'));
+		}
+
+		/* consider fields */
+		foreach($in_data as $row) {
+			/* consider fields callback */
+			if($this->fields_callback) {
+				$row = call_user_func($this->fields_callback, $row);
+			}
+
+			/* generate data */
+			$field = array();
+			foreach($this->fields as $col => $conf) {
+				$field[] = $row[$col];
+			}
+			$out_data[] = $field;
+		}
+
+		return($out_data);
+	}
+
+	/* get fields */
+	public function get_fields() {
+		return($this->fields);
+	}
+
+	/* get form filter */
+	public function get_form_filter() {
+		return($this->form_filter);
+	}
+
+	/* data sorting callback */
+	public function callback_sort_data($a, $b) {
+		$key  = key($this->order);
+		$crit = current($this->order);
+
+		if($a[$key] == $b[$key]) {
+			return(0);
+		}
+
+		if($a[$key] < $b[$key]) {
+			return(($crit == WF_ASC) ? -1 : 1);
+		}
+		else {
+			return(($crit == WF_ASC) ? 1 : -1);
+		}
 	}
 }
-
