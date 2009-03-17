@@ -107,6 +107,11 @@ class core_dataset {
 		$this->set_page_nb($this->wf->get_var($this->dsrc->get_name().'_page'));
 	}
 
+	public function auto_rows_per_page() {
+		/* retrieve number of rows per page */
+		$this->set_rows_per_page($this->wf->get_var($this->dsrc->get_name().'_rows_per_page'));
+	}
+
 	public function set_cols($cols) {
 		$this->cols = $cols;
 	}
@@ -172,9 +177,10 @@ class core_dataset {
 		/* retrieve rows from datasource considering all options */
 		$rows = array();
 
-		/* apply auto conditions, page number and ordering */
+		/* apply auto conditions, page number, number of rows per page and ordering */
 		$this->auto_conds();
 		$this->auto_page_nb();
+		$this->auto_rows_per_page();
 		$this->auto_order();
 
 		/* number of page should not exceed total num rows */
