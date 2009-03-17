@@ -24,7 +24,7 @@
 
 class core_dataview {
 
-	private $wf   = null;
+	private $fw   = null;
 	private $dset = null;
 
 	public function __construct($wf, $dset) {
@@ -34,10 +34,16 @@ class core_dataview {
 
 	public function render($tpl_path) {
 		$tpl = new core_tpl($this->wf);
-		$tpl->set('filters',     $this->dset->gen_filters());
-		$tpl->set('fields',      $this->dset->get_fields());
-		$tpl->set('data',        $this->dset->gen_data());
-		$tpl->set('form_filter', $this->dset->get_form_filter());
+		$tpl->set('name',    $this->dset->get_name());
+		$tpl->set('cols',    $this->dset->get_cols());
+		$tpl->set('rows',    $this->dset->get_rows());
+		$tpl->set('filters', $this->dset->get_filters());
+		$tpl->set('page_nb', $this->dset->get_page_nb());
+		$tpl->set('rows_per_page',  $this->dset->get_rows_per_page());
+		$tpl->set('total_num_rows', $this->dset->get_total_num_rows());
+		$tpl->set('form_order',     $this->wf->get_var($this->dset->get_name().'_order'));
+		$tpl->set('form_filter',    $this->wf->get_var($this->dset->get_name().'_filter'));
+		$tpl->set('form_page',      $this->wf->get_var($this->dset->get_name().'_page'));
 		return($tpl->fetch($tpl_path));
 	}
 

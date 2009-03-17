@@ -22,30 +22,50 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-abstract class core_datasource {
+class core_datasource_db extends core_datasource {
 
-	protected $wf   = null;
-	private   $name = null;
-
-	public function __construct($wf, $name) {
-		$this->wf   = $wf;
-		$this->name = $name;
+	public function get_struct() {
+		$dbfields = $this->wf->db->get_zone($this->get_name());
+		$struct = array();
+		foreach($dbfields as $dbfield) {
+			$struct[$dbfield['b.name']] = $dbfield['b.type'];
+		}
+		return($struct);
 	}
 
-	public function get_name() {
-		return($this->name);
+	public function get_data($conds = array(), $order = array(), $offset = null, $nb = null) {
+		$q = new core_db_adv_select();
+		$q->alias('t', $this->get_name());
+		foreach($conds as $cond) {
+			$q->do_comp($cond[0], $cond[1], $cond[2]);
+			$q->do_and();
+		}
+		if($order) {
+			$q->order($order);
+		}
+		if(!is_null($offset) && $nb) {
+			$q->limit($nb, $offset);
+		}
+		$this->wf->db->query($q);
+		return($q->get_result());
 	}
 
-	/* get data struct */
-	abstract public function get_struct();
+	public function get_options($field) {
+		$q = new core_db_select_distinct($this->get_name(), array($field));
+		$q->order(array($field => WF_ASC));
+		$this->wf->db->query($q);
+		return($q->get_result());
+	}
 
-	/* get data */
-	abstract public function get_data($conds = array(), $order = array(), $offset = null, $nb = null);
-
-	/* get options for a field (field must be an array) */
-	abstract public function get_options($field);
-
-	/* get total number of rows */
-	abstract public function get_num_rows($conds);
+	public function get_num_rows($conds) {
+		$q = new core_db_adv_select($this->get_name(), array($field));
+		$q->request_function(WF_REQ_FCT_COUNT);
+		foreach($conds as $cond) {
+			$q->do_comp($cond[0], $cond[1], $cond[2]);
+		}
+		$this->wf->db->query($q);
+		$res = $q->get_result();
+		return($res[0]['COUNT(*)']);
+	}
 
 }

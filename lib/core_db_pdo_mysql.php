@@ -914,7 +914,7 @@ class core_db_pdo_mysql extends core_db {
 		$this->a_core_cacher->delete($cvar);
 	}
 	
-	private function get_zone($name) {
+	public function get_zone($name) {
 		/* try to retrieve zone from the cache */
 		$cvar = "core_db_pdo_mysql_zone_$name";
 		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
