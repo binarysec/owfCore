@@ -137,14 +137,14 @@ class core_lang extends wf_agg {
 		$html->set_meta_http_equiv(
 			"Content-Language",
 			array(
-				"Content" => $this->current["code"]
+				"content" => $this->current["code"]
 			)
 		);
 		$html->set_meta_http_equiv(
 			"Content-Type",
 			array(
-				"Content" => "text/html",
-				"charset" => $this->current["encoding"]
+				"content" => "text/html; charset=".$this->current["encoding"],
+#				"charset" => $this->current["encoding"]
 			)
 		);
 		

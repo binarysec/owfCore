@@ -518,6 +518,9 @@ class core_tpl_compiler extends wf_agg {
 
 	/* alternating text */
 	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
+		if($argv[1]) {
+			return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : '.$argv[1].';');
+		}
 		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
 	}
 
@@ -550,7 +553,12 @@ class core_tpl_compiler extends wf_agg {
 
 	/* random value */
 	public function func_rand(core_tpl_compiler $tpl_compiler, $argv) {
-		return('echo rand('.$argv[0].', '.$argv[1].')');
+		return('echo rand('.$argv[0].', '.$argv[1].');');
+	}
+
+	/* human readable size by keo on 22/01/09 */
+	public function func_hsize(core_tpl_compiler $tpl_compiler, $argv) {
+		return('echo $t->wf->bit8_scale('.$argv[0].');');
 	}
 
 	private function parse_tpl_var($var) {
