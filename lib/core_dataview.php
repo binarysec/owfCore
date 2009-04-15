@@ -32,8 +32,15 @@ class core_dataview {
 		$this->dset = $dset;
 	}
 
-	public function render($tpl_path) {
+	public function render($tpl_path, $tplset=array()) {
+		/* création du template */
 		$tpl = new core_tpl($this->wf);
+		
+		/* ajout des variables utilisateur */
+		foreach($tplset as $k => $v)
+			$tpl->set($k, $v);
+			
+		/* ajout des variables interne */
 		$tpl->set('name',    $this->dset->get_name());
 		$tpl->set('cols',    $this->dset->get_cols());
 		$tpl->set('rows',    $this->dset->get_rows());
