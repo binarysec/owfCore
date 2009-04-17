@@ -107,6 +107,10 @@ class wfr_core_data extends wf_route_request {
 				$_SERVER['SERVER_PROTOCOL'].
 				" 304 Not Modified"
 			);
+			$this->a_core_request->set_header(
+				"Cache-Control",
+				"max-age=3600"
+			);
 			$this->a_core_request->send_headers();
 			exit(0);
 		}
@@ -123,12 +127,12 @@ class wfr_core_data extends wf_route_request {
 		);
 		
 		/* Cache control by expires */
-		$mtime = time()+3600;
-		$expires = date("D, d M Y H:i:s \G\M\T", $mtime);
-		$this->a_core_request->set_header(
-			"Expires",
-			$expires
-		);
+// 		$mtime = time()+3600;
+// 		$expires = date("D, d M Y H:i:s \G\M\T", $mtime);
+// 		$this->a_core_request->set_header(
+// 			"Expires",
+// 			$expires
+// 		);
 		$this->a_core_request->set_header(
 			"Cache-Control",
 			"max-age=3600"
@@ -138,7 +142,6 @@ class wfr_core_data extends wf_route_request {
 			"Content-length", 
 			filesize($used_file)
 		);
-		
 		$this->a_core_request->send_headers();
 		
 		/* envoi le fichier */
