@@ -41,7 +41,7 @@ class core_session extends wf_agg {
 	public function loader($wf) {
 		$this->wf = $wf;
 		$this->_core_pref = $this->wf->core_pref();
-		$this->cache = $this->wf->core_cacher();
+		$this->cache = new core_cacher_group($wf, "session");
 		
 		$struct = array(
 			"id" => WF_PRI,
@@ -117,16 +117,21 @@ class core_session extends wf_agg {
 	 * Vérification de la session
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function check_session() {
+	
 		/* try to get existing session */
 		if($session = $_COOKIE[$this->sess_var]) {
-			$q = new core_db_select("core_session");
-			$where = array(
-				"session_id" => $session
-			);
-	
-			$q->where($where);
-			$this->wf->db->query($q);
-			$res = $q->get_result();
+			$res = $this->cache->get("auth");
+			if(!$res) {
+				$q = new core_db_select("core_session");
+				$where = array(
+					"session_id" => $session
+				);
+		
+				$q->where($where);
+				$this->wf->db->query($q);
+				$res = $q->get_result();
+				$this->cache->store("auth", $res);
+			}
 		}
 
 		/* no existing session, open anonymous session */
@@ -510,6 +515,7 @@ class core_session extends wf_agg {
 					&$perms, 
 					&$value
 				);
+			$this->cache->clear();
 		}
 		else if(is_array($perms)) {
 			for($a=0; $a<count($perms); $a++) {
@@ -529,6 +535,7 @@ class core_session extends wf_agg {
 						&$v
 					);
 			}
+			$this->cache->clear();
 		}
 		else
 			return(FALSE);
@@ -542,7 +549,9 @@ class core_session extends wf_agg {
 	 * Master request processor
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function user_add_permissions($uid, $perm, $value=NULL) {
-		return($this->user_set_permissions(&$uid, &$perm, &$value));
+		$ret = $this->user_set_permissions(&$uid, &$perm, &$value);
+		$this->cache->clear();
+		return($ret);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -563,6 +572,7 @@ class core_session extends wf_agg {
 			$q->do_comp('b.perm_name', '=', $perm);
 			
 			$this->wf->db->query($q);
+			$this->cache->clear();
 		}
 		else {
 			$q = new core_db_delete(
@@ -570,6 +580,7 @@ class core_session extends wf_agg {
 				array('core_session_id' => $uid)
 			);
 			$this->wf->db->query($q);
+			$this->cache->clear();
 		}
 		return(TRUE);
 	}
@@ -648,24 +659,32 @@ class core_session extends wf_agg {
 		}
 
 		/* generate the cvar corresponding to the request */
-		$cvar = "core_session_preq_$uid".
-			"_$request";
-
+		$cvar = "p_$uid".
+			"_".md5($request);
+		$cache = $this->cache->get($cvar);
+		
+		if(is_array($cache)) {
+			if(count($cache) <= 0)
+				return(NULL);
+			return($cache);
+		}
+		
 		/* execute request */
 		$this->wf->db->query($q);
 		$res = $q->get_result();
 
 		$tab = array();
-		
 		/* construct tab perm */
 		foreach($res as $lres) {
 			$tab[$lres["b.perm_name"]] = $lres["b.perm_value"] == NULL ? 
 				TRUE : $lres["b.perm_value"];
 		}
 
+		$this->cache->store($cvar, $tab);
+		
 		if(count($res) <= 0)
 			return(NULL);
-
+		 
 		return($tab);
 	}
 
