@@ -22,7 +22,7 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-define("WF_VERSION",   "1.0.1-branched");
+define("WF_VERSION",   "1.0.2-branched");
 
 define("WF_T_INTEGER", 1);
 define("WF_T_DOUBLE",  2);
