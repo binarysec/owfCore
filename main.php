@@ -311,7 +311,7 @@ class web_framework {
 	 *
 	 * Open the database
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function open_db() {
+	public function open_db() {
 		$d = $this->ini_arr["db"];
 		$driver = "core_db_".$d["driver"];
 		$this->db = new ${driver};
