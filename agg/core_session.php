@@ -28,7 +28,7 @@ define("CORE_SESSION_USER_UNKNOWN", 3);
 define("CORE_SESSION_AUTH_FAILED",  4);
 
 class core_session extends wf_agg {
-	private $sess_var;
+	public $sess_var;
 	private $sess_timeout;
 	private $_core_pref;
 	private $cache;
@@ -92,12 +92,16 @@ class core_session extends wf_agg {
 		);
 		
 		/* session variable */
-		$this->sess_var = $this->pref_session->register(
-			"variable",
-			"Variable context",
-			CORE_PREF_VARCHAR,
-			"session".rand()
-		);
+		if($this->wf->ini_arr["session"]["variable"])
+			$this->sess_var = &$this->wf->ini_arr["session"]["variable"];
+		else {
+			$this->sess_var = $this->pref_session->register(
+				"variable",
+				"Variable context",
+				CORE_PREF_VARCHAR,
+				"session".rand()
+			);
+		}
 
 		/* session timeout */
 		$this->sess_timeout = $this->pref_session->register(

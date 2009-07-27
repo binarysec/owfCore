@@ -579,6 +579,7 @@ class web_framework {
 			);
 		}
 		
+		header("X-Owf-Session: NeedAuth");
 		echo $tpl->fetch("core/html/login");
 		exit(0);
 	}
