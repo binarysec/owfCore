@@ -564,7 +564,15 @@ class core_db_pdo_mysql extends core_db {
 				
 			foreach($query_obj->cond_matrix as $k) {
 				switch($k[0]) {
-					case 1: $cond .= '('; break;
+					case 1: 
+						switch($atom) {
+							case 0: $cond .= ' ';  break;
+							case 1: $cond .= ' OR ';  break;
+							case 2: $cond .= ' AND ';  break;
+							case 3: $cond .= ' AND '; break;
+						}
+						$atom = 0;
+						$cond .= '('; break;
 					case 2: $cond .= ')'; break;
 					case 3: $atom = 1; break;
 					case 4: $atom = 2; break;
