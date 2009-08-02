@@ -121,21 +121,22 @@ class core_session extends wf_agg {
 	 * Vérification de la session
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function check_session() {
-	
-		/* try to get existing session */
-		if($session = $_COOKIE[$this->sess_var]) {
-			$res = $this->cache->get("auth");
-			if(!$res) {
-				$q = new core_db_select("core_session");
-				$where = array(
-					"session_id" => $session
-				);
 		
-				$q->where($where);
-				$this->wf->db->query($q);
-				$res = $q->get_result();
-				$this->cache->store("auth", $res);
-			}
+		/* try to get existing session */
+		$session = $_COOKIE[$this->sess_var];
+		$res = $this->cache->get("auth_$session");
+		if(!$res) {
+			$q = new core_db_select("core_session");
+			$where = array(
+				"session_id" => $session
+			);
+	
+			$q->where($where);
+			$this->wf->db->query($q);
+			$res = $q->get_result();
+
+			if(count($res) != 0)
+				$this->cache->store("auth_$session", $res);
 		}
 
 		/* no existing session, open anonymous session */
