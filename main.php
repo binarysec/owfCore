@@ -317,20 +317,30 @@ class web_framework {
 	 *
 	 * Function used to execute a share event
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function execute_hook($name, $args=NULL) {
+	public function execute_hook($name, $args=NULL, $cb=NULL) {
 		$result = array();
 		
 		/* execute filters */
 		foreach($this->modules as $k => $mod) {
-		
 			/* function exists ? */
-			if(method_exists($mod[7], $name)) {
+			if(method_exists($mod[8], $name)) {
 			
 				/* call the user function */
-				$result[] = call_user_func_array(
-					array($mod[7], $name),
+				$r = call_user_func_array(
+					array($mod[8], $name),
 					$args
 				);
+				
+				/* call back user function to 
+				   control result */
+				if($cb) {
+					call_user_func_array(
+						$cb,
+						$r
+					);
+				}
+				
+				$result[] = $r;
 			}
 		}
 		
