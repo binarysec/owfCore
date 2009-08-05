@@ -32,7 +32,11 @@ class core_dataview {
 		$this->dset = $dset;
 	}
 
-	public function render($tpl_path, $tplset=array()) {
+	public function render($tpl_path=NULL, $tplset=array()) {
+		/* default template */
+		if(!$tpl_path)
+			$tpl_path = "core/dataset";
+			
 		/* création du template */
 		$tpl = new core_tpl($this->wf);
 		
