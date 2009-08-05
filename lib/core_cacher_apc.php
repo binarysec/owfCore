@@ -28,7 +28,8 @@ class core_cacher_apc extends core_cacher_lib {
 	}
 	
 	public function store($var, $val, $timeout) {
-		apc_store($var, serialize($val), $timeout);
+		if(!apc_store($var, serialize($val), $timeout))
+			return(FALSE);
 		return(TRUE);
 	}
 	

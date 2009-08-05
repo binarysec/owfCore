@@ -43,6 +43,20 @@ class wfr_core_session extends wf_route_request {
 		}
 		/* bon login */
 		else {
+
+			if(strlen($url) <= 1) {
+				if($this->wf->ini_arr["session"]["default_url"])
+					$link = $this->wf->linker($this->wf->ini_arr["session"]["default_url"]);
+				else	
+					$link = $this->wf->linker('/');
+				
+				header("X-Owf-Session: ".$ret["session_id"]);
+				header("X-Owf-Session-Var: ".$this->a_core_session->sess_var);
+				header("Location: ".$link);
+				exit(0);
+			}
+			header("X-Owf-Session: ".$ret["session_id"]);
+			header("X-Owf-Session-Var: ".$this->a_core_session->sess_var);
 			header("Location: ".$url);
 			exit(0);
 		}
@@ -50,7 +64,10 @@ class wfr_core_session extends wf_route_request {
 
 	public function logout() {
 		$this->wf->core_session()->logout();
-		$link = $this->wf->linker('/');
+		if($this->wf->ini_arr["session"]["default_url"])
+			$link = $this->wf->linker($this->wf->ini_arr["session"]["default_url"]);
+		else	
+			$link = $this->wf->linker('/');
 		header("Location: $link");
 		exit(0);
 	}
