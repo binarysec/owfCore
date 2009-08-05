@@ -74,90 +74,6 @@ abstract class core_cacher_lib {
 }
 
 /**
- * Cache grouping system
- */
-class core_cacher_group {
-	private $name;
-	private $wf;
-	private $ref = array();
-	private $ref_update = FALSE;
-	private $core_cacher;
-	private $group;
-	
-	/**
-	 * Constructor
-	 * @param $wf Web Framework
-	 * @param $name The group name
-	 */
-	public function __construct($wf, $name) {
-		$this->wf = $wf;
-		$this->name = $name;
-		$this->core_cacher = $this->wf->core_cacher();
-		$this->group = "core_cacher_group_".$this->name;
-
-		/* load group */
-		$this->ref = $this->core_cacher->get($this->group);
-	}
-	
-	/**
-	 * Destructor
-	 * @param $wf Web Framework
-	 * @param $name The group name
-	 */
-	public function __destruct() {
-		if($this->ref_update) {
-			$this->core_cacher->store(
-				$this->group,
-				$this->ref
-			);
-		}
-	}
-	
-	/**
-	 * Store a key-value pair
-	 * @param $var The key
-	 * @param $val The value
-	 * @param $timeout Maximum time (in milliseconds)
-	 */
-	public function store($var, $val, $timeout=NULL) {
-		$this->ref[$var] = TRUE;
-		$this->ref_update = TRUE;
-		return($this->core_cacher->store($this->group.'_'.$var, $val, $timeout));
-	}
-
-	/**
-	 * Retrieve a cached value
-	 *
-	 * @param $var The key
-	 * @return The cached value
-	 */
-	public function get($var) {
-		return($this->core_cacher->get($this->group.'_'.$var));
-	}
-
-	/**
-	 * Delete a cached value
-	 * @param $var The key
-	 */
-	public function delete($var) {
-		return($this->core_cacher->delete($this->group.'_'.$var));
-	}
-
-	/**
-	 * Delete all cached values of this group
-	 */
-	public function clear() {
-		foreach($this->ref as $key => $val) {
-			$this->core_cacher->delete($this->group.'_'.$key);
-		}
-		$this->ref_update = TRUE;
-		return(TRUE);
-	}
-	
-}
-
- 
-/**
  * Cache system in shared memory
  */
 class core_cacher extends wf_agg {
@@ -191,9 +107,9 @@ class core_cacher extends wf_agg {
 	public function store($var, $val, $timeout=NULL) {
 		if (is_null($timeout))
 			$timeout = $this->wf->ini_arr["common"]["max_cache_timeout"];
-
+	
 		if($this->system)
-			$this->system->store($this->namespace.$var, $val, $timeout);
+			return($this->system->store($this->namespace.$var, $val, $timeout));
 		return(TRUE);
 	}
 

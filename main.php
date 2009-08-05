@@ -22,7 +22,7 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-define("WF_VERSION",   "1.0.1-branched");
+define("WF_VERSION",   "1.1.0-HEAD");
 
 define("WF_T_INTEGER", 1);
 define("WF_T_DOUBLE",  2);
@@ -245,7 +245,6 @@ class web_framework {
 	 * Application modules manager
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public $modules = array();
-	public $events = array();
 	
 	public function load_module($name, $dir) {
 		$modfile = $dir."/module.php";	
@@ -292,18 +291,6 @@ class web_framework {
 				$obj->get_depends(),
 				$obj
 			);
-			
-			/* check if module has hookable event */
-			if(method_exists($obj, "get_events")) {
-				$events = $obj->get_events();
-				if(count($events) > 0) {
-					foreach($events as $name => $event) {
-						if(!is_array($this->events[$name]))
-							$this->events[$name] = array();
-						$this->events[$name][] = $event;
-					}
-				}
-			}
 		}
 	}
 	
@@ -311,7 +298,7 @@ class web_framework {
 	 *
 	 * Open the database
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	private function open_db() {
+	public function open_db() {
 		$d = $this->ini_arr["db"];
 		$driver = "core_db_".$d["driver"];
 		$this->db = new ${driver};
@@ -330,19 +317,34 @@ class web_framework {
 	 *
 	 * Function used to execute a share event
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function execute_hook($name, $args=NULL, $result=NULL) {
-		if(!$this->events[$name])
-			return(FALSE);
-			
+	public function execute_hook($name, $args=NULL, $cb=NULL) {
+		$result = array();
+		
 		/* execute filters */
-		foreach($this->events[$name] as $event) {
-			$agg = $this->__call($event[0]);
-			$ret = $agg->$event[1]($args);
-			if(is_array($result))
-				$result[] = $ret;
+		foreach($this->modules as $k => $mod) {
+			/* function exists ? */
+			if(method_exists($mod[8], $name)) {
+			
+				/* call the user function */
+				$r = call_user_func_array(
+					array($mod[8], $name),
+					$args
+				);
+				
+				/* call back user function to 
+				   control result */
+				if($cb) {
+					call_user_func_array(
+						$cb,
+						$r
+					);
+				}
+				
+				$result[] = $r;
+			}
 		}
 		
-		return(TRUE);
+		return($result);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -579,6 +581,7 @@ class web_framework {
 			);
 		}
 		
+		header("X-Owf-Session: NeedAuth");
 		echo $tpl->fetch("core/html/login");
 		exit(0);
 	}
