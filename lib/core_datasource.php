@@ -52,6 +52,6 @@ abstract class core_datasource {
 	/* add a data precondition */
 	public function add_preconds($in) {
 		foreach($in as $v)
-			$this->preconds = $v;
+			$this->preconds[] = $v;
 	}
 }
