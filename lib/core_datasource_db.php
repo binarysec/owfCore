@@ -36,6 +36,10 @@ class core_datasource_db extends core_datasource {
 	public function get_data($conds = array(), $order = array(), $offset = null, $nb = null) {
 		$q = new core_db_adv_select();
 		$q->alias('t', $this->get_name());
+		foreach($this->preconds as $cond) {
+			$q->do_comp($cond[0], $cond[1], $cond[2]);
+			$q->do_and();
+		}
 		foreach($conds as $cond) {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
 			$q->do_and();
@@ -60,6 +64,10 @@ class core_datasource_db extends core_datasource {
 	public function get_num_rows($conds) {
 		$q = new core_db_adv_select($this->get_name(), array($field));
 		$q->request_function(WF_REQ_FCT_COUNT);
+		foreach($this->preconds as $cond) {
+			$q->do_comp($cond[0], $cond[1], $cond[2]);
+			$q->do_and();
+		}
 		foreach($conds as $cond) {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
 		}

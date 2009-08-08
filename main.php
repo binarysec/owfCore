@@ -692,6 +692,15 @@ class web_framework {
 		return($b);
 	}
 	
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Use as a hash standard
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function hash($data) {
+		return(sha1($data));
+	}
+	
 /*
 get_first_filename
 locate_files

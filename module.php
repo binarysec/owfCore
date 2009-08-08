@@ -14,22 +14,22 @@ class wfm_core extends wf_module {
 	
 	public function get_actions() {
 		return(array(
-			"/session/login" => array(
-				WF_ROUTE_ACTION,
-				"session",
-				"login",
-				"Login",
-				WF_ROUTE_HIDE,
-				array("session:anon")
-			),
-			"/session/logout" => array(
-				WF_ROUTE_ACTION,
-				"session",
-				"logout",
-				"Logout",
-				WF_ROUTE_HIDE,
-				array("session:anon")
-			),
+// 			"/session/login" => array(
+// 				WF_ROUTE_ACTION,
+// 				"session",
+// 				"login",
+// 				"Login",
+// 				WF_ROUTE_HIDE,
+// 				array("session:anon")
+// 			),
+// 			"/session/logout" => array(
+// 				WF_ROUTE_ACTION,
+// 				"session",
+// 				"logout",
+// 				"Logout",
+// 				WF_ROUTE_HIDE,
+// 				array("session:anon")
+// 			),
 			"/img" => array(
 				WF_ROUTE_ACTION,
 				"img",
