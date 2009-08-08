@@ -23,7 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class core_request extends wf_agg {
-	var $a_core_session;
+	var $_session;
 	var $a_core_route;
 	var $a_core_html;
 	var $a_core_request;
@@ -31,7 +31,7 @@ class core_request extends wf_agg {
 	public function loader($wf) {
 		$this->wf = $wf;
 
-		$this->a_core_session = $this->wf->core_session();
+		$this->_session = $this->wf->session();
 		$this->a_core_route = $this->wf->core_route();
 		$this->a_core_html = $this->wf->core_html();
 
@@ -79,8 +79,8 @@ class core_request extends wf_agg {
 		$this->check_for_login();
 		
 		/* vérification de la session */
-		$ret = $this->a_core_session->check_session();
-		if($ret != CORE_SESSION_VALID) {
+		$ret = $this->_session->check_session();
+		if($ret != SESSION_VALID) {
 			$this->wf->display_login(
 				"Session destroyed"
 			);
@@ -94,7 +94,7 @@ class core_request extends wf_agg {
 		$need_arranged = array();
 		
 		/* get uid */
-		$uid = &$this->a_core_session->me["id"];
+		$uid = &$this->_session->me["id"];
 		
 		/* special handle form anon session */
 		if($uid == -1) {
@@ -113,8 +113,8 @@ class core_request extends wf_agg {
 				);
 		}
 
-		$display_login = $this->a_core_session->check_permissions(
-			$need, NULL, NULL, &$need_arranged
+		$display_login = $this->_session->check_permission(
+			$need
 		);
 
 		/* do we need to display login ? */
@@ -122,8 +122,6 @@ class core_request extends wf_agg {
 			$this->wf->display_login(
 				"You don't have enough permissions"
 			);
-
-
 		
 		/* terminate */
 		$this->a_core_route->execute_route(&$this->channel);

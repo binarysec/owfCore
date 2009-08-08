@@ -98,8 +98,9 @@ class core_lang extends wf_agg {
 	var $current = NULL;
 	var $available = NULL;
 	
-	var $_core_session;
-	var $_core_cacher;
+	var $_session;
+	private $_core_cacher;
+	private $_core_register;
 	
 	public function loader($wf) {
 		$this->wf = &$wf;
@@ -115,9 +116,10 @@ class core_lang extends wf_agg {
 		foreach($t as $v)
 			$this->available[$v] = $this->ini[$v];
 
-		$this->_core_session = $this->wf->core_session();
+		$this->_session = $this->wf->session();
 		$this->_core_cacher = $this->wf->core_cacher();
-
+		$this->_core_register = $this->wf->core_register();
+		
 		$this->default = $this->resolv($this->wf->ini_arr["lang"]["default"]);
 	}
 	
@@ -159,7 +161,7 @@ class core_lang extends wf_agg {
 		);
 		
 		/* force le passage de la langue */
-		$this->_core_session->set_data(array(
+		$this->_core_register->set_user_data(array(
 			"language" => $lang
 		));
 	
@@ -175,7 +177,7 @@ class core_lang extends wf_agg {
 		if($lang)
 			$lang = $lang;
 		else
-			$lang = $this->_core_session->get_data("language");
+			$lang = $this->_core_register->get_user_data("language");
 			
 		/* get the full context path */
 		$full = "var/lang/ctx/".

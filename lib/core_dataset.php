@@ -38,7 +38,8 @@ class core_dataset {
 	private $row_callback   = null;
 	private $rows_per_page  = null;
 	private $page_nb        = 1;
-
+	
+	
 	public function __construct($wf, $dsrc) {
 		$this->wf   = $wf;
 		$this->dsrc = $dsrc;

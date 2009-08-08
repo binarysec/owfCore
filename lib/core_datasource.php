@@ -26,7 +26,8 @@ abstract class core_datasource {
 
 	protected $wf   = null;
 	private   $name = null;
-
+	public  $preconds = array();
+	
 	public function __construct($wf, $name) {
 		$this->wf   = $wf;
 		$this->name = $name;
@@ -48,4 +49,9 @@ abstract class core_datasource {
 	/* get total number of rows */
 	abstract public function get_num_rows($conds);
 
+	/* add a data precondition */
+	public function add_preconds($in) {
+		foreach($in as $v)
+			$this->preconds = $v;
+	}
 }
