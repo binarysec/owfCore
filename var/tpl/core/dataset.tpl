@@ -69,7 +69,7 @@
 </div>
 
 <div class="dataset_data">
-	<table>
+	<table class="dataset_data_table">
 		<thead class="dataset_data_head">
 			<tr>
 				{foreach $cols as $id => $col}
