@@ -1,5 +1,9 @@
-{literal}
+
 <script type="text/javascript">
+	
+	var data_responder = '{$form_responder}';
+	
+	{literal}
 	
 	function dataset_set_order(col, order) {
 		{/literal}
@@ -10,19 +14,39 @@
 		{/foreach}
 		{literal}
 		document.getElementById('form_{/literal}{$name}{literal}_order_' + col).value = order;
-		document.getElementById('form_{/literal}{$name}{literal}').submit();
+		
+		if(data_responder != '')
+			f = document.getElementById(data_responder);
+		else
+			f = document.getElementById('form_{/literal}{$name}{literal}');
+		f.method = 'GET';
+		f.action = '';	
+		f.submit();
 	}
 	
 	function dataset_set_page(nb) {
 		document.getElementById('form_{/literal}{$name}{literal}_page').value = nb;
-		document.getElementById('form_{/literal}{$name}{literal}').submit();
+		if(data_responder != '')
+			f = document.getElementById(data_responder);
+		else
+			f = document.getElementById('form_{/literal}{$name}{literal}');
+		f.method = 'GET';
+		f.action = '';	
+		f.submit();
 	}
 	
 	function dataset_set_rows_per_page(nb) {
 		document.getElementById('form_{/literal}{$name}{literal}_rows_per_page').value = nb;
-		document.getElementById('form_{/literal}{$name}{literal}').submit();
+		if(data_responder != '')
+			f = document.getElementById(data_responder);
+		else
+			f = document.getElementById('form_{/literal}{$name}{literal}');
+		f.method = 'GET';
+		f.action = '';	
+		f.submit();
 	}
 
+	
 </script>
 {/literal}
 
@@ -108,10 +132,10 @@
 <td align="right">
 	R&eacute;sultats par page : 
 	
-	<select name="{$name}_rows_per_page" onchange="javascript: dataset_set_rows_per_page(this.value);">
-		<option value="1"{if $rows_per_page == 1} selected="selected"{/if}>25 r&eacute;sultat</option>
-		<option value="2"{if $rows_per_page == 2} selected="selected"{/if}>50 r&eacute;sultats</option>
-		<option value="3"{if $rows_per_page == 3} selected="selected"{/if}>100 r&eacute;sultats</option>
+	<select onchange="javascript: dataset_set_rows_per_page(this.value);">
+		<option value="0"{if $rows_per_page == 25} selected="selected"{/if}>25 r&eacute;sultat</option>
+		<option value="1"{if $rows_per_page == 50} selected="selected"{/if}>50 r&eacute;sultats</option>
+		<option value="2"{if $rows_per_page == 100} selected="selected"{/if}>100 r&eacute;sultats</option>
 	</select>
 </td>
 </tr>
@@ -194,10 +218,10 @@
 <td align="right">
 	R&eacute;sultats par page : 
 	
-	<select name="{$name}_rows_per_page" onchange="javascript: dataset_set_rows_per_page(this.value);">
-		<option value="1"{if $rows_per_page == 1} selected="selected"{/if}>25 r&eacute;sultat</option>
-		<option value="2"{if $rows_per_page == 2} selected="selected"{/if}>50 r&eacute;sultats</option>
-		<option value="3"{if $rows_per_page == 3} selected="selected"{/if}>100 r&eacute;sultats</option>
+	<select onchange="javascript: dataset_set_rows_per_page(this.value);">
+		<option value="0"{if $rows_per_page == 25} selected="selected"{/if}>25 r&eacute;sultat</option>
+		<option value="1"{if $rows_per_page == 50} selected="selected"{/if}>50 r&eacute;sultats</option>
+		<option value="2"{if $rows_per_page == 100} selected="selected"{/if}>100 r&eacute;sultats</option>
 	</select>
 </td>
 </tr>
