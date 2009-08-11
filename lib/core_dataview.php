@@ -27,6 +27,7 @@ class core_dataview {
 	private $fw   = null;
 	private $dset = null;
 	private $args = array();
+	private $form_responder = null;
 	
 	public function __construct($wf, $dset) {
 		$this->wf   = $wf;
@@ -35,6 +36,10 @@ class core_dataview {
 	
 	public function add_argument($var, $val) {
 		$this->args[$var] = $val;
+	}
+	
+	public function set_form_responder($name) {
+		$this->form_responder = $name;
 	}
 	
 	public function render($tpl_path=NULL, $tplset=array()) {
@@ -56,6 +61,7 @@ class core_dataview {
 		$tpl->set('filters', $this->dset->get_filters());
 		$tpl->set('page_nb', $this->dset->get_page_nb());
 		$tpl->set('args', $this->args);
+		$tpl->set('form_responder', $this->form_responder);
 		$tpl->set('rows_per_page',  $this->dset->get_rows_per_page());
 		$tpl->set('total_num_rows', $this->dset->get_total_num_rows());
 		$tpl->set('form_order',     $this->wf->get_var($this->dset->get_name().'_order'));
