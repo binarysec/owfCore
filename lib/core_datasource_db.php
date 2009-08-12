@@ -23,7 +23,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class core_datasource_db extends core_datasource {
-
+	private $cache = null;
+	
 	public function get_struct() {
 		$dbfields = $this->wf->db->get_zone($this->get_name());
 		$struct = array();
@@ -62,18 +63,36 @@ class core_datasource_db extends core_datasource {
 	}
 
 	public function get_num_rows($conds) {
+		if(!$this->cache)
+			$this->cache = $this->wf->core_cacher();
+			
 		$q = new core_db_adv_select($this->get_name(), array($field));
 		$q->request_function(WF_REQ_FCT_COUNT);
 		$q->alias('t', $this->get_name());
+		
+		/* create cache line */
+		$cl = "core_ddb_src_".$this->get_name();
 		foreach($this->preconds as $cond) {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
+			$cl .= "_p$cond[0]$cond[1]$cond[2]";
 		}
 		foreach($conds as $cond) {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
+			$cl .= "_c$cond[0]$cond[1]$cond[2]";
 		}
+
+		/* get cache */
+		if(($cache = $this->cache->get($cl)))
+			return($cache);
+			
 		$this->wf->db->query($q);
 		$res = $q->get_result();
-		return($res[0]['COUNT(*)']);
+		$count = $res[0]['COUNT(*)'];
+		
+		/* store cache */
+		$this->cache->store($cl, $count);
+		
+		return($count);
 	}
 
 }

@@ -25,6 +25,15 @@
 class core_cacher_apc extends core_cacher_lib {
 	public function __construct($wf) {
 		$this->wf = $wf;
+		
+		if(!function_exists("apc_fetch")) {
+			throw new wf_exception(
+				$this,
+				WF_EXC_PRIVATE,
+				"APC not available"
+			);
+		}
+		
 	}
 	
 	public function store($var, $val, $timeout) {
