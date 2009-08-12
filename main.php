@@ -181,10 +181,10 @@ class wf_exception extends Exception {
 class web_framework {
 	var $ini_arr;
 	var $db;
-	
+	private $_core_log = null;
 	public $time_start;
 	
-	public function __construct($ini) {
+	public function __construct($ini, $db=true) {
 		/* record starting time */
 		$this->time_start = microtime(TRUE);
 		
@@ -204,15 +204,26 @@ class web_framework {
 		spl_autoload_register(array($this, 'autoloader'));
 		
 		/* Open database */
-		$this->open_db();
+		if($db == true)
+			$this->open_db();
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Master processing
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function process(
-		) {
+	public function log($log) {
+		if(!$this->_core_log)
+			$this->_core_log = $this->core_log();
+			
+		$this->_core_log->log(&$log);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Master processing
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function process() {
 		/* chargement des routes */
 		$this->core_route()->scan();
 		

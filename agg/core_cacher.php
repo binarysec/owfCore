@@ -186,23 +186,33 @@ class core_cacher extends wf_agg {
 			$this->system = NULL;
 			return;
 		}
-
-		switch($cache_driver) {
-			case 'apc':
-				$this->system = new core_cacher_apc($this->wf);
-				break;
-
-			case 'memcache':
-				$this->system = new core_cacher_memcache($this->wf);
-				break;
-
-			case 'eaccelerator':
-				$this->system = new core_cacher_eaccelerator($this->wf);
-				break;
-
-			default:
-				$this->system = NULL;
-				break;
+		try {
+			switch($cache_driver) {
+				case 'apc':
+					$this->system = new core_cacher_apc(
+						$this->wf
+					);
+					break;
+	
+				case 'memcache':
+					$this->system = new core_cacher_memcache(
+						$this->wf
+					);
+					break;
+	
+				case 'eaccelerator':
+					$this->system = new core_cacher_eaccelerator(
+						$this->wf
+					);
+					break;
+	
+				default:
+					$this->system = NULL;
+					break;
+			}
+		} 
+		catch (wf_exception $e) {
+			$this->system = NULL;
 		}
 	}
 	

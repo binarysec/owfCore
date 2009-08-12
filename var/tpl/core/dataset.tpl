@@ -147,7 +147,7 @@
 		<thead class="dataset_data_head">
 			<tr>
 				{foreach $cols as $id => $col}
-				<th>
+				<th style="text-align: center;">
 					{if $col['orderable']}<a href="javascript: void(0);" onclick="javascript: dataset_set_order('{$id}', '{if $form_order[$id] == 'A'}D{elseif !$form_order[$id]}A{else}{/if}');">{/if}{$col['name']}{if $col['orderable']}</a>{/if}
 					{if $form_order[$id]}
 					{if $form_order[$id] == 'D'}<img src="{link '/data/yui/build/assets/skins/sam/dt-arrow-dn.png'}" alt="[DESC]" title="Tri d&eacute;croissant" />
