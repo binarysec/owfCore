@@ -168,7 +168,7 @@
 			</tr>
 			{/foreach}
 			{else}
-			<tr class="noresult">
+			<tr class="dataset_noresult">
 				<td colspan="{$cols|count}">La recherche n'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.</td>
 			</tr>
 			{/if}
