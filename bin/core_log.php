@@ -1,12 +1,15 @@
 <?php
 
-class core_log_bin extends web_framework {
+class core_log_bin {
 	private $gzip = "/bin/gzip";
 	private $gunzip = "/bin/gunzip";
 	private $core_log;
+	private $wf;
 	
-	public function cli() {
-		$this->cl = $this->core_log();
+	public function __construct($ini) {
+		$this->wf = new web_framework($ini);
+
+		$this->cl = $this->wf->core_log();
 		
 		$exlude_time = mktime(0, 0, 0);
 		
@@ -18,7 +21,7 @@ class core_log_bin extends web_framework {
 			$archives_dir = $base_dir."/_archives";
 			
 			/* scan files */
-			$files = $this->scandir($current_dir);
+			$files = $this->wf->scandir($current_dir);
 			$matches = array();
 			foreach($files as $file) {
 				preg_match("/^([0-9]+)\.log$/", $file, &$matches);
@@ -31,9 +34,9 @@ class core_log_bin extends web_framework {
 	private function store_gzip($log, $file, $base_dir, $time) {
 		$current_file = $base_dir."/_current/$file";
 		$archives_file = $base_dir."/_archives/$file".".gz";
-		$srcfile = $this->locate_file($current_file);
-		$dstfile = $this->get_last_filename($archives_file);
-		$this->create_dir($dstfile);
+		$srcfile = $this->wf->locate_file($current_file);
+		$dstfile = $this->wf->get_last_filename($archives_file);
+		$this->wf->create_dir($dstfile);
 		$size = stat($srcfile);
 		$size = $size["size"];
 		system("gzip -c $srcfile > $dstfile");
@@ -50,7 +53,6 @@ class core_log_bin extends web_framework {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 try {
 	$wf = new core_log_bin($ini);
-	$wf->cli();
 }
 catch (wf_exception $e) {
 	echo "/!\\ Exception:\n";
