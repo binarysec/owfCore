@@ -120,6 +120,13 @@ class core_lang extends wf_agg {
 		$this->_core_cacher = $this->wf->core_cacher();
 		$this->_core_register = $this->wf->core_register();
 		
+		
+// 		$r = $this->wf->core_request();
+// 		$r = $r->channel;
+// 		var_dump($r);
+// // 		exit(0);
+// 		
+		
 		$this->default = $this->resolv($this->wf->ini_arr["lang"]["default"]);
 	}
 	
@@ -164,7 +171,7 @@ class core_lang extends wf_agg {
 		$this->_core_register->set_user_data(array(
 			"language" => $lang
 		));
-	
+
 		return($this->current);
 	}
 	
@@ -177,7 +184,7 @@ class core_lang extends wf_agg {
 		if($lang)
 			$lang = $lang;
 		else
-			$lang = $this->_core_register->get_user_data("language");
+			$lang = $this->current["code"];
 			
 		/* get the full context path */
 		$full = "var/lang/ctx/".
