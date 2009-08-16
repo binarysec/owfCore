@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 /* search for INI file */

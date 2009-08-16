@@ -52,8 +52,8 @@ class core_register extends wf_agg {
 	 *
 	 * Add user specific information
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function set_user_data() {
-	
+	public function set_user_data($data) {
+// 		var_dump($data);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
