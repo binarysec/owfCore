@@ -54,7 +54,7 @@ class core_lang_context {
 			);
 			return($res);
 		}
-			
+		
 		return($this->get_translation($text));
 	}
 	
@@ -98,7 +98,6 @@ class core_lang extends wf_agg {
 	var $current = NULL;
 	var $available = NULL;
 	
-	var $_session;
 	private $_core_cacher;
 	private $_core_register;
 	
@@ -107,7 +106,7 @@ class core_lang extends wf_agg {
 		
 		/** \todo SYSTEME DE CACHE */
 		/* prend le fichier ini */
-		$file = dirname(dirname(__FILE__))."/var/lang.ini";
+		$file = $this->wf->locate_file("var/lang.ini");
 
 		$this->ini = parse_ini_file($file, TRUE);
 		
@@ -116,16 +115,8 @@ class core_lang extends wf_agg {
 		foreach($t as $v)
 			$this->available[$v] = $this->ini[$v];
 
-		$this->_session = $this->wf->session();
 		$this->_core_cacher = $this->wf->core_cacher();
 		$this->_core_register = $this->wf->core_register();
-		
-		
-// 		$r = $this->wf->core_request();
-// 		$r = $r->channel;
-// 		var_dump($r);
-// // 		exit(0);
-// 		
 		
 		$this->default = $this->resolv($this->wf->ini_arr["lang"]["default"]);
 	}

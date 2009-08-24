@@ -39,11 +39,11 @@ class core_route extends wf_agg {
 	 * Scan routes of modules
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function scan() {
-		/* cherche s'il y a des informations dans le cache */
-		if(($c = $this->a_core_cacher->get("core_route"))) {
-			$this->routes = $c;
-			return(TRUE);
-		}
+// 		/* cherche s'il y a des informations dans le cache */
+// 		if(($c = $this->a_core_cacher->get("core_route"))) {
+// 			$this->routes = $c;
+// 			return(TRUE);
+// 		}
 
 		/* parcours les modules dans le sens initié */
 		foreach($this->wf->modules as $info) {
@@ -60,11 +60,11 @@ class core_route extends wf_agg {
 			}
 		}
 	
-		/* cache les données */
-		$this->a_core_cacher->store(
-			"core_route", 
-			$this->routes
-		);
+// 		/* cache les données */
+// 		$this->a_core_cacher->store(
+// 			"core_route", 
+// 			$this->routes
+// 		);
 
 		return(TRUE);
 	}
