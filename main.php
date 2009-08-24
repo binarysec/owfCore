@@ -73,8 +73,21 @@ abstract class wf_agg {
  * Object module dependance
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 abstract class wf_module {
-	var $wf = NULL;
-	abstract public function __construct($wf);
+	public $wf = NULL;
+	public $lang = NULL;
+	
+	public function __construct($wf) {
+		$this->wf = $wf;
+	}
+	
+	
+	public function ts($text) {
+		if(!$this->lang) {
+			$ctxname = "module/".$this->get_name();
+			$this->lang = $this->wf->core_lang()->get_context($ctxname);
+		}
+		return($this->lang->ts($text));
+	}
 	
 	abstract public function get_name();
 	abstract public function get_description();
@@ -200,6 +213,27 @@ class web_framework {
 		}
 		chdir($save);
 		
+		/* put lang context */
+// 		$l = $this->core_lang();
+// 		foreach($this->modules as $name => $mod) {
+// 			echo "$name<br>\n";
+// 			$ctxname = "module/$name";
+// // 			$mod[8]->lang = 
+// 		}
+// 		exit(0);
+		
+// 			$this->modules[$name] = array(
+// 				$dir,
+// 				$name,
+// 				$obj->get_name(),
+// 				$obj->get_description(),
+// 				$obj->get_banner(),
+// 				$obj->get_version(),
+// 				$obj->get_authors(),
+// 				$obj->get_depends(),
+// 				$obj
+// 			);
+			
 		/* fonction d'autoloader */
 		spl_autoload_register(array($this, 'autoloader'));
 		
@@ -224,6 +258,10 @@ class web_framework {
 	 * Master processing
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function process() {
+		/* check language */
+		$l = $this->get_lang_code();
+		$this->core_lang()->check_lang_route($l);
+		
 		/* chargement des routes */
 		$this->core_route()->scan();
 		
@@ -231,8 +269,13 @@ class web_framework {
 		$this->core_request()->process();
 	}
 
-	protected function preinit() {
-		//
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get language code
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private function get_lang_code() {
+		$t = explode("/", $_SERVER["PATH_INFO"]);
+		return($t[1]);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

@@ -201,9 +201,9 @@ class core_html extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_managed() {
 
-		if($this->_session->session_my_perms["session:god"] && $this->wf->mod_exists("god")) {
-			return($this->wf->god_renderer()->get_content());
-		}
+// 		if($this->_session->session_my_perms["session:god"] && $this->wf->mod_exists("god")) {
+// 			return($this->wf->god_renderer()->get_content());
+// 		}
 		return(NULL);
 	}
 	

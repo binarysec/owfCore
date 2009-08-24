@@ -45,6 +45,17 @@
 		f.action = '';	
 		f.submit();
 	}
+	
+	function dataset_set_option(name, value) {
+		document.getElementById('dataset_opt_' + name).value = value;
+		if(data_responder != '')
+			f = document.getElementById(data_responder);
+		else
+			f = document.getElementById('form_{/literal}{$name}{literal}');
+		f.method = 'GET';
+		f.action = '';	
+		f.submit();
+	}
 
 	
 </script>
@@ -86,12 +97,14 @@
 		
 		
 		{foreach $args as $k => $v}
-		<input type="hidden" name="{$k}" value="{$v}" />
+		<input type="hidden" id="dataset_opt_{$k}" name="{$k}" value="{$v}" />
 		{/foreach}
 		
 	</form>
 </div>
 
+{set nb_pages, ceil($total_num_rows / $rows_per_page)}
+{if $nb_pages > 1}
 <div class="dataset_header dataset_header_color">
 <table width="100%">
 <tr>
@@ -101,10 +114,9 @@
 	sur {$total_num_rows}
 </td>
 
-{if $rows_per_page}
+{if $rows_per_page > 1}
 <td align="center">
 <div class="dataset_pager">
-	{set nb_pages, ceil($total_num_rows / $rows_per_page)}
 	{if $page_nb > 1}
 		<a
 			href="javascript: void(0);"
@@ -129,6 +141,7 @@
 </td>
 {/if}
 
+
 <td align="right">
 	R&eacute;sultats par page : 
 	
@@ -141,6 +154,7 @@
 </tr>
 </table>
 </div>
+{/if}
 
 <div class="dataset_data">
 	<table class="dataset_data_table">
@@ -178,6 +192,7 @@
 	</table>
 </div>
 
+{if $nb_pages > 1}
 <div class="dataset_footer dataset_footer_color">
 <table width="100%">
 <tr>
@@ -190,7 +205,6 @@
 {if $rows_per_page}
 <td align="center">
 <div class="dataset_pager">
-	{set nb_pages, ceil($total_num_rows / $rows_per_page)}
 	{if $page_nb > 1}
 		<a
 			href="javascript: void(0);"
@@ -228,3 +242,4 @@
 </table>
 
 </div>
+{/if}
