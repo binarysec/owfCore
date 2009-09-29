@@ -66,7 +66,12 @@ class core_db_pdo_mysql extends core_db {
 			$user = $dbconf["user"];
 			$pass = $dbconf["pass"];
 			
-			$this->hdl = new PDO($dsn, $user, $pass);	
+			$this->hdl = new PDO(
+				$dsn, $user, $pass, 
+				array(
+   					PDO::ATTR_PERSISTENT => true
+				)
+			);
 		} 
 		catch (PDOException $e) {
 			print "MySQL: " . $e->getMessage() . "<br/>";
