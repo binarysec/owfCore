@@ -197,6 +197,8 @@ class web_framework {
 	private $_core_log = null;
 	public $time_start;
 	
+	private $aggregator_cached = array();
+
 	public function __construct($ini, $db=true) {
 		/* record starting time */
 		$this->time_start = microtime(TRUE);
@@ -283,15 +285,21 @@ class web_framework {
 	 * Load global ini configuration
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function load_by_file($file) {
-		$ret = @parse_ini_file($file, TRUE);
-		if($ret == NULL) {
-			throw new wf_exception(
-				$this,
-				WF_EXC_PUBLIC,
-				"Could not load general ini file"
-			);
+		if(function_exists("apc_fetch") && ($i = apc_fetch("owf_ini".$file)))
+			$this->ini_arr = unserialize(&$i);
+		else {
+			$this->ini_arr = @parse_ini_file($file, TRUE);
+			if($this->ini_arr == NULL) {
+				throw new wf_exception(
+					$this,
+					WF_EXC_PUBLIC,
+					"Could not load general ini file"
+				);
+			}
+
+			if(function_exists("apc_fetch"))
+				apc_store("owf_ini".$file, serialize($this->ini_arr));
 		}
-		$this->ini_arr = $ret;
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -303,6 +311,7 @@ class web_framework {
 	public function load_module($name, $dir) {
 		$modfile = $dir."/module.php";	
 		if(file_exists($modfile)) {
+
 			/* parse/vm the file */
 			require_once($modfile);
 			
@@ -345,6 +354,7 @@ class web_framework {
 				$obj->get_depends(),
 				$obj
 			);
+
 		}
 	}
 	
@@ -423,7 +433,7 @@ class web_framework {
 	 *
 	 * Modular aggregator
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	var $aggregator_cached = array();
+
 	public function __call($funcname, $exception=TRUE) {
 		if($this->aggregator_cached[$funcname])
 			return($this->aggregator_cached[$funcname]);
@@ -444,7 +454,7 @@ class web_framework {
 		
 		/* loading file */
 		require($file);
-		
+
 		/* launching object */
 		$obj = new ${funcname};
 		
