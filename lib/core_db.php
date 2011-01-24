@@ -40,6 +40,7 @@ define("WF_UPDATE",            5);
 define("WF_DELETE",            6);
 define("WF_ADV_DELETE",        7);
 define("WF_SELECT_DISTINCT",   8);
+define("WF_ADV_UPDATE",        9);
 
 /* order define */
 define("WF_ASC",              10);

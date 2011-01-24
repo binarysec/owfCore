@@ -78,7 +78,7 @@ class core_dataset {
 
 	public function set_conds($conds) {
 		$pconds = array();
-		foreach($this->filters as $col => $conf) {
+		if(is_array($this->filters)) foreach($this->filters as $col => $conf) {
 			if($conds[$col]) {
 				if($conf['type'] == WF_CORE_DATASET_SELECT) {
 					$pconds[] = array($col, '~=', $conds[$col]);
@@ -112,6 +112,12 @@ class core_dataset {
 		/* retrieve number of rows per page */
 		$p = $this->wf->get_var($this->dsrc->get_name().'_rows_per_page');
 		switch($p) {
+			case 3:
+				$p = 500;
+				break;
+			case 2:
+				$p = 100;
+				break;
 			case 1:
 				$p = 50;
 				break;
@@ -153,7 +159,7 @@ class core_dataset {
 		$struct  = $this->dsrc->get_struct();
 
 		/* consider filters */
-		foreach($this->filters as $col => $conf) {
+		if(is_array($this->filters)) foreach($this->filters as $col => $conf) {
 			if($struct[$col]) {
 				$filter = array(
 					'type'  => $conf['type'],

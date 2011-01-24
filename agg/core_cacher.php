@@ -90,7 +90,10 @@ class core_cacher extends wf_agg {
 		$this->wf = $wf;
 
 		/* use the framework instance name as namespace */
-		$this->namespace = $this->wf->modkey;
+		if(property_exists($this->wf,"modkey"))
+			$this->namespace = $this->wf->modkey;
+		else
+			$this->namespace = NULL;
 
 		/* enable the cache if possible */
 		$this->enable();
@@ -224,7 +227,9 @@ class core_cacher extends wf_agg {
 	 * @param $name The group name
 	 */
 	public function create_group($name) {
-		if(is_object($this->group_obj[$name]))
+		if(   array_key_exists($name,$this->group_obj) 
+		   && is_object($this->group_obj[$name])
+		  )
 			return($this->group_obj[$name]);
 			
 		$obj = new core_cacher_group($this->wf, $name);
