@@ -56,11 +56,11 @@ class core_db_pdo_mysql extends core_db {
 			$dsn  = "mysql:";
 
 			$dsn .= "dbname=".$dbconf["dbname"];
-			if($dbconf["host"])
+			if(array_key_exists("host",$dbconf))
 				$dsn .= ";host=".$dbconf["host"];
-			if($dbconf["port"])
+			if(array_key_exists("port",$dbconf))
 				$dsn .= ";port=".$dbconf["port"];
-			if($dbconf["unix_socket"])
+			if(array_key_exists("unix_socket",$dbconf))
 				$dsn .= ";unix_socket=".$dbconf["unix_socket"];
 				
 			$user = $dbconf["user"];
@@ -391,7 +391,7 @@ class core_db_pdo_mysql extends core_db {
 			
 			/* check for order */
 			$order = NULL;
-			if($query_obj->order != NULL) {
+			if(is_array($query_obj->order)) {
 				foreach($query_obj->order as $k => $v) {
 					if(!$order) {
 						$order = 'ORDER BY `'.$k.'`';
@@ -432,9 +432,12 @@ class core_db_pdo_mysql extends core_db {
 					$offset = "OFFSET ".intval($query_obj->offset);
 			}
 			
-			if($query_obj->req_fct & WF_REQ_FCT_COUNT)
-				$fields = "COUNT(*)";
-			
+			if($query_obj->req_fct & WF_REQ_FCT_COUNT){
+				if($fields!="*")
+					$fields .= ", COUNT(*) as count_etoile";
+				else
+					$fields = "COUNT(*)";
+			}		
 			if($query_obj->req_fct & WF_REQ_FCT_DISTINCT)
 				$select = "SELECT DISTINCT";
 			else
@@ -566,10 +569,17 @@ class core_db_pdo_mysql extends core_db {
 			$atom = 0;
 			if(count($query_obj->cond_matrix) > 0)
 				$cond .= " WHERE";
-				
-			foreach($query_obj->cond_matrix as $k) {
+			
+						foreach($query_obj->cond_matrix as $k) {
 				switch($k[0]) {
-					case 1: $cond .= '('; break;
+					case 1:
+						switch($atom) {
+							case 1: $cond .= ' OR '; break;
+							case 2: case 3: $cond .= ' AND '; break;
+						}
+						$atom = 0;
+						$cond .= '(';
+						break;
 					case 2: $cond .= ')'; break;
 					case 3: $atom = 1; break;
 					case 4: $atom = 2; break;
@@ -589,7 +599,7 @@ class core_db_pdo_mysql extends core_db {
 						break;
 				}
 			}
-			
+	
 			/* prepare and exec the query */
 			$query = "DELETE FROM ".$query_obj->zone." $cond";
 			$this->sql_query($query, $prepare_value);

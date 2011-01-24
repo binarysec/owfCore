@@ -89,7 +89,7 @@ class core_pref_context {
 	 * Register a new variable 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register($var, $description, $type, $dft, $serial=NULL) {
-		if($this->variables[$var])
+		if(array_key_exists($var,$this->variables))
 			return($this->variables[$var]["value"]);
 			
 		$data = $this->db_find($var);
@@ -245,7 +245,7 @@ class core_pref_context {
 	 * Low level function to find variable
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function db_find($var) {
-		if(is_array($this->variables[$var]))
+		if(array_key_exists($var,$this->variables) && is_array($this->variables[$var]))
 			return($this->variables[$var]);
 			
 		$q = new core_db_select("core_pref");
@@ -314,7 +314,7 @@ class core_pref extends wf_agg {
 		$cvar = "core_pref_RG_$name";
 		
 		/* local and short cache */
-		if(is_object($this->contexts[$name]))
+		if(array_key_exists($name,$this->contexts) && is_object($this->contexts[$name]))
 			return($this->contexts[$name]);
 			
 		/* look at the long cache */

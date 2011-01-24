@@ -102,7 +102,6 @@ class core_tpl {
 	public function locate($tpl_name) {
 		$modrev = array_reverse($this->wf->modules);
 		$cache_to = end($this->wf->modules);
-		
 		foreach($modrev as $mod => $mod_infos) {
 			$tmp = $this->wf->modules[$mod][0].
 				'/var/tpl/'.$tpl_name.'.tpl';
@@ -119,7 +118,7 @@ class core_tpl {
 	public function get_template($tpl_name, $no_manage=FALSE) {
 		/* locate the template */
 		$found = $this->locate($tpl_name);
-		
+
 		/* if template doesn't exist */
 		if(!$this->tpl_file) {
 			throw new wf_exception(
@@ -128,7 +127,6 @@ class core_tpl {
 				"Can not find template $tpl_name."
 			);
 		}
-		
 		if(!$no_manage)
 			$this->a_core_html->add_managed_tpl($tpl_name, &$this);
 		
@@ -137,7 +135,6 @@ class core_tpl {
 
 		if (!file_exists($this->cache_file) ||
 		     filemtime($this->tpl_file) >= filemtime($this->cache_file)) {
-				
 			$this->wf->create_dir($this->cache_file);
 			
 			$this->a_core_tpl_compiler->compile(
@@ -161,6 +158,7 @@ class core_tpl {
 		$t->vars['_GHOST']        = $this->a_core_request->get_ghost();
 		$t->vars['_BACK_URL']     = base64_encode($_SERVER["REQUEST_URI"]);
 		$t->vars['_CURRENT_TIME'] = time();
+
 		require($this->cache_file);
 	}
 
