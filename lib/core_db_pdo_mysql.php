@@ -433,7 +433,7 @@ class core_db_pdo_mysql extends core_db {
 			}
 			
 			if($query_obj->req_fct & WF_REQ_FCT_COUNT){
-				if($fields!="*")
+				if($query_obj->fields != NULL)
 					$fields .= ", COUNT(*) as count_etoile";
 				else
 					$fields = "COUNT(*)";
