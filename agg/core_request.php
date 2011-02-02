@@ -80,7 +80,7 @@ class core_request extends wf_agg {
 		
 		/* vérification de la session */
 		$ret = $this->_session->check_session();
-		if($ret != SESSION_VALID) {
+		if($ret == SESSION_TIMEOUT) {		
 			$this->wf->display_login(
 				"Session destroyed"
 			);
@@ -120,7 +120,7 @@ class core_request extends wf_agg {
 		/* do we need to display login ? */
 		if(!$display_login)
 			$this->wf->display_login(
-				"You don't have enough permissions"
+				"You must be connected"
 			);
 		
 		/* terminate */
