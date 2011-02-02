@@ -37,6 +37,8 @@ define("WF_USER_RANON",   "session:ranon");
 
 define("WF_ROUTE_ACTION",   1);
 define("WF_ROUTE_REDIRECT", 2);
+define("WF_ROUTE_MENU_ACTION", 3);
+define("WF_ROUTE_MENU_REDIRECT", 4);
 
 define("WF_ROUTE_SHOW", 1); // visible pour l'utilisateur
 define("WF_ROUTE_HIDE", 2); // insivible pour l'utilisateur
