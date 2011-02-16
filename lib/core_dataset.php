@@ -111,21 +111,25 @@ class core_dataset {
 	public function auto_rows_per_page() {
 		/* retrieve number of rows per page */
 		$p = $this->wf->get_var($this->dsrc->get_name().'_rows_per_page');
-		switch($p) {
-			case 3:
-				$p = 500;
-				break;
-			case 2:
-				$p = 100;
-				break;
-			case 1:
-				$p = 50;
-				break;
-				
-			case 0:
-			default:
-				$p = 25;
-				break;
+		if($p==25 || $p==50 || $p==100 || $p==500){
+			$this->set_rows_per_page($p);
+		}else{		
+			switch($p) {
+				case 3:
+					$p = 500;
+					break;
+				case 2:
+					$p = 100;
+					break;
+				case 1:
+					$p = 50;
+					break;
+					
+				case 0:
+				default:
+					$p = 25;
+					break;
+			}
 		}
 		$this->set_rows_per_page($p);
 	}
