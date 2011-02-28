@@ -171,12 +171,12 @@ class wf_exception extends Exception {
 
 			$debug = debug_backtrace();
 			foreach($debug as $v) {
-				if(!$v["file"])
+				if(!isset($v["file"]))
 					$v["file"] = __FILE__;
-				if(!$v["line"])
+				if(!isset($v["line"]))
 					$v["line"] = "??";
 					
-				if($v["object"]) {
+				if(isset($v["object"])) {
 					$this->messages[] = 
 						"<b>$v[file]</b>".
 						":+$v[line] ".
@@ -313,12 +313,12 @@ class web_framework {
 	public function load_module($name, $dir) {
 		$modfile = $dir."/module.php";	
 		if(file_exists($modfile)) {
-
+			
 			/* parse/vm the file */
 			require_once($modfile);
 			
 			/* define the module name */
-			$objname = "wfm_$name";
+			$objname = "wfm_".$name;
 			
 			/* check if the class exists */
 			if(!class_exists($objname)) {
@@ -331,7 +331,7 @@ class web_framework {
 			}
 			
 			/* load the object */
-			$obj = new ${objname}($this);
+			$obj = new ${"objname"}($this);
 			
 			/* sanatize */
 			if(get_parent_class($obj) != "wf_module") {
@@ -367,7 +367,7 @@ class web_framework {
 	public function open_db() {
 		$d = $this->ini_arr["db"];
 		$driver = "core_db_".$d["driver"];
-		$this->db = new ${driver};
+		$this->db = new ${"driver"};
 		$this->db->wf = $this;
 		$ret = $this->db->load($d);
 		if($ret == FALSE) {
@@ -383,7 +383,7 @@ class web_framework {
 	 *
 	 * Function used to execute a share event
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function execute_hook($name, $args=NULL, $cb=NULL) {
+	public function execute_hook($name, $args=array(), $cb=NULL) {
 		$result = array();
 		
 		/* execute filters */
@@ -437,7 +437,7 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	public function __call($funcname, $exception=TRUE) {
-		if($this->aggregator_cached[$funcname])
+		if(isset($this->aggregator_cached[$funcname]))
 			return($this->aggregator_cached[$funcname]);
 
 		$file = $this->locate_file("agg/".$funcname.".php");
@@ -458,7 +458,7 @@ class web_framework {
 		require($file);
 
 		/* launching object */
-		$obj = new ${funcname};
+		$obj = new ${"funcname"};
 		
 		/* caching object */
 		$this->aggregator_cached[$funcname] = &$obj;
@@ -773,6 +773,3 @@ locate_files
 */
 
 }
-
-
-?>
