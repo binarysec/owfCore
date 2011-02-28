@@ -53,12 +53,12 @@ class wfr_core_data extends wf_route_request {
 				}
 				/* end: added by keo on 31/12/2008 */
 				
-				/* get permission */
-				$is = $this->a_core_session->user_get_permissions(
-					NULL, 
-					WF_USER_GOD
-				);
-				if(!$is || !$this->wf->mod_exists("admin"))
+// 				/* get permission */
+// 				$is = $this->a_core_session->user_get_permissions(
+// 					NULL, 
+// 					WF_USER_GOD
+// 				);
+				if(!$this->wf->mod_exists("admin"))
 					$this->wf->display_error(
 						404,
 						"Page not found"
