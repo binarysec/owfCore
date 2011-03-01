@@ -140,7 +140,7 @@ class core_log extends wf_agg {
 		
 		/* channel */
 		$res = $this->get("channel", $name);
-		if(!is_array($res[0])) {
+		if(!isset($res[0]) || !is_array($res[0])) {
 			$insert = array(
 				"create_t" => time(),
 				"channel" => $name,
@@ -242,7 +242,7 @@ class core_log extends wf_agg {
 		$res = $q->get_result();
 
 		/* store cache */
-		if(is_array($res[0]))
+		if(isset($res[0]) && is_array($res[0]))
 			$this->cache->store($cl, $res);
 			
 		return($res);

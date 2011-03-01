@@ -257,12 +257,12 @@ class core_pref_context {
 		$res = $q->get_result();
 		
 		/* store short cache */
-		$this->variables[$var] = $res[0];
+		$this->variables[$var] = isset($res[0]) ? $res[0] : NULL;
 		
 		/* need cacher update */
 		$this->need_up = TRUE;
 
-		return($res[0]);
+		return(isset($res[0]) ? $res[0] : NULL);
 	}
 }
 

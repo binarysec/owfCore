@@ -63,7 +63,7 @@ class core_request extends wf_agg {
 		}
 		
 		/* vérification du canal */
-		if(!$this->channel[0]) {
+		if(!isset($this->channel[0])) {
 			if(!$this->channel[3]) {
 				header("Location: ".$this->wf->linker("/"));
 				exit(0);
@@ -170,7 +170,7 @@ class core_request extends wf_agg {
 	 * Allow to get a request ghost argument
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_ghost() {
-		return($this->channel[4]);
+		return(isset($this->channel[4]) ? $this->channel[4] : NULL);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
