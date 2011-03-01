@@ -279,7 +279,7 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function get_lang_code() {
 		$t = explode("/", $_SERVER["PATH_INFO"]);
-		return($t[1]);
+		return(isset($t[1]) ? $t[1] : NULL);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

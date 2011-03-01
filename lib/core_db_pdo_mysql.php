@@ -118,7 +118,7 @@ class core_db_pdo_mysql extends core_db {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register_zone($name, $description, $struct) {
 		$res = $this->get_zone($name);
-		if(!$res[0]) {
+		if(!isset($res[0])) {
 			$this->create_table($name, $struct);
 			$this->create_zone($name, $struct);
 		}

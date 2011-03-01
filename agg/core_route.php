@@ -64,7 +64,7 @@ class core_route extends wf_agg {
 		$nav = &$this->routes;
 
 		for($i=1; $i<count($dir); $i++) {
-			if(!$nav[0]) 
+			if(!isset($nav[0]))
 				$nav[0] = array();
 				
 			$nav = &$nav[0][$dir[$i]];
@@ -162,7 +162,7 @@ class core_route extends wf_agg {
 		$start = 1;
 		
 		/* checking lang context if available */
-		if($lang->check_lang_route($dir[1]))
+		if($lang->check_lang_route(isset($dir[1]) ? $dir[1] : NULL))
 			$start++;
 		
 		for($i=$start; $i<count($dir); $i++) {
