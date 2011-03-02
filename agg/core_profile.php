@@ -103,7 +103,7 @@ class core_profile_context {
 	 * Register a new field 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register($field, $desc, $type, $dft, $serial=NULL) {
-		if($this->fields[$field])
+		if(isset($this->fields[$field]))
 			return(true);
 			
 		$data = $this->db_search_field($field);
@@ -262,7 +262,7 @@ class core_profile_context {
 	 * Low level function to search a field
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function db_search_field($field) {
-		if(is_array($this->fields[$field]))
+		if(isset($this->fields[$field]) && is_array($this->fields[$field]))
 			return($this->fields[$field]);
 			
 		$q = new core_db_select('core_profile_field');
@@ -370,7 +370,7 @@ class core_profile extends wf_agg {
 		$cvar = 'core_profile_RG_'.$name;
 		
 		/* local and short cache */
-		if(is_object($this->contexts[$name]))
+		if(isset($this->contexts[$name]) && is_object($this->contexts[$name]))
 			return($this->contexts[$name]);
 			
 		/* look at the long cache */
