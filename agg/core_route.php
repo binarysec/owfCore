@@ -166,12 +166,12 @@ class core_route extends wf_agg {
 			$start++;
 		
 		for($i=$start; $i<count($dir); $i++) {
-			if(!$stop && $nav[0][$dir[$i]])
+			if(!isset($stop) && isset($nav[0][$dir[$i]]))
 				$nav = &$nav[0][$dir[$i]];
 			else
 				$stop = TRUE;
 
-			if($stop == TRUE) {
+			if(isset($stop) && $stop == TRUE) {
 				$result[1][] = $dir[$i];
 				$result[4] .= "/$dir[$i]";
 			}
