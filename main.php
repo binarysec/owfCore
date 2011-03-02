@@ -752,9 +752,9 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private $rfd = NULL;
 	public function get_rand($size=1024) {
-		if(!$rfd)
-			$fd = fopen("/dev/urandom", "r");
-		$b = fread($fd, $size);
+		if(!$this->rfd)
+			$this->rfd = fopen("/dev/urandom", "r");
+		$b = fread($this->rfd, $size);
 		return($b);
 	}
 	

@@ -903,6 +903,7 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	private function create_zone($name, $struct) {
+		$description = NULL;
 		$insert = array(
 			"name" => $name,
 			"description" => $description
