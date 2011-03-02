@@ -87,7 +87,7 @@ class wfr_core_data extends wf_route_request {
 		}
 		
 		/* fichier inconnu */
-		if(!$used_file)
+		if(!isset($used_file))
 			return(FALSE);
 		
 		/* prend le type de contenu */
@@ -167,7 +167,7 @@ class wfr_core_data extends wf_route_request {
 		}
 		
 		/* fichier inconnu */
-		if(!$used_file)
+		if(!isset($used_file))
 			return(FALSE);
 		return(TRUE);
 	}
