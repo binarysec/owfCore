@@ -35,6 +35,12 @@ class core_mime extends wf_agg {
 	}
 	
 	public function get_mime($file) {
+	
+		/* check for directory */
+		if(is_dir($file))
+			return('httpd/unix-directory');
+		
+		
 		/* find extension */
 		$ext = NULL;
 		for($a=strlen($file)-1; $a>0; $a--) {

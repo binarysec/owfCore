@@ -57,7 +57,7 @@ class wfm_core extends wf_module {
 			"/admin/system/data" => array(
 				WF_ROUTE_REDIRECT,
 				"/data",
-				"Listing des données",
+				$this->ts("Listing des données"),
 				WF_ROUTE_SHOW,
 				array("session:god")
 			),
@@ -65,7 +65,7 @@ class wfm_core extends wf_module {
 				WF_ROUTE_ACTION,
 				"data",
 				"show_data",
-				"Données statiques",
+				$this->ts("Données statiques"),
 				WF_ROUTE_HIDE,
 				array("session:anon")
 			),
