@@ -539,11 +539,11 @@ class web_framework {
 	public function get_var($name) {
 		$var = null;
 
-		if($_GET[$name])
+		if(isset($_GET[$name]))
 			$var = $_GET[$name];
-		else if($_POST[$name])
+		else if(isset($_POST[$name]))
 			$var = $_POST[$name];
-		else if($_FILES[$name])
+		else if(isset($_FILES[$name]))
 			$var = $_FILES[$name];
 
 		if(is_array($var) && is_array($_FILES[$name])) {
@@ -681,7 +681,7 @@ class web_framework {
 			$dirs = @scandir($tmp);
 			if(file_exists($tmp)) {
 				foreach($dirs as $dir) {
-					if(!$assoc[$dir]) {
+					if(!isset($assoc[$dir])) {
 						$assoc[$dir] = $tmp;
 						$list[] = $dir;
 					}
