@@ -109,7 +109,7 @@ class core_route extends wf_agg {
 			require($filename);
 			
 			/* loading objet */
-			$object = new ${objectname}($this->wf);
+			$object = new ${'objectname'}($this->wf);
 			$funcname = $channel[0][4];
 
 			/* vérification si la classe est bien codée */
