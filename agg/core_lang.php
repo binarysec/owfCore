@@ -183,7 +183,7 @@ class core_lang extends wf_agg {
 			"/".
 			$name;
 		
-		if($this->contexts[$full])
+		if(isset($this->contexts[$full]))
 			return($this->contexts[$full]);
 			
 		/* locate file */

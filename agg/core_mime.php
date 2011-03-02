@@ -46,7 +46,7 @@ class core_mime extends wf_agg {
 		$ext  = strrev($ext);
 		
 		/* search */
-		if($this->ini[$ext])
+		if(isset($this->ini[$ext]))
 			return($this->ini[$ext]);
 		
 		/* if not know */

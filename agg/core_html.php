@@ -129,7 +129,7 @@ class core_html extends wf_agg {
 		$tpl = new core_tpl($this->wf);
 		
 		/* hehe */
-		if($this->_session->session_my_perms["session:god"])
+		if(isset($this->_session->session_my_perms["session:god"]))
 			$this->title .= " (as god)";
 		else if($this->_session->session_my_perms["session:admin"])
 			$this->title .= " (as admin)";
