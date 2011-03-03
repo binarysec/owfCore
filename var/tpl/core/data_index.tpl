@@ -1,4 +1,4 @@
-<h1><img src="{link '/data/core/index/title.png'}"/>{@ "Index directory of"} {$dir}</h1>
+<h1><img src="{link '/data/core/index/title.png'}" alt="{@ "Index directory"}"/>{@ "Index directory of"} {$dir}</h1>
 
 <div class="admin_content">
 
@@ -12,6 +12,11 @@
 			<th>{@ 'Derni&egrave;re modification'}</th>
 		</tr>
 	</thead>
+	<tfoot>
+		<tr>
+			<th colspan="5">Total ({$files|count})</th>
+		</tr>
+	</tfoot>
 	<tbody>
 		{if $up_dir}
 			<tr class="alt">
@@ -41,11 +46,6 @@
 			</tr>
 		{/foreach}
 	</tbody>
-	<tfoot>
-		<tr>
-			<th colspan="5">Total ({$files|count})</th>
-		</tr>
-	</tfoot>
 </table>
 
 </div>

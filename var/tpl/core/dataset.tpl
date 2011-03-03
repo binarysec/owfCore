@@ -64,7 +64,7 @@
 {$scripts}
 
 <div class="dataset_filters">
-	<form method="GET" id="form_{$name}">
+	<form method="get" id="form_{$name}" action="">
 		{if $filters}
 		<table>
 			{foreach $filters as $col => $filter}
