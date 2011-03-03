@@ -571,8 +571,9 @@ class web_framework {
 			"code",
 			$code
 		);
-		echo $tpl->fetch("core/html/error");
-		exit(0);
+		$html = $this->core_html();
+		$html->set_title($message);
+		$html->rendering($tpl->fetch("core/html/error"));
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
