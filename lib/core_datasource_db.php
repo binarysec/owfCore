@@ -66,7 +66,7 @@ class core_datasource_db extends core_datasource {
 		if(!$this->cache)
 			$this->cache = $this->wf->core_cacher();
 			
-		$q = new core_db_adv_select($this->get_name(), array($field));
+		$q = new core_db_adv_select($this->get_name());
 		$q->request_function(WF_REQ_FCT_COUNT);
 		$q->alias('t', $this->get_name());
 		

@@ -87,7 +87,9 @@ class core_request extends wf_agg {
 		}
 
 		/* chargement du canal et des filtres */
-		$this->filters = $_GET["f"];
+		$this->filters = NULL;
+		if(isset($_GET["f"]))
+			$this->filters = $_GET["f"];
 		
 		/* get channel needed permissions */
 		$need = &$this->channel[0][7];

@@ -182,10 +182,10 @@ class core_cacher extends wf_agg {
 	 */
 	public function enable() {
 		/* get cache driver */
-		$cache_driver = $this->wf->ini_arr['common']['cache_driver'];
-
-		/* no cache driver */
-		if(!$cache_driver) {
+		if(isset($this->wf->ini_arr['common']['cache_driver']))
+			$cache_driver = $this->wf->ini_arr['common']['cache_driver'];
+		else {
+			/* no cache driver */
 			$this->system = NULL;
 			return;
 		}
