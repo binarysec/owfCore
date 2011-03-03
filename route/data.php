@@ -100,7 +100,9 @@ class wfr_core_data extends wf_route_request {
 		$file_time = date("D, d M Y H:i:s \G\M\T", $mtime);
 		
 		/* vérifie la requete */
-		$requested_time = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
+		$requested_time = NULL;
+		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']))
+			$requested_time = $_SERVER['HTTP_IF_MODIFIED_SINCE'];
 		
 		if($file_time == $requested_time) {
 			$this->a_core_request->set_header(
@@ -205,7 +207,6 @@ class wfr_core_data extends wf_route_request {
 		$d = $this->wf->scandir('/var/data'.$directory);
 		foreach($d as $v) {
 			if($v != '.' && $v != "..") {
-				$file = "$dir/$v";
 				if(strlen($_directory) > 1)
 					$link = "$directory/$v";
 				else

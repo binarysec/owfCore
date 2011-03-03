@@ -172,7 +172,10 @@ class core_log extends wf_agg {
 	public function log($log, $channel=NULL, $async=TRUE) {
 		if(!$channel)
 			$channel = "core_log";
-		$this->logs[$channel] .= $log."\n";
+		if(isset($this->logs[$channel]))
+			$this->logs[$channel] .= $log."\n";
+		else
+			$this->logs[$channel] = $log."\n";
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

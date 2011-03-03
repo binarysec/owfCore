@@ -171,7 +171,8 @@ class core_tpl_compiler extends wf_agg {
 			);
 		}
 		
-		$res = $header.$res;
+		if(isset($header))
+			$res = $header.$res;
 		$res = preg_replace('/\?>\n?<\?php/', '', $res);
 		$res = preg_replace('/<\?php\s*\?>/', '', $res);
 		

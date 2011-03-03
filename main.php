@@ -499,9 +499,13 @@ class web_framework {
 			$lang_code = $cl["code"];
 		/* encode le lang into the link */
 		$n_route = "/$lang_code$route";
-	
+		
+		$base = "";
+		if(isset($this->ini_arr["common"]["base"]))
+			$base = $this->ini_arr["common"]["base"];
+		
 		return(
-			$this->ini_arr["common"]["base"]."/index.php".
+			$base."/index.php".
 			$n_route
 		);
 	}
@@ -546,7 +550,7 @@ class web_framework {
 		else if(isset($_FILES[$name]))
 			$var = $_FILES[$name];
 
-		if(is_array($var) && is_array($_FILES[$name])) {
+		if(is_array($var) && isset($_FILES[$name]) && is_array($_FILES[$name])) {
 			$var = array_merge($var, $_FILES[$name]);
 		}
 
