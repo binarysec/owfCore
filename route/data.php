@@ -11,7 +11,7 @@ class wfr_core_data extends wf_route_request {
 		$this->a_core_request = $this->wf->core_request();
 		
 		$this->a_core_html = $this->wf->core_html();
-		$this->a_core_session = $this->wf->core_session();
+		$this->a_session = $this->wf->session();
 	}
 
 
@@ -19,7 +19,7 @@ class wfr_core_data extends wf_route_request {
 	 *
 	 * Public function
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function show_data() {
+	public function show_data() {		
 		$file = $this->a_core_request->get_ghost();
 		
 		/* remove directory traversal */
@@ -39,29 +39,42 @@ class wfr_core_data extends wf_route_request {
 				/* fichier vraiment inconnu */
 				$this->wf->display_error(
 					404,
-					"Page not found"
+					"Document does not exists"
 				);
 			}
 			else {
-				/* autorisé à afficher listing ? */
-				/* begin: added by keo on 31/12/2008 */
+				/* Allow data index */
 				if(!$this->wf->ini_arr["common"]["allow_data_index"]) {
 					$this->wf->display_error(
 						403,
-						"You don't have permission to access this page on this server"
+						"Data index listing is disabled"
 					);
 				}
-				/* end: added by keo on 31/12/2008 */
 				
-// 				/* get permission */
-// 				$is = $this->a_core_session->user_get_permissions(
-// 					NULL, 
-// 					WF_USER_GOD
-// 				);
+				if($this->a_session->session_me["id"] == -1) {
+					$this->wf->display_error(
+						403,
+						"You should be authenticated"
+					);
+					return(TRUE);
+				}
+				
+				/* autorisé à afficher listing ? */
+				if(
+					!isset($this->a_session->session_my_perms["session:god"]) &&
+					!isset($this->a_session->session_my_perms["session:admin"])
+					) {
+					$this->wf->display_error(
+						403,
+						"No permissions for index listing"
+					);
+					return(TRUE);
+				}
+		
 				if(!$this->wf->mod_exists("admin"))
 					$this->wf->display_error(
 						404,
-						"Page not found"
+						"Need OpenWF admin module"
 					);
 					
 				$this->show_listing($file);
@@ -256,5 +269,3 @@ class wfr_core_data extends wf_route_request {
 	}
 	
 }
-
-?>
