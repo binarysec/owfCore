@@ -67,7 +67,7 @@ class core_db_pdo_pgsql extends core_db {
 			$this->hdl = new PDO($dsn, $user, $pass);
 		} 
 		catch (PDOException $e) {
-			print "PgSQL: " . $e->getMessage() . "<br/>";
+			print "PgSQL: " . $e->getMessage() . " ($dsn)<br/>";
 			die();
 		}
 		
@@ -94,11 +94,11 @@ class core_db_pdo_pgsql extends core_db {
 	}
 	
 	public function get_driver_name() {
-		return("PgSQL");
+		return("PostGreSQL");
 	}
 	
 	public function get_driver_banner() {
-		return("PgSQL/".$this->hdl->getAttribute(PDO::ATTR_SERVER_VERSION));
+		return("PostGreSQL/".$this->hdl->getAttribute(PDO::ATTR_SERVER_VERSION));
 	}
 	
 	public function get_request_counter() {
@@ -228,9 +228,9 @@ class core_db_pdo_pgsql extends core_db {
 				foreach($query_obj->where as $k => $sv) {
 					$v = $this->safe_input($sv);
 					if(!$where)
-						$where .= 'WHERE '.$k.' = ?';
+						$where .= 'WHERE "'.$k.'" = ?';
 					else
-						$where .= ' AND '.$k.' = ?';
+						$where .= ' AND "'.$k.'" = ?';
 					
 					array_push($prepare_value, $v);
 				}
@@ -241,7 +241,7 @@ class core_db_pdo_pgsql extends core_db {
 			if($query_obj->order != NULL) {
 				foreach($query_obj->order as $k => $v) {
 					if(!$order) {
-						$order = 'ORDER BY '.$k;
+						$order = 'ORDER BY "'.$k.'"';
 						if($v == WF_ASC)
 							$order .= ' ASC';
 						else
@@ -266,11 +266,13 @@ class core_db_pdo_pgsql extends core_db {
 					$offset = "OFFSET ".intval($query_obj->offset);
 			}
 			
+
 			$query = 
-				"SELECT $fields FROM ".
+				"SELECT $fields FROM \"".
 				$query_obj->zone.
-				" $where $group $order $limit $offset";
-				
+				"\" $where $group $order $limit $offset";
+			
+			
 			$res = $this->sql_query($query, $prepare_value);
 			$query_obj->result = $this->fetch_result($res);
 			
@@ -329,7 +331,7 @@ class core_db_pdo_pgsql extends core_db {
 				for($a=0; $a<count($query_obj->as); $a++) {
 					if($as != NULL) 
 						$as .= ",";
-					$as .= $query_obj->as[$a]["T"];
+					$as .= '"'.$query_obj->as[$a]["T"].'"';
 					$as .= " AS ";
 					$as .= $query_obj->as[$a]["A"];
 				}
@@ -441,7 +443,7 @@ class core_db_pdo_pgsql extends core_db {
 				}
 				array_push($prepare_value, $v);
 			}
-			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES ($val);";
+			$query = "INSERT INTO \"".$query_obj->zone."\" ($key) VALUES ($val);";
 			$this->sql_query($query, $prepare_value);
 		}
 		/* Insert query with ID */
@@ -466,8 +468,8 @@ class core_db_pdo_pgsql extends core_db {
 
 			/* insertion */
 			$query =
-				"INSERT INTO ".
-				$query_obj->zone." ($key) VALUES ($val);";
+				"INSERT INTO \"".
+				$query_obj->zone."\" ($key) VALUES ($val);";
 			$this->sql_query($query, $prepare_value);
 			
 			$id = $this->hdl->lastInsertId($query_obj->zone."_id_seq");
@@ -511,7 +513,7 @@ class core_db_pdo_pgsql extends core_db {
 			}
 			
 			/* prepare and exec the query */
-			$query = "UPDATE ".$query_obj->zone." SET $set $where";
+			$query = "UPDATE \"".$query_obj->zone."\" SET $set $where";
 			
 			$this->sql_query($query, $prepare_value);
 		}
@@ -532,7 +534,7 @@ class core_db_pdo_pgsql extends core_db {
 			}
 			
 			/* prepare and exec the query */
-			$query = "DELETE FROM ".$query_obj->zone." $where";
+			$query = "DELETE FROM \"".$query_obj->zone."\" $where";
 			$this->sql_query($query, $prepare_value);
 		}
 		/* advanced delete query */
@@ -569,7 +571,7 @@ class core_db_pdo_pgsql extends core_db {
 			}
 			
 			/* prepare and exec the query */
-			$query = "DELETE FROM ".$query_obj->zone." $cond";
+			$query = "DELETE FROM \"".$query_obj->zone."\" $cond";
 			$this->sql_query($query, $prepare_value);
 		}
 		
@@ -631,9 +633,9 @@ class core_db_pdo_pgsql extends core_db {
 			}
 			
 			$query = 
-				"SELECT DISTINCT $fields FROM ".
+				"SELECT DISTINCT $fields FROM \"".
 				$query_obj->zone.
-				" $group $order $limit $offset";
+				"\" $group $order $limit $offset";
 			
 			$res = $this->sql_query($query);
 			$query_obj->result = $this->fetch_result($res);
@@ -769,7 +771,7 @@ class core_db_pdo_pgsql extends core_db {
 	private function create_table($name, $struct) {
 		$pri_list = array();
 		
-		$query = 'CREATE TABLE '.$name.' (';
+		$query = 'CREATE TABLE "'.$name.'" (';
 		$vir = FALSE;
 		foreach($struct as $k => $v) {
 			if($v == WF_PRI)
@@ -886,7 +888,7 @@ class core_db_pdo_pgsql extends core_db {
 		$this->a_core_cacher->delete($cvar);
 	}
 	
-	private function get_zone($name) {
+	public function get_zone($name) {
 		/* try to retrieve zone from the cache */
 		$cvar = "core_db_pdo_pgsql_zone_$name";
 		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
