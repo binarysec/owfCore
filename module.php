@@ -71,4 +71,15 @@ class wfm_core extends wf_module {
 			),
 		));
 	}
+	
+	public function admin_partners() {
+		return(array(
+			array(
+				"name" => "SAS BinarySEC",
+				"url" => "http://www.binarysec.com/",
+				"img" => "/data/admin/partners/binarysec.png"
+			),
+		));
+	}
+	
 }
