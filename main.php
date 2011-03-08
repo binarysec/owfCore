@@ -435,7 +435,6 @@ class web_framework {
 	 *
 	 * Modular aggregator
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 	public function __call($funcname, $exception=TRUE) {
 		if(isset($this->aggregator_cached[$funcname]))
 			return($this->aggregator_cached[$funcname]);
@@ -466,6 +465,42 @@ class web_framework {
 		/* execute le chargeur */
 		$obj->loader(&$this);
 		
+		return($obj);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Modular aggregator
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function load_agg($funcname) {
+		$funcname = preg_replace(
+			array(
+				"/\//",
+				"/\./"
+			),
+			array(),
+			$funcname
+		);
+	
+		if(isset($this->aggregator_cached[$funcname]))
+			return($this->aggregator_cached[$funcname]);
+		
+		$file = $this->locate_file("agg/".$funcname.".php");
+		if(!$file)
+			return(FALSE);
+		
+		/* loading file */
+		require($file);
+
+		/* launching object */
+		$obj = new ${"funcname"};
+		
+		/* caching object */
+		$this->aggregator_cached[$funcname] = &$obj;
+		
+		/* execute le chargeur */
+		$obj->loader($this);
+
 		return($obj);
 	}
 	
