@@ -6,8 +6,8 @@ class wfm_core extends wf_module {
 	}
 	
 	public function get_name() { return("core"); }
-	public function get_description()  { return("OWF Core module"); }
-	public function get_banner()  { return("OWF Core/1.1.0-HEAD"); }
+	public function get_description()  { return("OpenWF Core module"); }
+	public function get_banner()  { return("OpenWF Core/1.1.0-HEAD"); }
 	public function get_version() { return("1.1.0-HEAD"); }
 	public function get_authors() { return("Michael VERGOZ"); }
 	public function get_depends() { return(NULL); }
@@ -66,6 +66,14 @@ class wfm_core extends wf_module {
 				"data",
 				"show_data",
 				$this->ts("Données statiques"),
+				WF_ROUTE_HIDE,
+				array("session:anon")
+			),
+			"/dao/form" => array(
+				WF_ROUTE_ACTION,
+				"dao",
+				"form",
+				$this->ts("Add form DAO "),
 				WF_ROUTE_HIDE,
 				array("session:anon")
 			),

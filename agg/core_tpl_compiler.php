@@ -75,8 +75,8 @@ class core_tpl_compiler extends wf_agg {
 	private $php_exec = 1;
 	private $allowed_func = array();
 	private $registered_generator = array();
-	private $ldelim = '{';
-	private $rdelim = '}';
+	private $ldelim = '%{';
+	private $rdelim = '}%';
 
 	private $modifiers = array(
 		'upper'        => 'strtoupper',
