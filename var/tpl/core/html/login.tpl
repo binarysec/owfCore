@@ -18,7 +18,7 @@ h1, h2, h3, h4 {
 	font-weight: normal;
 }
 
-h1 %{ font-size: 12pt; }%
+h1 { font-size: 12pt; }
 h2 { 
 	font-size: 7pt; 
 	color: #a10e09; 
@@ -26,8 +26,8 @@ h2 {
 	margin-top: 10px;
 	margin-bottom: 5px;
 }
-h3 %{ font-size: 7pt; }%
-h4 %{ font-size: 6pt; }%
+h3 { font-size: 7pt; }
+h4 { font-size: 6pt; }
 
 table {
 	text-align: center;
