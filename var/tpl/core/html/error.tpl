@@ -15,7 +15,7 @@ h1, h2, h3 {
 	font-weight: normal;
 }
 
-h3 %{ font-size: 8pt;  }%
+h3 { font-size: 8pt;  }
 
 a {
 	color: #a10e09; 
