@@ -117,20 +117,48 @@
 %{if $rows_per_page > 1}%
 <td align="center">
 <div class="dataset_pager">
-	%{if $page_nb > 1}%
+		%{if $page_nb > 1}%
 		<a
 			href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb - 1}%');"
 			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="Page pr&ecaute;c&eacute;dente" alt="Page pr&eacute;c&eacute;dente" /></a>
 	%{/if}%
 
-	%{for $i = 1; $i <= $nb_pages; $i++}%
-		%{if $page_nb != $i}%
-		<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+	%{if $nb_pages<5}%
+		%{for $i = 1; $i <= $nb_pages; $i++}%
+			%{if $page_nb != $i}%
+				<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+			%{else}%
+				[%{$i}%]
+			%{/if}%
+		%{/for}%
+	%{else}%
+		%{if $page_nb<4}%
+			%{for $i = 1; $i <= $page_nb; $i++}%
+				%{if $page_nb != $i}%
+					<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+				%{else}%
+					[%{$i}%]
+				%{/if}%
+			%{/for}%
 		%{else}%
-		[%{$i}%]
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('1');">1</a> ...
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$page_nb - 1}%');">%{$page_nb - 1}%</a>
+			[%{$page_nb}%]
 		%{/if}%
-	%{/for}%
+		
+	
+		
+		%{if $page_nb>$nb_pages-3}%
+			%{for $i =$page_nb+1; $i <= $nb_pages; $i++}%
+					<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+			%{/for}%
+		%{else}%
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$page_nb + 1}%');">%{$page_nb + 1}%</a> ...
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$nb_pages}%');">%{$nb_pages}%</a> 
+		%{/if}%
+
+	%{/if}%
 	%{if $page_nb < $nb_pages}%
 		<a
 			href="javascript: void(0);"
@@ -212,13 +240,41 @@
 			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="Page pr&ecaute;c&eacute;dente" alt="Page pr&eacute;c&eacute;dente" /></a>
 	%{/if}%
 
-	%{for $i = 1; $i <= $nb_pages; $i++}%
-		%{if $page_nb != $i}%
-		<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+	%{if $nb_pages<5}%
+		%{for $i = 1; $i <= $nb_pages; $i++}%
+			%{if $page_nb != $i}%
+				<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+			%{else}%
+				[%{$i}%]
+			%{/if}%
+		%{/for}%
+	%{else}%
+		%{if $page_nb<4}%
+			%{for $i = 1; $i <= $page_nb; $i++}%
+				%{if $page_nb != $i}%
+					<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+				%{else}%
+					[%{$i}%]
+				%{/if}%
+			%{/for}%
 		%{else}%
-		[%{$i}%]
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('1');">1</a> ...
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$page_nb - 1}%');">%{$page_nb - 1}%</a>
+			[%{$page_nb}%]
 		%{/if}%
-	%{/for}%
+		
+	
+		
+		%{if $page_nb>$nb_pages-3}%
+			%{for $i =$page_nb+1; $i <= $nb_pages; $i++}%
+					<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
+			%{/for}%
+		%{else}%
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$page_nb + 1}%');">%{$page_nb + 1}%</a> ...
+			<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$nb_pages}%');">%{$nb_pages}%</a> 
+		%{/if}%
+
+	%{/if}%
 	%{if $page_nb < $nb_pages}%
 		<a
 			href="javascript: void(0);"
