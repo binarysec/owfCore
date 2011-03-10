@@ -9,13 +9,11 @@ class core_dao_item {
 	
 	private $capable;
 	private $struct;
-	private $name;
-	private $description;
+	public $name;
+	public $description;
 	
 	private $db = array();
 	public $data;
-	
-	
 	
 	public function __construct(
 			$wf,
@@ -73,18 +71,22 @@ class core_dao_item {
 		return(TRUE);
 	}
 	
-	public function get($where) {
+	public function get($where=NULL, $order=NULL) {
 		$q = new core_db_select($this->name);
-		$q->where($where);
+		if($where)
+			$q->where($where);
 		$this->wf->db->query($q);
 		$res = $q->get_result();
+		
 		return($res);
 	}
 
-	public function button_add($text, $title="Add new item", $id=NULL) {
+	public function button_add($text, $title="Add new item") {
 		$tpl = new core_tpl($this->wf);
 		$in = array(
-			"id" => $this->name.$id,
+			"id" => $this->name.$this->id,
+			"dao_name" => $this->name,
+			"dao_id" => $this->id,
 			"title" => $title,
 			"button_name" => $text
 		);	
