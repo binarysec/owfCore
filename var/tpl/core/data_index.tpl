@@ -1,6 +1,6 @@
 <h1><img src="%{link '/data/core/index/title.png'}%" alt="%{@ "Index directory"}%"/>%{@ "Index directory of"}% %{$dir}%</h1>
 
-<div class="admin_content">
+
 
 <table class="dataset_data_table" width="100%">
 	<thead>
@@ -48,4 +48,3 @@
 	</tbody>
 </table>
 
-</div>

@@ -22,7 +22,7 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-define("WF_VERSION",   "1.1.0-HEAD");
+define("WF_VERSION",   "1.2.0");
 
 define("WF_T_INTEGER", 1);
 define("WF_T_DOUBLE",  2);
@@ -532,6 +532,10 @@ class web_framework {
 			$lang_code = $this->core_lang()->get_code();
 		else
 			$lang_code = $cl["code"];
+
+		if(strncmp('http://', $route, 7) == 0)
+			return($route);
+			
 		/* encode le lang into the link */
 		$n_route = "/$lang_code$route";
 		
