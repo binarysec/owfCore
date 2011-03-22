@@ -46,6 +46,14 @@ class wfm_core extends wf_module {
 				WF_ROUTE_SHOW,
 				array("session:god")
 			),
+			"/admin/system/preferences/smtp" => array(
+				WF_ROUTE_ACTION,
+				"smtp",
+				"page",
+				$this->ts("SMTP Service configuration"),
+				WF_ROUTE_SHOW,
+				array("core:smtp")
+			),
 			"/data" => array(
 				WF_ROUTE_ACTION,
 				"data",

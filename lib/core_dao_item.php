@@ -95,7 +95,12 @@ class core_dao_item {
 	}
 	
 	public function button_remove($text, $id) {
-	
+		
+		$html = '<span class="dao_button_del">'.
+			'<a href="">%{$button_name}%</a>'.
+			'</span>';
+		return($html);
+		
 	}
 	
 	public function button_modify($text, $id) {

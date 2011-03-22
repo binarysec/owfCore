@@ -54,6 +54,12 @@ class wfr_core_dao extends wf_route_request {
 					"kind" => $val["type"],
 				);
 				
+				if(array_key_exists("value", $val))
+					$result[$key]["value"] = $val["value"];
+					
+				if(array_key_exists("size", $val))
+					$result[$key]["size"] = $val["size"];
+					
 				if($val["kind"] == OWF_DAO_SELECT) {
 					if(isset($val["select_cb"]))
 						$list = call_user_func($val["select_cb"], $item, $val);
