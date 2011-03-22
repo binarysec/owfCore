@@ -6,30 +6,15 @@ class wfm_core extends wf_module {
 	}
 	
 	public function get_name() { return("core"); }
-	public function get_description()  { return("OpenWF Core module"); }
-	public function get_banner()  { return("OpenWF Core/1.1.0-HEAD"); }
-	public function get_version() { return("1.1.0-HEAD"); }
+	public function get_description()  { return("OWF Native Core module"); }
+	public function get_banner()  { return("OWF Native Core/1.2.0"); }
+	public function get_version() { return("1.2.0"); }
 	public function get_authors() { return("Michael VERGOZ"); }
 	public function get_depends() { return(NULL); }
 	
 	public function get_actions() {
 		return(array(
-// 			"/session/login" => array(
-// 				WF_ROUTE_ACTION,
-// 				"session",
-// 				"login",
-// 				"Login",
-// 				WF_ROUTE_HIDE,
-// 				array("session:anon")
-// 			),
-// 			"/session/logout" => array(
-// 				WF_ROUTE_ACTION,
-// 				"session",
-// 				"logout",
-// 				"Logout",
-// 				WF_ROUTE_HIDE,
-// 				array("session:anon")
-// 			),
+
 			"/img" => array(
 				WF_ROUTE_ACTION,
 				"img",
