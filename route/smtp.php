@@ -49,7 +49,10 @@ class wfr_core_smtp extends wf_route_request {
 		$tpl = new core_tpl($this->wf);
 
 		$in = array(
-			"button_add" => $this->a_core_smtp->dao->button_add("Add SMTP server"),
+			"dao_name" => $this->a_core_smtp->dao->name,
+			"dao_id" => $this->a_core_smtp->dao->id,
+			"dao_dialog" => $this->a_core_smtp->dao->get_dialog(),
+			"dao_button_add" => $this->a_core_smtp->dao->button_add("Add SMTP server"),
 			"dataset" => $dview->render(NULL, $tplset)
 		);	 
 		$tpl->set_vars($in);
@@ -61,6 +64,7 @@ class wfr_core_smtp extends wf_route_request {
 
 	public function callback_row($row, $datum) {
 		$action = $this->a_core_smtp->dao->button_remove("Delete", $datum['id']);
+		$action .= $this->a_core_smtp->dao->button_modify("Edit", $datum['id']);
 		
 		return(array(
 			'description' => htmlspecialchars($datum['description']),
