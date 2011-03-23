@@ -13,6 +13,12 @@ class wfm_core extends wf_module {
 	public function get_authors() { return("Michael VERGOZ"); }
 	public function get_depends() { return(NULL); }
 	
+	public function session_permissions() {
+		return(array(
+			"core:smtp" => $this->ts("Allow SMTP configuration"),
+		));
+	}
+	
 	public function get_actions() {
 		return(array(
 
