@@ -47,6 +47,12 @@ class core_smtp extends wf_agg {
 					"filter_cb" => array($this, "check_port"),
 					"type" => WF_VARCHAR
 				),
+				"mail_sent" => array(
+					"type" => WF_INT
+				),
+				"error_count" => array(
+					"type" => WF_INT
+				),
 			),
 		);
 		
@@ -76,6 +82,89 @@ class core_smtp extends wf_agg {
 		return(true);
 	}
 	
+	public function sendmail($mailfrom, $rcpt, $content, $sid=-1) {
+		/* select best server */
+		$this->select_server($sid);
+
+
+		/* open connection */
+		$fd = fsockopen(
+			$this->server["server_ip"], 
+			$this->server["server_port"]
+		);
+
+		$atom = 0;
+		$log = array(date(DATE_RFC822));
+		while(1) {
+			$data = fread($fd, 1024);
+			
+			$log[] = trim($data);
+			
+
+			/* 220 */
+			if($atom == 0) {
+				fwrite($fd, "HELO www.owf.re\r\n");
+				$atom = 1;
+			}
+			else if($atom == 1) {
+				$buf = "MAIL FROM:<".$mailfrom.">\r\n";
+				fwrite($fd, $buf);
+				$atom = 2;
+			}
+			else if($atom == 2) {
+				if(is_array($rcpt)) {
+					foreach($rcpt as $val) {
+						$buf = "RCPT TO:<$val>\r\n";
+						fwrite($fd, $buf);
+					}
+				}
+				else {
+					$buf = "RCPT TO:<$rcpt>\r\n";
+					fwrite($fd, $buf);
+				}
+				
+				$atom = 3;
+			}
+			else if($atom == 3) {
+				$buf = "DATA\r\n".
+					$content.
+					"\r\n\r\n.\r\n"
+				;
+				fwrite($fd, $buf);
+				$atom = 4;
+			}
+// 			else if($atom == 4)
+// 				$atom = 5;
+			else {
+				fclose($fd);
+				break;
+			}
+		}
+		
+		$this->servers_id++;
+	}
+	
+	private $servers = NULL;
+	private $servers_id = 0;
+	private $servers_conn = array();
+	private $server = NULL;
+	
+	private function select_server($sid=-1) {
+		if(!$this->servers) {
+			if($sid != -1)
+				$where = array("id" => $sid);
+			else
+				$where = null;
+				
+			$this->servers = $this->dao->get($where);
+		}
+		
+		if($this->servers_id >= count($this->servers))
+			$this->servers_id = 0;
+			
+		$this->server = &$this->servers[$this->servers_id];
+		
+	}
 	
 	
 }
