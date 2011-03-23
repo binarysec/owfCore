@@ -35,78 +35,52 @@ class wfr_core_dao extends wf_route_request {
 		return(TRUE);
 	}
 	
-	private function draw_form($item) {
-// 		echo 
-// 			'<form id="'.
-// 			$item->name.$item->id.
-// 			'_form" action="/">'.
-// 			"<table>\n";
+	private function draw_form($item, $data=array()) {
 		$result = array();
-		
+
 		/* follow and build form */
 		foreach($item->data as $key => $val) {
 		
 			/* check permissions */
 			$ret = $this->a_session->check_permission($val["perm"]);
 			if($ret && $val["perm"]) {
-				$result[$key] = array(
-					"text" => $val["name"],
-					"kind" => $val["type"],
-				);
-				
-				if(array_key_exists("value", $val))
-					$result[$key]["value"] = $val["value"];
+				if(isset($val["kind"])) {
+					$result[$key] = array(
+						"text" => $val["name"],
+						"kind" => $val["type"],
+					);
 					
-				if(array_key_exists("size", $val))
-					$result[$key]["size"] = $val["size"];
+					if(isset($data[$key])) {
+						$result[$key]["value"] = htmlentities($data[$key]);
+					}
+					else {
+						if(array_key_exists("value", $val))
+							$result[$key]["value"] = htmlentities($val["value"]);
+					}
 					
-				if($val["kind"] == OWF_DAO_SELECT) {
-					if(isset($val["select_cb"]))
-						$list = call_user_func($val["select_cb"], $item, $val);
-					
-					$result[$key]["list"] = $list;
+					if(array_key_exists("size", $val))
+						$result[$key]["size"] = $val["size"];
+						
+					if($val["kind"] == OWF_DAO_SELECT) {
+						if(isset($val["select_cb"]))
+							$list = call_user_func($val["select_cb"], $item, $val);
+						
+						$result[$key]["list"] = $list;
+					}
 				}
-				
-				
 			}
 		}
 
 		echo json_encode($result);
-		
 		exit(0);
-		
 	}
 	
-// 				if($val["type"] == OWF_DAO_INPUT) {
-// 					echo 
-// 						"<tr>\n".
-// 						'<td><span id="'.$key.'_id">'.$val["name"].': </span></td>'.
-// 						'<td><input name="'.$key.'" type="text"></td>'.
-// 						"</tr>\n";
-// 				}
-// 				else if($val["kind"] == OWF_DAO_SELECT) {
-// 					if(isset($val["select_cb"]))
-// 						$list = call_user_func($val["select_cb"], $item, $val);
-// 		
-// 					echo 
-// 						"<tr>\n".
-// 						"<td>$val[name]: </td>".
-// 						'<td><select name="'.$key.'">';
-// 
-// 					foreach($list as $id => $entry) {
-// 						echo "<option value=\"$id\">".
-// 							$entry.
-// 							"</option>\n";
-// 					}
-// 					
-// 					echo '</select></td>'.
-// 						"</tr>\n";
-
 	public function form() {
 		$this->mode = $this->a_core_request->get_argv(0);
 		$this->agg = $this->a_core_request->get_argv(1);
 		$this->id = (int)$this->a_core_request->get_argv(2);
 		
+		/* select form */
 		$item = $this->selector();
 		if(!is_object($item)) {
 			$this->wf->display_error(
@@ -116,19 +90,49 @@ class wfr_core_dao extends wf_route_request {
 			exit(0);
 		}
 		
-		
+		/* check form permission */
+		$ret = $this->a_session->check_permission($item->struct["form"]["perm"]);
+		if(!$ret || !isset($item->struct["form"]["perm"])) {
+			$this->wf->display_error(
+				403,
+				"Data access object forbidden"
+			);
+			exit(0);
+		}
+			
 		if($this->mode == 'add') {
 			$this->draw_form($item);
 		}
 		else if($this->mode  == 'postadd') {
 			$this->add_post($item);
 		}
+		else if($this->mode == 'mod') {
+			$id = $this->wf->get_var("id");
+			$ret = $item->get(array("id" => (int)$id));
+			if(!array_key_exists(0, $ret))
+				exit(0);
+			
+			$this->draw_form($item, $ret[0]);
+		}
+		else if($this->mode  == 'postmod') {
+			$id = $this->wf->get_var("id");
+			$ret = $item->get(array("id" => (int)$id));
+			if(!array_key_exists(0, $ret))
+				exit(0);
+				
+			$this->add_post($item, $id);
+		}
 		else if($this->mode  == 'get') {
 			$this->get($item);
 		}
+		else if($this->mode  == 'del') {
+			$id = $this->wf->get_var("id");
+			$item->remove(array("id" => (int)$id));
+			exit(0);
+		}
 	}
 
-	public function add_post($item) {
+	public function add_post($item, $id=NULL) {
 		$insert = array();
 		$error = array();
 		
@@ -160,7 +164,10 @@ class wfr_core_dao extends wf_route_request {
 		}
 		
 		if(count($insert) > 0 && count($error) == 0) {
-			$item->add($insert);
+			if(isset($id))
+				$item->modify(array("id" => $id), $insert);
+			else
+				$item->add($insert);
 			echo json_encode(true);
 			return;
 		}

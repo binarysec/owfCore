@@ -1,14 +1,14 @@
 <?php
 
 
-class core_dao_item {
+class core_dao_form_db {
 	public $id;
 	private $wf;
 	
 	private $a_dao;
 	
 	private $capable;
-	private $struct;
+	public $struct;
 	public $name;
 	public $description;
 	
@@ -57,7 +57,6 @@ class core_dao_item {
 			$where
 		);
 		$this->wf->db->query($q);
-		
 		return(TRUE);
 	}
 	
@@ -81,40 +80,39 @@ class core_dao_item {
 		return($res);
 	}
 
-	public function button_add($text, $title="Add new item") {
-		$tpl = new core_tpl($this->wf);
-		$in = array(
-			"id" => $this->name.$this->id,
-			"dao_name" => $this->name,
-			"dao_id" => $this->id,
-			"title" => $title,
-			"button_name" => $text
-		);	
-		$tpl->set_vars($in);
-		return($tpl->fetch('core/dao/add'));
+	public function get_dialog() {
+		$name = $this->name.$this->id."_dialog";
+		return(
+			'<div id="'.$name.'" class="dao_dialog">'.
+			'</div>'
+		);
+	}
+	
+	public function button_add($text) {
+		$html = '<span class="dao_button_add">'.
+			'<a href="">'.$text.'</a>'.
+			'</span>';
+		return($html);
+		
 	}
 	
 	public function button_remove($text, $id) {
 		
 		$html = '<span class="dao_button_del">'.
-			'<a href="">%{$button_name}%</a>'.
+			'<a href="" id="'.$id.'">'.$text.'</a>'.
 			'</span>';
 		return($html);
 		
 	}
 	
 	public function button_modify($text, $id) {
-	
+		$html = '<span class="dao_button_mod">'.
+			'<a href="" id="'.$id.'">'.$text.'</a>'.
+			'</span>';
+		return($html);
 	}
 	
 	
-	public function receive_form($mod) {
-	
-	}
-	
-	public function send_form() {
-	
-	}
 	
 
 }
