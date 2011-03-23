@@ -5,10 +5,13 @@ class core_smtp extends wf_agg {
 	public $wf;
 	public $struct;
 	public $dao;
+	public $lang;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
 		$this->wf->core_dao();
+		
+		$this->lang = $this->wf->core_lang()->get_context("tpl/core/smtp/list");
 		
 		$this->struct = array(
 			"form" => array(
@@ -21,7 +24,7 @@ class core_smtp extends wf_agg {
 					"perm" => array("core:smtp"),
 				),
 				"description" => array(
-					"name" => "Server description",
+					"name" => $this->lang->ts("Server description"),
 					"kind" => OWF_DAO_INPUT,
 					"perm" => array("core:smtp"),
 					"filter_cb" => array($this, "check_description"),
@@ -29,7 +32,7 @@ class core_smtp extends wf_agg {
 				),
 				"server_ip" => array(
 					"size" => 22,
-					"name" => "Server IP or Hostname",
+					"name" => $this->lang->ts("Server IP or Hostname"),
 					"kind" => OWF_DAO_INPUT,
 					"perm" => array("core:smtp"),
 					
@@ -38,7 +41,7 @@ class core_smtp extends wf_agg {
 				"server_port" => array(
 					"size" => 10,
 					"value" => 25,
-					"name" => "Serveur port number",
+					"name" => $this->lang->ts("Serveur port number"),
 					"kind" => OWF_DAO_INPUT,
 					"perm" => array("core:smtp"),
 					"filter_cb" => array($this, "check_port"),
@@ -59,16 +62,16 @@ class core_smtp extends wf_agg {
 	
 	public function check_description($item, $var) {
 		if(strlen($var) < 2)
-			return("Description too short");
+			return($this->lang->ts("Description too short"));
 
 		return(true);
 	}
 	
 	public function check_port($item, $var) {
 		if($var <= 0)
-			return("Port number too low");
+			return($this->lang->ts("Port number too low"));
 		if($var >= 65535)
-			return("Port number too high");
+			return($this->lang->ts("Port number too high"));
 			
 		return(true);
 	}
