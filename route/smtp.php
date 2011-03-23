@@ -14,6 +14,8 @@ class wfr_core_smtp extends wf_route_request {
 		$this->a_core_smtp = $this->wf->core_smtp();
 		
 		$this->a_session = $this->wf->session();
+		
+		
 	}
 
 	public function page() {
@@ -24,15 +26,15 @@ class wfr_core_smtp extends wf_route_request {
 		$filters = array();
 		$cols = array(
 			'description' => array(
-				'name'      => 'Description',
+				'name'      => $this->a_core_smtp->lang->ts('Description'),
 				'orderable' => true,
 			),
 			'server_ip' => array(
-				'name'      => 'Server IP',
+				'name'      => $this->a_core_smtp->lang->ts('Server IP'),
 				'orderable' => true,
 			),
 			'server_port' => array(
-				'name'      => 'Server Port',
+				'name'      => $this->a_core_smtp->lang->ts('Server Port'),
 				'orderable' => true,
 			),
 			'actions' => array()
@@ -52,7 +54,7 @@ class wfr_core_smtp extends wf_route_request {
 			"dao_name" => $this->a_core_smtp->dao->name,
 			"dao_id" => $this->a_core_smtp->dao->id,
 			"dao_dialog" => $this->a_core_smtp->dao->get_dialog(),
-			"dao_button_add" => $this->a_core_smtp->dao->button_add("Add SMTP server"),
+			"dao_button_add" => $this->a_core_smtp->dao->button_add($this->a_core_smtp->lang->ts("Add SMTP server")),
 			"dataset" => $dview->render(NULL, $tplset)
 		);	 
 		$tpl->set_vars($in);
@@ -63,8 +65,8 @@ class wfr_core_smtp extends wf_route_request {
 	}
 
 	public function callback_row($row, $datum) {
-		$action = $this->a_core_smtp->dao->button_remove("Delete", $datum['id']);
-		$action .= $this->a_core_smtp->dao->button_modify("Edit", $datum['id']);
+		$action = $this->a_core_smtp->dao->button_remove($this->a_core_smtp->lang->ts("Delete"), $datum['id']);
+		$action .= $this->a_core_smtp->dao->button_modify($this->a_core_smtp->lang->ts("Edit"), $datum['id']);
 		
 		return(array(
 			'description' => htmlspecialchars($datum['description']),
