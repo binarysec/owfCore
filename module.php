@@ -1,10 +1,11 @@
 <?php
- 
+
+
 class wfm_core extends wf_module {
 	public function __construct($wf) {
 		$this->wf = $wf;
 	}
-	
+	/* mimetype icon (c) FAMFAMFAM */
 	public function get_name() { return("core"); }
 	public function get_description()  { return("OWF Native Core module"); }
 	public function get_banner()  { return("OWF Native Core/1.2.0"); }

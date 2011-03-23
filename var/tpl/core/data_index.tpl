@@ -12,11 +12,7 @@
 			<th>%{@ 'Derni&egrave;re modification'}%</th>
 		</tr>
 	</thead>
-	<tfoot>
-		<tr>
-			<th colspan="5">Total (%{$files|count}%)</th>
-		</tr>
-	</tfoot>
+
 	<tbody>
 		%{if $up_dir}%
 			<tr class="alt">
@@ -25,26 +21,25 @@
 					<td>-</td>
 					<td>-</td>
 					<td>-</td>
-					<td>-</td>
 			</tr>
 		%{/if}%
 		%{foreach $files as $file => $data}%
 			<tr class="alt">
 				<td class="icon">
-					%{if $data['mimetype'] == 'httpd/unix-directory'}%
-						<img src="%{link '/data/icons/16x16/cat_close.png'}%" alt="[DIR]" />
-					%{elseif $data['mimetype'] == 'image/png' || $data['mimetype'] == 'image/gif' || $data['mimetype'] == 'image/jpeg'}%
-						<img src="%{link '/data/icons/16x16/mime_image.png'}%" alt="[DIR]" />
-					%{else}%
-						<img src="%{link '/data/icons/16x16/mime_unknown.png'}%" alt="[FILE]" />
-					%{/if}%
+					<img src="%{link '/data/icons/'}%%{$data['mimetype']}%.png" alt="?" />
 				</td>
-				<td><a href="%{$data['link']}%">%{$file}%</a></td>
+				<td width="25%"><a href="%{$data['link']}%">%{$file}%</a></td>
 				<td>%{$data['size']}%</td>
 				<td>%{$data['mimetype']}%</td>
 				<td>%{date 'd/m/Y H:i', $data['lastmod']}%</td>
 			</tr>
 		%{/foreach}%
 	</tbody>
+	
+	<tfoot>
+		<tr>
+			<th colspan="5">Total (%{$files|count}%)</th>
+		</tr>
+	</tfoot>
 </table>
 
