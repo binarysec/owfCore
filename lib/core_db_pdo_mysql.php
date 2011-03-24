@@ -604,6 +604,46 @@ class core_db_pdo_mysql extends core_db {
 			$query = "DELETE FROM ".$query_obj->zone." $cond";
 			$this->sql_query($query, $prepare_value);
 		}
+		else if($query_obj->type == WF_INSERT_OR_UPDATE) {
+			$prepare_value = array();
+		
+			/* fill fields */
+			$key = NULL;
+			$val = NULL;
+			foreach($query_obj->arr as $k => $sv) {
+				$v = $this->safe_input($sv);
+				if(!$key) {
+					$key = '`'.$k.'`';
+					$val .= '?';
+				}
+				else {
+					$key .= ', `'.$k.'`';
+					$val .= ', ?';
+				}
+				array_push($prepare_value, $v);
+			}
+			/* fill fields */
+			$up = NULL;
+			if(is_array($query_obj->up)){
+				foreach($query_obj->up as $k => $sv) {
+					if(!$up){	
+						$up="`".$sv["col"]."` = ";
+						foreach($sv["op"] as $k2=>$v2){
+							$up.=$v2." ";
+						}
+					}
+					else{
+						$up.=" , `".$sv["col"]."` = ";
+						foreach($sv["op"] as $k2=>$v2){
+							$up.=$v2." ";
+						}
+					}
+				}
+			}
+			/* prepare and exec the query */
+			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES ($val) ON DUPLICATE KEY UPDATE $up";
+			$this->sql_query($query, $prepare_value);
+		}
 		
 		/* Select distinct query */
 		if($query_obj->type == WF_SELECT_DISTINCT) {
