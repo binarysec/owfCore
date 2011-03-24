@@ -41,6 +41,7 @@ define("WF_DELETE",            6);
 define("WF_ADV_DELETE",        7);
 define("WF_SELECT_DISTINCT",   8);
 define("WF_ADV_UPDATE",        9);
+define("WF_INSERT_OR_UPDATE",	10);
 
 /* order define */
 define("WF_ASC",              10);
@@ -71,11 +72,36 @@ class core_db_query {
 class core_db_insert extends core_db_query {
 	var $zone = NULL;
 	var $arr = NULL;
-	public function __construct($zone, $arr) {
+	var $where = NULL;
+	public function __construct($zone, $arr, $where=NULL) {
 		$this->type = WF_INSERT;
 		$this->zone = $zone;
 		$this->arr = $arr;
+		$this->where = $where;
 	}
+	public function where($where) {
+		$this->where = $where;
+	}
+	public function insert($insert) {
+		$this->arr = $insert;
+	}
+}
+
+class core_db_insert_or_update extends core_db_query {
+	var $zone = NULL;
+	var $arr = NULL;
+	var $up = NULL;
+	public function __construct($zone, $arr,$up=NULL) {
+		$this->type = WF_INSERT_OR_UPDATE;
+		$this->zone = $zone;
+		$this->arr = $arr;
+		if($up)
+			$this->up = $up;
+	}
+	public function up($up) {
+		$this->up = $up;
+	}
+	
 }
 
 
