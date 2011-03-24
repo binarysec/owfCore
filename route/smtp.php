@@ -51,7 +51,7 @@ class wfr_core_smtp extends wf_route_request {
 		$tpl = new core_tpl($this->wf);
 
 		$in = array(
-			"dao_name" => $this->a_core_smtp->dao->name,
+			"dao_name" => $this->a_core_smtp->dao->aggregator,
 			"dao_id" => $this->a_core_smtp->dao->id,
 			"dao_dialog" => $this->a_core_smtp->dao->get_dialog(),
 			"dao_button_add" => $this->a_core_smtp->dao->button_add($this->a_core_smtp->lang->ts("Add SMTP server")),

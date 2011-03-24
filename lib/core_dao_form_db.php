@@ -11,19 +11,22 @@ class core_dao_form_db {
 	public $struct;
 	public $name;
 	public $description;
+	public $aggregator;
 	
 	private $db = array();
 	public $data;
 	
 	public function __construct(
 			$wf,
+			$aggregator,
 			$capable,
 			$struct,
 			$name,
 			$description=NULL
 		) {
 		$this->capable = $capable;
-	
+		$this->aggregator = $aggregator;
+		
 		$this->wf = $wf;
 		$this->a_dao = $this->wf->core_dao();
 		$this->capable = $capable;
