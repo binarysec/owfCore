@@ -116,15 +116,20 @@ class core_db_pdo_mysql extends core_db {
 	 *
 	 * Register a new DB zone
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function register_zone($name, $description, $struct) {
+	public function register_zone($name, $description, $struct,$index=NULL) {
 		$res = $this->get_zone($name);
 		if(!isset($res[0])) {
 			$this->create_table($name, $struct);
 			$this->create_zone($name, $struct);
+			if(is_array($index))
+				$this->add_primary_key($name,$index);
 		}
 		else {
-			if(!$this->table_exists($name)) 
+			if(!$this->table_exists($name)){ 
 				$this->create_table($name, $struct);
+				if(is_array($index))
+					$this->add_primary_key($name,$index);
+			}
 				
 			$this->check_for_data_translation($name, $description, $struct, $res);
 		}
@@ -143,6 +148,21 @@ class core_db_pdo_mysql extends core_db {
 		return(TRUE);
 	}
 	
+	private function add_primary_key($name,$pri_list){
+		$query = "ALTER TABLE `$name` ADD PRIMARY KEY (";
+		$a = 0;
+		foreach($pri_list as $k => $v){
+			if($a > 0)
+				$query .= ",";
+			if($v == WF_DATA)
+				$query .= "`$k`(500)";
+			else
+				$query .= "`$k`";
+			$a++;
+		}
+		$query .= ")";
+		$this->sql_query($query);
+	}
 	
 	private function check_for_data_translation($name, $description, $struct, $info) {
 		foreach($info as $k => $v)
@@ -822,7 +842,7 @@ class core_db_pdo_mysql extends core_db {
 	*/
 	private function get_struct_type($item) {
 		switch($item) {
-			case WF_VARCHAR:
+			case WF_VARCHAR: case WF_VARCHAR_PRI:
 				return("VARCHAR(255) NULL");
 			case WF_SMALLINT:
 				return("SMALLINT NULL");
@@ -832,20 +852,22 @@ class core_db_pdo_mysql extends core_db {
 				return("FLOAT NULL");
 			case WF_TIME:
 				return("INT NULL");
-			case WF_DATA:
+			case WF_DATA: case WF_DATA_PRI:
 				return("LONGBLOB");
 			case WF_PRI:
 				return("INT NULL AUTO_INCREMENT");
 		}
 	}
-
+	
 	private function create_table($name, $struct) {
 		$pri_list = array();
 		
 		$query = 'CREATE TABLE `'.$name.'` (';
 		$vir = FALSE;
 		foreach($struct as $k => $v) {
-			if($v == WF_PRI)
+			if($v == WF_PRI || 
+				$v == WF_VARCHAR_PRI || 
+				$v == WF_DATA_PRI)
 				$pri_list[] = $k;
 					
 			if($vir == TRUE) $query .= ",";
