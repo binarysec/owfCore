@@ -70,10 +70,12 @@ class core_dataset {
 		$this->order = array();
 		$struct = $this->dsrc->get_struct();
 		foreach($order as $col => $way) {
-			if($struct[$col] && $this->cols[$col]['orderable'] == true) {
+			if($this->cols[$col]['orderable'] == true) {
 				$this->order[$col] = $way;
 			}
+		
 		}
+		
 	}
 
 	public function set_conds($conds) {
