@@ -32,16 +32,17 @@ define("WF_DATA",      6);
 define("WF_PRI",       7);
 
 /* type of query */
-define("WF_SELECT",            1);
-define("WF_ADV_SELECT",        2);
-define("WF_INSERT",            3);
-define("WF_INSERT_ID",         4);
-define("WF_UPDATE",            5);
-define("WF_DELETE",            6);
-define("WF_ADV_DELETE",        7);
-define("WF_SELECT_DISTINCT",   8);
-define("WF_ADV_UPDATE",        9);
-define("WF_INSERT_OR_UPDATE",	10);
+define("WF_SELECT",            			1);
+define("WF_ADV_SELECT",        			2);
+define("WF_INSERT",            			3);
+define("WF_INSERT_ID",         			4);
+define("WF_UPDATE",            			5);
+define("WF_DELETE",            			6);
+define("WF_ADV_DELETE",        			7);
+define("WF_SELECT_DISTINCT",   			8);
+define("WF_ADV_UPDATE",        			9);
+define("WF_MULTIPLE_INSERT_OR_UPDATE",	10);
+
 
 /* order define */
 define("WF_ASC",              10);
@@ -86,13 +87,12 @@ class core_db_insert extends core_db_query {
 		$this->arr = $insert;
 	}
 }
-
-class core_db_insert_or_update extends core_db_query {
+class core_db_multiple_insert_or_update extends core_db_query {
 	var $zone = NULL;
 	var $arr = NULL;
 	var $up = NULL;
 	public function __construct($zone, $arr,$up=NULL) {
-		$this->type = WF_INSERT_OR_UPDATE;
+		$this->type = WF_MULTIPLE_INSERT_OR_UPDATE;
 		$this->zone = $zone;
 		$this->arr = $arr;
 		if($up)
@@ -101,9 +101,7 @@ class core_db_insert_or_update extends core_db_query {
 	public function up($up) {
 		$this->up = $up;
 	}
-	
 }
-
 
 class core_db_insert_id extends core_db_query {
 	var $zone = NULL;

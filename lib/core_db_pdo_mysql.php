@@ -624,23 +624,36 @@ class core_db_pdo_mysql extends core_db {
 			$query = "DELETE FROM ".$query_obj->zone." $cond";
 			$this->sql_query($query, $prepare_value);
 		}
-		else if($query_obj->type == WF_INSERT_OR_UPDATE) {
+		else if($query_obj->type == WF_MULTIPLE_INSERT_OR_UPDATE) {
 			$prepare_value = array();
 		
 			/* fill fields */
 			$key = NULL;
 			$val = NULL;
-			foreach($query_obj->arr as $k => $sv) {
-				$v = $this->safe_input($sv);
-				if(!$key) {
-					$key = '`'.$k.'`';
-					$val .= '?';
+			if(is_array($query_obj->arr[0])){
+				foreach($query_obj->arr[0] as $k => $v){
+					if(!$key)
+						$key = '`'.$k.'`';
+					else
+						$key .= ', `'.$k.'`';
 				}
-				else {
-					$key .= ', `'.$k.'`';
-					$val .= ', ?';
+			}
+			foreach($query_obj->arr as $k => $sv) {		
+				foreach($sv as $k2 => $sv2){	
+					$v2 = $this->safe_input($sv2);
+					if(!$val[$k]) 
+						$val[$k] .= '?';
+					else 
+						$val[$k] .= ', ?';
+					array_push($prepare_value, $v2);
 				}
-				array_push($prepare_value, $v);
+			}
+			$val_str = NULL;
+			foreach($val as $k => $v){
+				if(!$val_str)
+					$val_str.="(".$v.")";
+				else
+					$val_str.=",(".$v.")";
 			}
 			/* fill fields */
 			$up = NULL;
@@ -661,10 +674,9 @@ class core_db_pdo_mysql extends core_db {
 				}
 			}
 			/* prepare and exec the query */
-			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES ($val) ON DUPLICATE KEY UPDATE $up";
+			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES $val_str ON DUPLICATE KEY UPDATE $up";
 			$this->sql_query($query, $prepare_value);
 		}
-		
 		/* Select distinct query */
 		if($query_obj->type == WF_SELECT_DISTINCT) {
 			/* check for fields */
