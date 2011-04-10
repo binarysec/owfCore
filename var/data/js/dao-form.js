@@ -160,6 +160,7 @@
 			'<table width="100%">'
 		;
 		
+		
 		if(id != -1) 
 			form_res += '<input type="hidden" name="id" value="'+id+'"/>';
 		
@@ -201,13 +202,17 @@
 				var select = '';
 				if(typeof(val.value) == 'undefined')
 					val.value = '';
-				
-				/* read list */
-				select += '<select name="'+key+'">';
-				$.each(val.list, function(lkey, lval) {
-					select += '<option value="' + lkey + '">'+ lval +'</option>'
-				});
-				select += '</select>';
+
+				if(typeof(val.list) == 'undefined')
+					alert('Warning: No list defined for select input ' + key);
+				else {
+					/* read list */
+					select += '<select name="'+key+'">';
+					$.each(val.list, function(lkey, lval) {
+						select += '<option value="' + lkey + '">'+ lval +'</option>'
+					});
+					select += '</select>';
+				}
 				
 				form_res += 
 					'<tr>' +
@@ -224,6 +229,7 @@
 			}
 		});
 		form_res += '</table></form>'
+		
 		
 		$(form).html(form_res);
 		
