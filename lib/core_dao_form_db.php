@@ -84,7 +84,7 @@ class core_dao_form_db {
 	}
 
 	public function get_dialog() {
-		$name = $this->name.$this->id."_dialog";
+		$name = $this->aggregator.$this->id."_dialog";
 		return(
 			'<div id="'.$name.'" class="dao_dialog">'.
 			'</div>'

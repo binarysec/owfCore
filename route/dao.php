@@ -37,19 +37,18 @@ class wfr_core_dao extends wf_route_request {
 	
 	private function draw_form($item, $data=array()) {
 		$result = array();
-
 		/* follow and build form */
 		foreach($item->data as $key => $val) {
 		
 			/* check permissions */
 			$ret = $this->a_session->check_permission($val["perm"]);
+		
 			if($ret && $val["perm"]) {
 				if(isset($val["kind"])) {
 					$result[$key] = array(
 						"text" => $val["name"],
-						"kind" => $val["type"],
+						"kind" => $val["kind"],
 					);
-					
 					if(isset($data[$key])) {
 						$result[$key]["value"] = htmlentities($data[$key]);
 					}
@@ -64,13 +63,14 @@ class wfr_core_dao extends wf_route_request {
 					if($val["kind"] == OWF_DAO_SELECT) {
 						if(isset($val["select_cb"]))
 							$list = call_user_func($val["select_cb"], $item, $val);
-						
+					
 						$result[$key]["list"] = $list;
 					}
+					if(isset($val["reader_cb"]))
+						$result[$key]["value"] = call_user_func($val["reader_cb"], $item, $data[$key]);
 				}
 			}
-		}
-
+		}	
 		echo json_encode($result);
 		exit(0);
 	}
@@ -150,8 +150,16 @@ class wfr_core_dao extends wf_route_request {
 						$ret = call_user_func($val["filter_cb"], $item, &$var);
 						if(is_string($ret))
 							$error[$key] = $ret;
-						else if($ret && $var)
-							$insert[$key] = $var;
+						else if($ret && $var) {
+							if(isset($val["return_cb"])){
+								$ret2 = call_user_func($val["return_cb"], $item, &$var);
+								if($ret2)
+									$insert[$key] = $ret2;
+								else
+									$error[$key] = $ret2;
+							}else 
+								$insert[$key] = $var;
+						}
 					}
 					else if($var)
 						$insert[$key] = $var;
