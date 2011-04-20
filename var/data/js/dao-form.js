@@ -3,29 +3,29 @@
 	var methods = { };
 	
 	methods.form = function(options) {
-		var gen_dialog = '#' + options.dao.name + options.dao.id + '_dialog';
-
+		var div_title =  "#" + options.dao.name + options.dao.id;
+		var gen_dialog = div_title + '_dialog';
+	
 		$(gen_dialog).hide();
-		
-		$("a", ".dao_button_add").button({ 
+	
+		$("a", div_title + " .dao_button_add").button({ 
 			icons: {
 				primary: options.add.icon
 			}
 		});
 		
-		$("a", ".dao_button_del").button({ 
+		$("a", div_title + " .dao_button_del").button({ 
 			icons: {
 				primary: options.del.icon
 			}
 		});
 
-		$("a", ".dao_button_mod").button({ 
+		$("a", div_title + " .dao_button_mod").button({ 
 			icons: {
 				primary: options.mod.icon
 			}
 		});
-		
-		$("a", ".dao_button_add").click(function() {
+		$("a", div_title + " .dao_button_add").click(function() {
 			
 			$(gen_dialog).html(options.add.loading);
 			
@@ -57,7 +57,7 @@
 			});
 			
 			url = options.dao.linker + '/add/' + options.dao.name + '/' + options.dao.id;
-
+			
 			$.getJSON(
 				url,
 				function(data) {
@@ -68,7 +68,7 @@
 			return(false);
 		});
 	
-		$("a", ".dao_button_del").click(function() {
+		$("a", div_title + " .dao_button_del").click(function() {
 			var id = $(this).attr("id");
 			
 			$(gen_dialog).html(options.del.text);
@@ -104,7 +104,7 @@
 		});
 		
 		
-		$("a", ".dao_button_mod").click(function() {
+		$("a", div_title + " .dao_button_mod").click(function() {
 			var id = $(this).attr("id");
 	
 			$(gen_dialog).html(options.mod.loading);
@@ -155,18 +155,25 @@
 		var form_name = options.dao.name + options.dao.id + '_form';
 		var form_res = '';
 		
+		if(options.dao.args){
+			var t = options.dao.args.split(",");
+			var args_tab = new Array();
+			$.each(t,function(key, val) {
+				var rep = val.split(":");
+				args_tab[rep[0]] = rep[1];
+			});
+		}
+		
 		form_res += 
 			'<form id="'+form_name+'" action="/">' +
 			'<table width="100%">'
 		;
-		
 		
 		if(id != -1) 
 			form_res += '<input type="hidden" name="id" value="'+id+'"/>';
 		
 		
 		$.each(data, function(key, val) {
-			
 			/* Input form */
 			if(val.kind == 1) {
 
@@ -194,11 +201,9 @@
 					'</td>' +
 					'</tr>'
 				;
-			
 			}
-		
 			/* Select form */
-			else if(val.kind == 3) {
+			else if(val.kind == 5) {
 				var select = '';
 				if(typeof(val.value) == 'undefined')
 					val.value = '';
@@ -209,6 +214,7 @@
 					/* read list */
 					select += '<select name="'+key+'">';
 					$.each(val.list, function(lkey, lval) {
+						
 						select += '<option value="' + lkey + '">'+ lval +'</option>'
 					});
 					select += '</select>';
@@ -227,10 +233,36 @@
 					'</tr>'
 				;
 			}
+			else if(val.kind == 6) {	
+				insert = '<input id="' + 
+					key + 
+					'_in" name="' + 
+					key + 
+					'" type="hidden"';
+				if(args_tab[key])
+					insert += ' value="' + args_tab[key] + '"';
+				else if(typeof(val.value) != 'undefined')
+					insert += ' value="' + val.value + '"';
+				
+				
+				if(typeof(val.size) != 'undefined')
+					insert += ' size="' + val.size + '"';
+				
+				
+					
+				form_res += 
+					'<tr>' +
+					'<td>' +
+					insert +
+					'</td>' +
+					'</tr>'
+				;
+			
+			}
+
 		});
 		form_res += '</table></form>'
-		
-		
+	
 		$(form).html(form_res);
 		
 		$('#' + form_name).submit(function(event) {
@@ -271,6 +303,7 @@
 				}
 			);
 		});	
+		
 	};
 	
 	$.fn.dao = function(method) {

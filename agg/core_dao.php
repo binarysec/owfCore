@@ -5,6 +5,7 @@ define("OWF_DAO_INPUT_REQ",       2);
 define("OWF_DAO_DATA_DIR",        3);
 define("OWF_DAO_UPLOAD",          4);
 define("OWF_DAO_SELECT",          5);
+define("OWF_DAO_HIDDEN",          6);
 
 class core_dao extends wf_agg {
 	private $position = 0;

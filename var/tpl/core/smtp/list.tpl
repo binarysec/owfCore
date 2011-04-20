@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
 	$(function() {
-		$('#smtp').dao('form', {
+		$('#%{$dao_name}%%{$dao_id}%').dao('form', {
 			dao: {
 				name: '%{$dao_name}%',
 				id: '%{$dao_id}%',
@@ -39,7 +39,7 @@
 
 <h1><img src="%{link '/data/core/title_smtp.png'}%" alt="%{@ 'SMTP Servers configuration'}%" title="%{@ 'SMTP Servers configuration'}%" />%{@ 'SMTP Servers configuration'}%</h1>
 
-<div id="smtp">
+<div id="%{$dao_name}%%{$dao_id}%">
 %{$dao_dialog}%
 %{$dao_button_add}%<br><br>
 
