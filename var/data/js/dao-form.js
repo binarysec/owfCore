@@ -69,7 +69,7 @@
 		});
 	
 		$("a", div_title + " .dao_button_del").click(function() {
-			var id = $(this).attr("id");
+			var id = $(this).attr("name");
 			
 			$(gen_dialog).html(options.del.text);
 			
@@ -105,8 +105,8 @@
 		
 		
 		$("a", div_title + " .dao_button_mod").click(function() {
-			var id = $(this).attr("id");
-	
+			var id = $(this).attr("name");
+
 			$(gen_dialog).html(options.mod.loading);
 			
 			/* Prevent enter */

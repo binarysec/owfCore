@@ -102,7 +102,7 @@ class core_dao_form_db {
 	public function button_remove($text, $id) {
 		
 		$html = '<span class="dao_button_del">'.
-			'<a href="" id="'.$id.'">'.$text.'</a>'.
+			'<a href="" name="'.$id.'">'.$text.'</a>'.
 			'</span>';
 		return($html);
 		
@@ -110,7 +110,7 @@ class core_dao_form_db {
 	
 	public function button_modify($text, $id) {
 		$html = '<span class="dao_button_mod">'.
-			'<a href="" id="'.$id.'">'.$text.'</a>'.
+			'<a href="" name="'.$id.'">'.$text.'</a>'.
 			'</span>';
 		return($html);
 	}
