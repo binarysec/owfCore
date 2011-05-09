@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Login</title>
-%{literal}%
+
 <style>
 body { 
 	font-family: Ubuntu, Tahoma, Verdana, Arial, sans-serif; 
@@ -38,7 +38,7 @@ a, a:hover {
 	text-decoration: none; 
 }
 </style>
-%{/literal}%
+
 </head>
 
 <body>

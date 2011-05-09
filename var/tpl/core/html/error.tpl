@@ -1,4 +1,4 @@
-%{literal}%
+
 <style>
 body { 
 	font-family: Ubuntu, Tahoma, Verdana, Arial, sans-serif; 
@@ -43,7 +43,7 @@ a:hover {
 
 
 </style>
-%{/literal}%
+
 
 
 <body bgcolor="white" text="black">

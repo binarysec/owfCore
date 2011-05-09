@@ -1,46 +1,41 @@
-
 <script type="text/javascript">
 	
 	var data_responder = '%{$form_responder}%';
 	
-	%{literal}%
-	
 	function dataset_set_order(col, order) {
-		%{/literal}%
 		%{foreach $cols as $id => $col}%
 		%{if $col['orderable']}%
 			document.getElementById('form_%{$name}%_order_%{$id}%').value = '';
 		%{/if}%
 		%{/foreach}%
-		%{literal}%
-		document.getElementById('form_%{/literal}%%{$name}%%{literal}%_order_' + col).value = order;
+		document.getElementById('form_%{$name}%_order_' + col).value = order;
 		
 		if(data_responder != '')
 			f = document.getElementById(data_responder);
 		else
-			f = document.getElementById('form_%{/literal}%%{$name}%%{literal}%');
+			f = document.getElementById('form_%{$name}%');
 		f.method = 'GET';
 		f.action = '';	
 		f.submit();
 	}
 	
 	function dataset_set_page(nb) {
-		document.getElementById('form_%{/literal}%%{$name}%%{literal}%_page').value = nb;
+		document.getElementById('form_%{$name}%_page').value = nb;
 		if(data_responder != '')
 			f = document.getElementById(data_responder);
 		else
-			f = document.getElementById('form_%{/literal}%%{$name}%%{literal}%');
+			f = document.getElementById('form_%{$name}%');
 		f.method = 'GET';
 		f.action = '';	
 		f.submit();
 	}
 	
 	function dataset_set_rows_per_page(nb) {
-		document.getElementById('form_%{/literal}%%{$name}%%{literal}%_rows_per_page').value = nb;
+		document.getElementById('form_%{$name}%_rows_per_page').value = nb;
 		if(data_responder != '')
 			f = document.getElementById(data_responder);
 		else
-			f = document.getElementById('form_%{/literal}%%{$name}%%{literal}%');
+			f = document.getElementById('form_%{$name}%');
 		f.method = 'GET';
 		f.action = '';	
 		f.submit();
@@ -51,7 +46,7 @@
 		if(data_responder != '')
 			f = document.getElementById(data_responder);
 		else
-			f = document.getElementById('form_%{/literal}%%{$name}%%{literal}%');
+			f = document.getElementById('form_%{$name}%');
 		f.method = 'GET';
 		f.action = '';	
 		f.submit();
@@ -59,7 +54,6 @@
 
 	
 </script>
-%{/literal}%
 
 %{$scripts}%
 
