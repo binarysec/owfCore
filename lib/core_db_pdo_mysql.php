@@ -434,7 +434,13 @@ class core_db_pdo_mysql extends core_db {
 					$fields .= ", COUNT(*) as count_etoile";
 				else
 					$fields = "COUNT(*)";
-			}		
+			}
+			elseif($query_obj->req_fct & WF_REQ_FCT_SUM) {
+				if($query_obj->fields != NULL)
+					$fields .= ", SUM(*) as sum_etoile";
+				else
+					$fields = "SUM(*)";
+			}
 			if($query_obj->req_fct & WF_REQ_FCT_DISTINCT)
 				$select = "SELECT DISTINCT";
 			else

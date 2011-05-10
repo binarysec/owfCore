@@ -403,6 +403,8 @@ class core_db_pdo_pgsql extends core_db {
 			
 			if($query_obj->req_fct & WF_REQ_FCT_COUNT)
 				$fields = "COUNT(*)";
+			elseif($query_obj->req_fct & WF_REQ_FCT_SUM)
+				$fields = "SUM(*)";
 			
 			if($query_obj->req_fct & WF_REQ_FCT_DISTINCT)
 				$select = "SELECT DISTINCT";
