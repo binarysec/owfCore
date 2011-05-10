@@ -865,7 +865,10 @@ class core_db_pdo_mysql extends core_db {
 			case WF_FLOAT :
 				$ret .= "FLOAT NULL";break;
 			case WF_DATA :
-				$ret .= "LONGBLOB";break;
+				$ret .= "LONGBLOB";
+				if($item & WF_PRIMARY)
+					$ret .= "(500)";
+				break;
 		}
 		
 		if($item & WF_AUTOINC)
