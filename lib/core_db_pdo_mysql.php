@@ -853,22 +853,25 @@ class core_db_pdo_mysql extends core_db {
 	get the wrapped type 
 	*/
 	private function get_struct_type($item) {
-		switch($item) {
-			case WF_VARCHAR: case WF_VARCHAR_PRI:
-				return("VARCHAR(255) NULL");
-			case WF_SMALLINT:
-				return("SMALLINT NULL");
-			case WF_INT:
-				return("INT NULL");
-			case WF_FLOAT:
-				return("FLOAT NULL");
-			case WF_TIME:
-				return("INT NULL");
-			case WF_DATA: case WF_DATA_PRI:
-				return("LONGBLOB");
-			case WF_PRI:
-				return("INT NULL AUTO_INCREMENT");
+		$ret = "";
+		switch($item & 0xF0) {
+			case WF_VARCHAR :
+				$ret .= "VARCHAR(255) NULL";break;
+			case WF_SMALLINT :
+				$ret .= "SMALLINT NULL";break;
+			case WF_INT :
+			case WF_TIME :
+				$ret .= "INT NULL";break;
+			case WF_FLOAT :
+				$ret .= "FLOAT NULL";break;
+			case WF_DATA :
+				$ret .= "LONGBLOB";break;
 		}
+		
+		if($item & WF_AUTOINC)
+			$ret .= " AUTO_INCREMENT";
+		
+		return $ret;
 	}
 	
 	private function create_table($name, $struct) {
@@ -877,9 +880,7 @@ class core_db_pdo_mysql extends core_db {
 		$query = 'CREATE TABLE `'.$name.'` (';
 		$vir = FALSE;
 		foreach($struct as $k => $v) {
-			if($v == WF_PRI || 
-				$v == WF_VARCHAR_PRI || 
-				$v == WF_DATA_PRI)
+			if($v & WF_PRIMARY)
 				$pri_list[] = $k;
 					
 			if($vir == TRUE) $query .= ",";
