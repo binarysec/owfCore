@@ -874,7 +874,7 @@ class core_db_pdo_mysql extends core_db {
 					$query .= ",";
 				$query .= "`$k`";
 				
-				if(($v & OxFO) == WF_DATA)
+				if(($v & 0xF0) == WF_DATA)
 					$query .= "(500)";
 				
 				$a++;
