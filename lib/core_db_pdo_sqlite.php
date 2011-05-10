@@ -741,24 +741,24 @@ class core_db_pdo_sqlite extends core_db {
 	get the wrapped type 
 	*/
 	private function get_struct_type($item) {
-		switch($item) {
-			case WF_VARCHAR:
+		if($item & WF_PRIMARY)
+			return("INTEGER NOT NULL PRIMARY KEY");
+		
+		switch($item & 0xF0) {
+			case WF_VARCHAR :
 				return("VARCHAR(255)");
-			case WF_SMALLINT:
+			case WF_SMALLINT :
 				return("SMALLINT");
-			case WF_INT:
+			case WF_INT :
+			case WF_TIME :
 				return("INT");
-			case WF_FLOAT:
+			case WF_FLOAT :
 				return("FLOAT");
-			case WF_TIME:
-				return("INT");
-			case WF_DATA:
+			case WF_DATA :
 				return("BLOB");
-			case WF_PRI:
-				return("INTEGER NOT NULL PRIMARY KEY");
 		}
 	}
-
+	
 	private function create_table($name, $struct) {
 		$query = 'CREATE TABLE "'.$name.'" (';
 		$vir = FALSE;

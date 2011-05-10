@@ -21,15 +21,25 @@
  *  engineer, decompile or disassemble this software     *
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        
+/* core_db types flags */
+define("WF_AUTOINC",	0x01);
+define("WF_PRIMARY",	0x02);
+define("WF_RES1",		0x04);
+define("WF_RES2",		0x08);
 
-/* type supported by core_db */
-define("WF_VARCHAR",   1);
-define("WF_SMALLINT",  2);
-define("WF_INT",       3);
-define("WF_FLOAT",     4);
-define("WF_TIME",      5);
-define("WF_DATA",      6);
-define("WF_PRI",       7);
+/* core_db types */
+define("WF_VARCHAR",	0x10);
+define("WF_SMALLINT",	0x20);
+define("WF_INT",		0x30);
+define("WF_FLOAT",		0x40);
+define("WF_TIME",		0x50);
+define("WF_DATA",		0x60);
+
+/* Deprecated, backyard compatibility only */
+define("WF_PRI",		WF_INT | WF_AUTOINC | WF_PRIMARY);
+define("WF_VARCHAR_PRI",WF_VARCHAR | WF_PRIMARY);
+define("WF_DATA_PRI",	WF_DATA | WF_PRIMARY);
 
 /* type of query */
 define("WF_SELECT",            			1);
@@ -42,7 +52,6 @@ define("WF_ADV_DELETE",        			7);
 define("WF_SELECT_DISTINCT",   			8);
 define("WF_ADV_UPDATE",        			9);
 define("WF_MULTIPLE_INSERT_OR_UPDATE",	10);
-
 
 /* order define */
 define("WF_ASC",              10);

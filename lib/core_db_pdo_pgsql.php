@@ -750,21 +750,21 @@ class core_db_pdo_pgsql extends core_db {
 	get the wrapped type 
 	*/
 	private function get_struct_type($item) {
-		switch($item) {
-			case WF_VARCHAR:
+		if($item & WF_PRIMARY)
+			return("SERIAL PRIMARY KEY");
+		
+		switch($item & 0xF0) {
+			case WF_VARCHAR :
 				return("VARCHAR(255) NULL");
-			case WF_SMALLINT:
+			case WF_SMALLINT :
 				return("SMALLINT NULL");
-			case WF_INT:
+			case WF_INT :
+			case WF_TIME :
 				return("INT NULL");
-			case WF_FLOAT:
+			case WF_FLOAT :
 				return("FLOAT NULL");
-			case WF_TIME:
-				return("INT NULL");
-			case WF_DATA:
+			case WF_DATA :
 				return("TEXT");
-			case WF_PRI:
-				return("SERIAL PRIMARY KEY");
 		}
 	}
 
@@ -774,7 +774,7 @@ class core_db_pdo_pgsql extends core_db {
 		$query = 'CREATE TABLE "'.$name.'" (';
 		$vir = FALSE;
 		foreach($struct as $k => $v) {
-			if($v == WF_PRI)
+			if($v & WF_PRIMARY)
 				$pri_list[] = $k;
 					
 			if($vir == TRUE) $query .= ",";
