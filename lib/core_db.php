@@ -58,8 +58,9 @@ define("WF_ASC",              10);
 define("WF_DES",              11);
 
 /* Request function */
-define("WF_REQ_FCT_COUNT",       0x1);
-define("WF_REQ_FCT_DISTINCT",    0x2);
+define("WF_REQ_FCT_COUNT",		0x1);
+define("WF_REQ_FCT_DISTINCT",	0x2);
+define("WF_REQ_FCT_SUM",	    0x4);
 
 abstract class core_db {
 	public $wf = NULL;

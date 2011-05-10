@@ -116,26 +116,20 @@ class core_db_pdo_mysql extends core_db {
 	 *
 	 * Register a new DB zone
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function register_zone($name, $description, $struct,$index=NULL) {
+	public function register_zone($name, $description, $struct) {
 		$res = $this->get_zone($name);
 		if(!isset($res[0])) {
 			$this->create_table($name, $struct);
-			$this->create_zone($name, $struct);
-			if(is_array($index))
-				$this->add_primary_key($name,$index);
+			$this->create_zone($name, $struct, $description);
 		}
 		else {
-			if(!$this->table_exists($name)){ 
+			if(!$this->table_exists($name))
 				$this->create_table($name, $struct);
-				if(is_array($index))
-					$this->add_primary_key($name,$index);
-			}
-				
+			
 			$this->check_for_data_translation($name, $description, $struct, $res);
 		}
 		
 		$this->schema[$name] = $struct;
-
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -146,22 +140,6 @@ class core_db_pdo_mysql extends core_db {
 		$this->drop_zone($name);
 		$this->drop_table($name);
 		return(TRUE);
-	}
-	
-	private function add_primary_key($name,$pri_list){
-		$query = "ALTER TABLE `$name` ADD PRIMARY KEY (";
-		$a = 0;
-		foreach($pri_list as $k => $v){
-			if($a > 0)
-				$query .= ",";
-			if($v == WF_DATA)
-				$query .= "`$k`(500)";
-			else
-				$query .= "`$k`";
-			$a++;
-		}
-		$query .= ")";
-		$this->sql_query($query);
 	}
 	
 	private function check_for_data_translation($name, $description, $struct, $info) {
@@ -187,12 +165,11 @@ class core_db_pdo_mysql extends core_db {
 				$this->sql_query($query);
 				$change = TRUE;
 			}
-
 		}
 
 		if($change == TRUE) {
 			$this->drop_zone($name);
-			$this->create_zone($name, $struct);
+			$this->create_zone($name, $struct, $description);
 		}
 	}
 	
@@ -865,10 +842,7 @@ class core_db_pdo_mysql extends core_db {
 			case WF_FLOAT :
 				$ret .= "FLOAT NULL";break;
 			case WF_DATA :
-				$ret .= "LONGBLOB";
-				if($item & WF_PRIMARY)
-					$ret .= "(500)";
-				break;
+				$ret .= "LONGBLOB";break;
 		}
 		
 		if($item & WF_AUTOINC)
@@ -884,7 +858,7 @@ class core_db_pdo_mysql extends core_db {
 		$vir = FALSE;
 		foreach($struct as $k => $v) {
 			if($v & WF_PRIMARY)
-				$pri_list[] = $k;
+				$pri_list[$k] = $v;
 					
 			if($vir == TRUE) $query .= ",";
 			$query .= '`'.$k.'` '.$this->get_struct_type($v);
@@ -894,13 +868,16 @@ class core_db_pdo_mysql extends core_db {
 		/* preparation des clés */
 		if(count($pri_list) > 0) {
 			$query .= ", PRIMARY KEY ( ";
-			for($a=0; $a<count($pri_list); $a++) {
-				$v = &$pri_list[$a];
-			
+			$a = 0;
+			foreach($pri_list as $k => $v) {
 				if($a > 0)
 					$query .= ",";
-					
-				$query .= "`$v`";
+				$query .= "`$k`";
+				
+				if(($v & OxFO) == WF_DATA)
+					$query .= "(500)";
+				
+				$a++;
 			}
 			$query .= ")";
 		}
@@ -980,8 +957,7 @@ class core_db_pdo_mysql extends core_db {
 		$this->a_core_cacher->delete($cvar);
 	}
 	
-	private function create_zone($name, $struct) {
-		$description = NULL;
+	private function create_zone($name, $struct, $description = NULL) {
 		$insert = array(
 			"name" => $name,
 			"description" => $description
