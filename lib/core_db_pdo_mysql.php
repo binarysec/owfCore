@@ -150,7 +150,7 @@ class core_db_pdo_mysql extends core_db {
 		
 		/* vérifi les élément à ajouter */
 		foreach($struct as $k => $v) {
-			if(!$all[$k]) {
+			if(!isset($all[$k])) {
 				$type = $this->get_struct_type($v);
 				$query = "ALTER TABLE `$name` ADD `$k` $type ;";
 				$this->sql_query($query);
@@ -160,7 +160,7 @@ class core_db_pdo_mysql extends core_db {
 		
 		/* vérifi les élément à enlever */
 		foreach($all as $k => $v) {
-			if(!$struct[$k]) {
+			if(!isset($struct[$k])) {
 				$query = "ALTER TABLE `$name` DROP `$k` ;";
 				$this->sql_query($query);
 				$change = TRUE;
