@@ -601,6 +601,7 @@ class web_framework {
 	 * Display the error page
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function display_error($code, $message) {
+		header("HTTP/1.1 $code $message");
 		$tpl = new core_tpl($this);
 		$tpl->set(
 			"message",
