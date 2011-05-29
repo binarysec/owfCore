@@ -244,6 +244,9 @@ class web_framework {
 		/* Open database */
 		if($db == true)
 			$this->open_db();
+			
+		$this->execute_hook("owf_post_init");
+	
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -385,12 +388,10 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function execute_hook($name, $args=array(), $cb=NULL) {
 		$result = array();
-		
 		/* execute filters */
 		foreach($this->modules as $k => $mod) {
 			/* function exists ? */
 			if(method_exists($mod[8], $name)) {
-			
 				/* call the user function */
 				$r = call_user_func_array(
 					array($mod[8], $name),
@@ -409,7 +410,6 @@ class web_framework {
 				$result[] = $r;
 			}
 		}
-		
 		return($result);
 	}
 	
