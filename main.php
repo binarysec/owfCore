@@ -526,7 +526,8 @@ class web_framework {
 	 *
 	 * Use to link
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function linker($route, $filter=NULL, $lang_code=NULL) {
+	public function linker($route, $filter=NULL, $lang_code=NULL, $forwarder=FALSE) {
+	
 		$cl = $this->core_lang()->resolv($lang_code);
 		if(!$cl)
 			$lang_code = $this->core_lang()->get_code();
@@ -543,9 +544,14 @@ class web_framework {
 		if(isset($this->ini_arr["common"]["base"]))
 			$base = $this->ini_arr["common"]["base"];
 		
+		$query = NULL;
+		if($forwarder)
+			$query = "?".$_SERVER["QUERY_STRING"];
+		
 		return(
 			$base."/index.php".
-			$n_route
+			$n_route.
+			$query
 		);
 	}
 	

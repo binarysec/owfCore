@@ -141,7 +141,7 @@ class core_route extends wf_agg {
 			exit(0);
 		}
 		else if($channel[0][2] == WF_ROUTE_REDIRECT) {
-			$link = $this->wf->linker($channel[0][3]);
+			$link = $this->wf->linker($channel[0][3], NULL, NULL, TRUE);
 			header("Location: $link");
 			exit(0);
 		}
