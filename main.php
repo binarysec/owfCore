@@ -545,7 +545,7 @@ class web_framework {
 			$base = $this->ini_arr["common"]["base"];
 		
 		$query = NULL;
-		if($forwarder)
+		if($forwarder && !empty($_SERVER["QUERY_STRING"]))
 			$query = "?".$_SERVER["QUERY_STRING"];
 		
 		return(
