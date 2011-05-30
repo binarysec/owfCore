@@ -504,7 +504,10 @@ class core_tpl_compiler extends wf_agg {
 	/* linker */
 	public function func_link(core_tpl_compiler $tpl_compiler, $argv) {
 		$args = $argv[0];
-		if(isset($argv[1])) $args .= ', null, '.$argv[1];
+		if(isset($argv[1])) {
+			$args .= ', null, '.$argv[1];
+			if(isset($argv[2])) $args .= ', '.$args[2];
+		}
 		return('echo $this->wf->linker('.$args.');');
 	}
 
