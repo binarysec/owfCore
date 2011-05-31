@@ -41,7 +41,7 @@
 
 <div id="%{$dao_name}%%{$dao_id}%">
 %{$dao_dialog}%
-%{$dao_button_add}%<br><br>
+%{$dao_button_add}%<br/><br/>
 
 %{$dataset}%
 </div>
