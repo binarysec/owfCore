@@ -124,7 +124,7 @@ class core_route extends wf_agg {
 			}
 			
 			/* vérification si la méthode existe */
-			if(!method_exists($object, $funcname)) {
+			if(!method_exists($object, $funcname) && !method_exists($object, "__call")) {
 				throw new wf_exception(
 					$this,
 					WF_EXC_PRIVATE,

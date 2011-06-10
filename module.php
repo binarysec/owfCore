@@ -67,7 +67,7 @@ class wfm_core extends wf_module {
 				"show_data",
 				$this->ts("Données statiques"),
 				WF_ROUTE_HIDE,
-				array("session:anon")
+				array("session:ranon")
 			),
 			"/dao/form" => array(
 				WF_ROUTE_ACTION,
