@@ -141,7 +141,7 @@
 			$.getJSON(
 				url + '?id=' + id,
 				function(data) {
-					methods.drawform(gen_dialog, options, data, id);		
+					methods.drawform(gen_dialog, options, data, id);
 				}
 			);
 			
