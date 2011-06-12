@@ -58,6 +58,7 @@ class core_request extends wf_agg {
 		
 		/* Check for real anonymous */
 		if($this->channel[0][7][0] == WF_USER_RANON) {
+			$this->_session->check_session();
 			$this->a_core_route->execute_route(&$this->channel);
 			exit(0);
 		}
