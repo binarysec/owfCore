@@ -22,30 +22,6 @@ class wfm_core extends wf_module {
 	public function get_actions() {
 		return(array(
 
-			"/img" => array(
-				WF_ROUTE_ACTION,
-				"img",
-				"show_img",
-				"Img",
-				WF_ROUTE_HIDE,
-				array("session:anon")
-			),
-			"/css" => array(
-				WF_ROUTE_ACTION,
-				"css",
-				"show_css",
-				"Css",
-				WF_ROUTE_HIDE,
-				array("session:anon")
-			),
-			"/js" => array(
-				WF_ROUTE_ACTION,
-				"js",
-				"show_js",
-				"Js",
-				WF_ROUTE_HIDE,
-				array("session:anon")
-			),
 			"/admin/system/data" => array(
 				WF_ROUTE_REDIRECT,
 				"/data",
@@ -75,7 +51,16 @@ class wfm_core extends wf_module {
 				"form",
 				$this->ts("Add form DAO "),
 				WF_ROUTE_HIDE,
-				array("session:anon")
+				array("session:ranon")
+			),
+			
+			"/json" => array(
+				WF_ROUTE_ACTION,
+				"json",
+				"handler",
+				$this->ts("JSON interface"),
+				WF_ROUTE_HIDE,
+				array("session:ranon")
 			),
 		));
 	}

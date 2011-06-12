@@ -84,6 +84,7 @@ class core_smtp extends wf_agg {
 	}
 	
 	public function sendmail($mailfrom, $rcpt, $content, $sid=-1) {
+		$queue = NULL;
 		/* select best server */
 		$this->select_server($sid);
 
@@ -98,7 +99,7 @@ class core_smtp extends wf_agg {
 		$log = array(date(DATE_RFC822));
 		while(1) {
 			$data = fread($fd, 1024);
-			
+
 			$log[] = trim($data);
 			
 
@@ -137,12 +138,16 @@ class core_smtp extends wf_agg {
 // 			else if($atom == 4)
 // 				$atom = 5;
 			else {
+				$e = explode(" ", $data);
+				$queue = $e[count($e)-1];
 				fclose($fd);
 				break;
 			}
 		}
 		
 		$this->servers_id++;
+		
+		return(trim($queue));
 	}
 	
 	private $servers = NULL;
