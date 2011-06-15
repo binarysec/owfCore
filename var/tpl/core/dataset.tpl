@@ -56,9 +56,9 @@
 </script>
 
 %{$scripts}%
-
+<form method="get" id="form_%{$name}%" action="">
 <div class="dataset_filters">
-	<form method="get" id="form_%{$name}%" action="">
+	
 		%{if $filters}%
 		<table>
 			%{foreach $filters as $col => $filter}%
@@ -94,11 +94,11 @@
 		<input type="hidden" id="dataset_opt_%{$k}%" name="%{$k}%" value="%{$v}%" />
 		%{/foreach}%
 		
-	</form>
+	
 </div>
 
 %{set nb_pages, ceil($total_num_rows / $rows_per_page)}%
-%{if $nb_pages > 1}%
+%{if $total_num_rows > 25}%
 <div class="dataset_header dataset_header_color">
 <table width="100%">
 <tr>
@@ -213,8 +213,8 @@
 		
 	</table>
 </div>
-
-%{if $nb_pages > 1}%
+</form>
+%{if $total_num_rows > 25}%
 <div class="dataset_footer dataset_footer_color">
 <table width="100%">
 <tr>
