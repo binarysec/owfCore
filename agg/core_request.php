@@ -55,13 +55,21 @@ class core_request extends wf_agg {
 			base64_decode("Q29tcG9zZWQtQnk="),
 			base64_decode("T3BlbldG")
 		);
-		
-		/* Check for real anonymous */
-		if($this->channel[0][7][0] == WF_USER_RANON) {
+
+		/* Check for real anonymous for action */
+		if($this->channel[0][2] == WF_ROUTE_ACTION)
+			$ranon = $this->channel[0][7][0];
+		else if($this->channel[0][2] == WF_ROUTE_REDIRECT)
+			$ranon = $this->channel[0][6][0];
+		else
+			$ranon = null;
+			
+		if($ranon == WF_USER_RANON) {
 			$this->_session->check_session();
 			$this->a_core_route->execute_route(&$this->channel);
 			exit(0);
 		}
+		
 		
 		/* vérification du canal */
 		if(!isset($this->channel[0])) {
@@ -81,7 +89,7 @@ class core_request extends wf_agg {
 		
 		/* vérification de la session */
 		$ret = $this->_session->check_session();
-		if($ret == SESSION_TIMEOUT) {		
+		if($ret == SESSION_TIMEOUT) {
 			$this->wf->display_login(
 				"Session destroyed"
 			);
