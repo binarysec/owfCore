@@ -173,7 +173,7 @@ class core_dataset {
 				);
 
 				/* select filter */
-				if($conf['type'] = WF_CORE_DATASET_SELECT) {
+				if(isset($conf['type']) && $conf['type'] = WF_CORE_DATASET_SELECT) {
 					/* get uniq list values */
 					$filter['options'] = array();
 					$options = $this->dsrc->get_options($col);
