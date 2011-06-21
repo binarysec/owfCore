@@ -98,16 +98,19 @@
 </div>
 
 %{set nb_pages, ceil($total_num_rows / $rows_per_page)}%
+
 %{if $total_num_rows > 25}%
+%{if $display_dataset_select_bar != 3}%
 <div class="dataset_header dataset_header_color">
 <table width="100%">
 <tr>
+%{if $display_dataset_select_bar == 1}%
 <td>
 	R&eacute;sultats
 	%{$rows_per_page * ($page_nb - 1) + 1}% &agrave; %{$rows_per_page * ($page_nb - 1) + count($rows)}%
 	sur %{$total_num_rows}%
 </td>
-
+%{/if}%
 %{if $rows_per_page > 1}%
 <td align="center">
 <div class="dataset_pager">
@@ -163,7 +166,7 @@
 </td>
 %{/if}%
 
-
+%{if $display_dataset_select_bar == 1}%
 <td align="right">
 	R&eacute;sultats par page : 
 	
@@ -173,9 +176,11 @@
 		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 r&eacute;sultats</option>
 	</select>
 </td>
+%{/if}%
 </tr>
 </table>
 </div>
+%{/if}%
 %{/if}%
 
 <div class="dataset_data">
@@ -215,15 +220,17 @@
 </div>
 </form>
 %{if $total_num_rows > 25}%
+%{if $display_dataset_select_bar != 3}%
 <div class="dataset_footer dataset_footer_color">
 <table width="100%">
 <tr>
+%{if $display_dataset_select_bar == 1}%
 <td>
 	R&eacute;sultats
 	%{$rows_per_page * ($page_nb - 1) + 1}% &agrave; %{$rows_per_page * ($page_nb - 1) + count($rows)}%
 	sur %{$total_num_rows}%
 </td>
-
+%{/if}%
 %{if $rows_per_page}%
 <td align="center">
 <div class="dataset_pager">
@@ -278,7 +285,7 @@
 </div>
 </td>
 %{/if}%
-
+%{if $display_dataset_select_bar == 1}%
 <td align="right">
 	R&eacute;sultats par page : 
 	
@@ -288,8 +295,10 @@
 		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 r&eacute;sultats</option>
 	</select>
 </td>
+%{/if}%
 </tr>
 </table>
 
 </div>
+%{/if}%
 %{/if}%
