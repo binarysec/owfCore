@@ -60,6 +60,7 @@ class core_dataview {
 		$tpl->set('rows',    $this->dset->get_rows());
 		$tpl->set('filters', $this->dset->get_filters());
 		$tpl->set('page_nb', $this->dset->get_page_nb());
+		$tpl->set('display_dataset_select_bar', $this->dset->get_display_select_bar());
 		$tpl->set('args', $this->args);
 		$tpl->set('form_responder', $this->form_responder);
 		$tpl->set('rows_per_page',  $this->dset->get_rows_per_page());

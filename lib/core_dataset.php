@@ -26,6 +26,10 @@ define('WF_CORE_DATASET_SELECT',   1);
 define('WF_CORE_DATASET_SLIDE',    2);
 define('WF_CORE_DATASET_ACTIVATE', 3);
 
+
+define('WF_CORE_DATASET_SELECT_BAR_ALL',		1);
+define('WF_CORE_DATASET_SELECT_BAR_ONLY_PAGE',	2);
+define('WF_CORE_DATASET_SELECT_BAR_NONE',		3);
 class core_dataset {
 
 	private $fw   = null;
@@ -38,7 +42,7 @@ class core_dataset {
 	private $row_callback   = null;
 	private $rows_per_page  = null;
 	private $page_nb        = 1;
-	
+	private $display_select_bar = WF_CORE_DATASET_SELECT_BAR_ALL;
 	
 	public function __construct($wf, $dsrc) {
 		$this->wf   = $wf;
@@ -51,6 +55,16 @@ class core_dataset {
 				'name' => $name
 			);
 		}
+	}
+
+	public function set_display_select_bar($display) {
+		if($display >= WF_CORE_DATASET_SELECT_BAR_ALL &&
+		$display <= WF_CORE_DATASET_SELECT_BAR_NONE)
+			$this->display_select_bar = $display;
+	}
+
+	public function get_display_select_bar() {
+		return $this->display_select_bar;
 	}
 
 	public function auto_order() {
