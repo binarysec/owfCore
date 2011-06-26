@@ -1,25 +1,4 @@
 <?php
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Web Framework 1                                       *
- * BinarySEC (c) (2000-2008) / www.binarysec.com         *
- * Author: Michael Vergoz <mv@binarysec.com>             *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~         *
- *  Avertissement : ce logiciel est protégé par la       *
- *  loi du copyright et par les traités internationaux.  *
- *  Toute personne ne respectant pas ces dispositions    *
- *  se rendra coupable du délit de contrefaçon et sera   *
- *  passible des sanctions pénales prévues par la loi.   *
- *  Il est notamment strictement interdit de décompiler, *
- *  désassembler ce logiciel ou de procèder à des        *
- *  opération de "reverse engineering".                  *
- *                                                       *
- *  Warning : this software product is protected by      *
- *  copyright law and international copyright treaties   *
- *  as well as other intellectual property laws and      *
- *  treaties. Is is strictly forbidden to reverse        *
- *  engineer, decompile or disassemble this software     *
- *  product.                                             *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
  * Code fortement inspirée de la librairie jTpl
@@ -45,7 +24,8 @@ class core_tpl {
 	private $php_exec = 1;
 	private $allowed_func = array();
 	private $registered_generator = array();
-
+	private $core_lang;
+	
 	private $vars = array();
 
 
@@ -56,6 +36,7 @@ class core_tpl {
 		$this->a_core_html = $this->wf->core_html();
 		$this->a_core_tpl_compiler = $this->wf->core_tpl_compiler();
 		$this->a_core_request = $this->wf->core_request();
+		$this->core_lang = $this->wf->core_lang();
 	}
 
 	// Accessors
@@ -99,16 +80,32 @@ class core_tpl {
 		$this->vars = array_merge($this->vars, $vars);
 	}
 	
-	public function locate($tpl_name) {
+	public function locate($tpl_name, $lang=false) {
+		if($lang) {
+			$l = $this->core_lang->get();
+			$sdir = "/var/lang/tpl/$l[code]/";
+			$tpl_name_cache = "$l[code]_$tpl_name";
+		}
+		else {
+			$r = $this->locate($tpl_name, true);
+			if($r == true)
+				return(true);
+				
+			$sdir = '/var/tpl/';
+			$tpl_name_cache = $tpl_name;
+		}
+	
 		$modrev = array_reverse($this->wf->modules);
 		$cache_to = end($this->wf->modules);
 		foreach($modrev as $mod => $mod_infos) {
 			$tmp = $this->wf->modules[$mod][0].
-				'/var/tpl/'.$tpl_name.'.tpl';
+				$sdir.$tpl_name.'.tpl';
+				
+				
 			if(file_exists($tmp)) {
 				$this->tpl_file = $tmp;
 				$this->cache_file = $cache_to[0].
-					'/var/tpl_cache/'.$tpl_name.'.tpl';
+					'/var/tpl_cache/'.$tpl_name_cache.'.tpl';
 				return(true);
 			}
 		}
