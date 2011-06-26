@@ -85,7 +85,7 @@ class wfr_core_json extends wf_route_request {
 			),
 			"result" => $data
 		);
-		
+		header("Content-Type: text/javascript");
 		echo json_encode($ret);
 		exit(0);
 	}
