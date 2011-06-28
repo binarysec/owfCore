@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Login</title>
+<title>%{@ 'Login'}%</title>
 
 <style>
 body { 
@@ -47,7 +47,7 @@ a, a:hover {
 <tr>
 <td align="center" valign="middle">
 
-<h1>Login required</h1>
+<h1>%{@ 'Login required'}%</h1>
 <h2>%{$message}%</h2>
 
 <form action="%{link '/session/login'}%" method="post">
@@ -56,11 +56,11 @@ a, a:hover {
 	%{/if}%
 	<table width="300px">
 		<tr>
-			<td><h3>Username:</h3></td>
+			<td><h3>%{@ 'Username'}% :</h3></td>
 			<td><input type="text" name="user" /></td>
 		</tr>
 		<tr>
-			<td><h3>Password:</h3></td>
+			<td><h3>%{@ 'Password'}% :</h3></td>
 			<td><input type="password" name="pass" /></td>
 		</tr>
 		<tr align="center">
@@ -70,9 +70,9 @@ a, a:hover {
 </form>
 <h4>
 %{if $via_addr}%
-from %{$remote_ip}% (%{$remote_addr}%) via %{$via_addr}% (%{$via_addr}%)
+%{@ 'from'}% %{$remote_ip}% (%{$remote_addr}%) via %{$via_addr}% (%{$via_addr}%)
 %{else}%
-from %{$remote_ip}% (%{$remote_addr}%)
+%{@ 'from'}% %{$remote_ip}% (%{$remote_addr}%)
 %{/if}%
 
 </h4>

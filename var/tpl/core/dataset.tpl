@@ -106,19 +106,18 @@
 <tr>
 %{if $display_dataset_select_bar == 1}%
 <td>
-	R&eacute;sultats
-	%{$rows_per_page * ($page_nb - 1) + 1}% &agrave; %{$rows_per_page * ($page_nb - 1) + count($rows)}%
-	sur %{$total_num_rows}%
+	%{@ 'R&eacute;sultats'}%
+	%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
+	%{@ 'sur'}% %{$total_num_rows}%
 </td>
 %{/if}%
 %{if $rows_per_page > 1}%
 <td align="center">
 <div class="dataset_pager">
 		%{if $page_nb > 1}%
-		<a
-			href="javascript: void(0);"
+		<a href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb - 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="Page pr&ecaute;c&eacute;dente" alt="Page pr&eacute;c&eacute;dente" /></a>
+			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="%{@ 'Page pr&ecaute;c&eacute;dente'}%" alt="%{@ 'Page pr&ecaute;c&eacute;dente'}%" /></a>
 	%{/if}%
 
 	%{if $nb_pages<5}%
@@ -144,8 +143,6 @@
 			[%{$page_nb}%]
 		%{/if}%
 		
-	
-		
 		%{if $page_nb>$nb_pages-3}%
 			%{for $i =$page_nb+1; $i <= $nb_pages; $i++}%
 					<a href="javascript: void(0);" onclick="javascript: dataset_set_page('%{$i}%');">%{$i}%</a>
@@ -160,20 +157,21 @@
 		<a
 			href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb + 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_forward.png'}%" title="Page suivante" alt="Page suivante" /></a>
+			><img src="%{link '/data/icons/16x16/agt_forward.png'}%" title="%{@ 'Page suivante'}%" alt="%{@ 'Page suivante'}%" /></a>
 	%{/if}%
 </div>
 </td>
 %{/if}%
 
+
 %{if $display_dataset_select_bar == 1}%
 <td align="right">
-	R&eacute;sultats par page : 
+	%{@ 'R&eacute;sultats par page'}% : 
 	
 	<select onchange="javascript: dataset_set_rows_per_page(this.value);">
-		<option value="0"%{if $rows_per_page == 25}% selected="selected"%{/if}%>25 r&eacute;sultat</option>
-		<option value="1"%{if $rows_per_page == 50}% selected="selected"%{/if}%>50 r&eacute;sultats</option>
-		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 r&eacute;sultats</option>
+		<option value="0"%{if $rows_per_page == 25}% selected="selected"%{/if}%>25 %{@ 'r&eacute;sultats'}%</option>
+		<option value="1"%{if $rows_per_page == 50}% selected="selected"%{/if}%>50 %{@ 'r&eacute;sultats'}%</option>
+		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 %{@ 'r&eacute;sultats'}%</option>
 	</select>
 </td>
 %{/if}%
@@ -191,8 +189,8 @@
 				<th style="text-align: center;">
 					%{if $col['orderable']}%<a href="javascript: void(0);" onclick="javascript: dataset_set_order('%{$id}%', '%{if $form_order[$id] == 'A'}%D%{elseif !$form_order[$id]}%A%{else}%%{/if}%');">%{/if}%%{$col['name']}%%{if $col['orderable']}%</a>%{/if}%
 					%{if $form_order[$id]}%
-					%{if $form_order[$id] == 'D'}%<img src="%{link '/data/yui/build/assets/skins/sam/dt-arrow-dn.png'}%" alt="[DESC]" title="Tri d&eacute;croissant" />
-					%{else}%<img src="%{link '/data/yui/build/assets/skins/sam/dt-arrow-up.png'}%" alt="[ASC]" title="Tri croissant" />
+					%{if $form_order[$id] == 'D'}%<img src="%{link '/data/yui/build/assets/skins/sam/dt-arrow-dn.png'}%" alt="[DESC]" title="%{@ 'Tri d&eacute;croissant'}%" />
+					%{else}%<img src="%{link '/data/yui/build/assets/skins/sam/dt-arrow-up.png'}%" alt="[ASC]" title="%{@ 'Tri croissant'}%" />
 					%{/if}%
 					%{/if}%
 				</th>
@@ -210,7 +208,7 @@
 			%{/foreach}%
 			%{else}%
 			<tr class="dataset_noresult">
-				<td colspan="%{$cols|count}%">La recherche n'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.</td>
+				<td colspan="%{$cols|count}%">%{@ 'La recherche n\'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.'}%</td>
 			</tr>
 			%{/if}%
 		</tbody>
@@ -226,9 +224,9 @@
 <tr>
 %{if $display_dataset_select_bar == 1}%
 <td>
-	R&eacute;sultats
-	%{$rows_per_page * ($page_nb - 1) + 1}% &agrave; %{$rows_per_page * ($page_nb - 1) + count($rows)}%
-	sur %{$total_num_rows}%
+	%{@ 'R&eacute;sultats'}%
+	%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
+	%{@ 'sur'}% %{$total_num_rows}%
 </td>
 %{/if}%
 %{if $rows_per_page}%
@@ -238,7 +236,7 @@
 		<a
 			href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb - 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="Page pr&ecaute;c&eacute;dente" alt="Page pr&eacute;c&eacute;dente" /></a>
+			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="%{@ 'Page pr&ecaute;c&eacute;dente'}%" alt="%{@ 'Page pr&ecaute;c&eacute;dente'}%" /></a>
 	%{/if}%
 
 	%{if $nb_pages<5}%
@@ -280,19 +278,19 @@
 		<a
 			href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb + 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_forward.png'}%" title="Page suivante" alt="Page suivante" /></a>
+			><img src="%{link '/data/icons/16x16/agt_forward.png'}%" title="%{@ 'Page suivante'}%" alt="%{@ 'Page suivante'}%" /></a>
 	%{/if}%
 </div>
 </td>
 %{/if}%
 %{if $display_dataset_select_bar == 1}%
 <td align="right">
-	R&eacute;sultats par page : 
+	%{@ 'R&eacute;sultats par page'}% : 
 	
 	<select onchange="javascript: dataset_set_rows_per_page(this.value);">
-		<option value="0"%{if $rows_per_page == 25}% selected="selected"%{/if}%>25 r&eacute;sultat</option>
-		<option value="1"%{if $rows_per_page == 50}% selected="selected"%{/if}%>50 r&eacute;sultats</option>
-		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 r&eacute;sultats</option>
+		<option value="0"%{if $rows_per_page == 25}% selected="selected"%{/if}%>25 %{@ 'r&eacute;sultat'}%</option>
+		<option value="1"%{if $rows_per_page == 50}% selected="selected"%{/if}%>50 %{@ 'r&eacute;sultats'}%</option>
+		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 %{@ 'r&eacute;sultats'}%</option>
 	</select>
 </td>
 %{/if}%
