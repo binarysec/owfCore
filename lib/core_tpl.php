@@ -105,7 +105,9 @@ class core_tpl {
 			if(file_exists($tmp)) {
 				$this->tpl_file = $tmp;
 				$this->cache_file = $cache_to[0].
-					'/var/tpl_cache/'.$tpl_name_cache.'.tpl';
+					'/var/tpl_cache/'.
+					$this->wf->modules[$mod][1].
+					"/$tpl_name_cache.tpl";
 				return(true);
 			}
 		}
