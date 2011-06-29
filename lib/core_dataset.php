@@ -138,8 +138,10 @@ class core_dataset {
 		
 		if(in_array($p,$this->range_rows_per_page))
 			$this->set_rows_per_page($p);
-		else
-			$this->set_rows_per_page($this->range_rows_per_page[0]);
+		else {
+			if(!$this->rows_per_page)
+				$this->set_rows_per_page($this->range_rows_per_page[0]);
+		}
 			
 	}
 
