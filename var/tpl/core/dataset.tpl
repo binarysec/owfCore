@@ -169,9 +169,9 @@
 	%{@ 'R&eacute;sultats par page'}% : 
 	
 	<select onchange="javascript: dataset_set_rows_per_page(this.value);">
-		<option value="0"%{if $rows_per_page == 25}% selected="selected"%{/if}%>25 %{@ 'r&eacute;sultats'}%</option>
-		<option value="1"%{if $rows_per_page == 50}% selected="selected"%{/if}%>50 %{@ 'r&eacute;sultats'}%</option>
-		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 %{@ 'r&eacute;sultats'}%</option>
+		%{foreach $range_rows_per_page as $v}%
+			<option value="%{$v}%"%{if $rows_per_page == $v}% selected="selected"%{/if}%>%{$v}% %{@ 'r&eacute;sultats'}%</option>
+		%{/foreach}%
 	</select>
 </td>
 %{/if}%
@@ -288,9 +288,9 @@
 	%{@ 'R&eacute;sultats par page'}% : 
 	
 	<select onchange="javascript: dataset_set_rows_per_page(this.value);">
-		<option value="0"%{if $rows_per_page == 25}% selected="selected"%{/if}%>25 %{@ 'r&eacute;sultat'}%</option>
-		<option value="1"%{if $rows_per_page == 50}% selected="selected"%{/if}%>50 %{@ 'r&eacute;sultats'}%</option>
-		<option value="2"%{if $rows_per_page == 100}% selected="selected"%{/if}%>100 %{@ 'r&eacute;sultats'}%</option>
+		%{foreach $range_rows_per_page as $v}%
+			<option value="%{$v}%"%{if $rows_per_page == $v}% selected="selected"%{/if}%>%{$v}% %{@ 'r&eacute;sultats'}%</option>
+		%{/foreach}% 
 	</select>
 </td>
 %{/if}%

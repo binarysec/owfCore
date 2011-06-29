@@ -30,6 +30,8 @@ define('WF_CORE_DATASET_ACTIVATE', 3);
 define('WF_CORE_DATASET_SELECT_BAR_ALL',		1);
 define('WF_CORE_DATASET_SELECT_BAR_ONLY_PAGE',	2);
 define('WF_CORE_DATASET_SELECT_BAR_NONE',		3);
+
+
 class core_dataset {
 
 	private $fw   = null;
@@ -43,6 +45,8 @@ class core_dataset {
 	private $rows_per_page  = null;
 	private $page_nb        = 1;
 	private $display_select_bar = WF_CORE_DATASET_SELECT_BAR_ALL;
+	private $range_rows_per_page = array(25,50,100);
+	
 	
 	public function __construct($wf, $dsrc) {
 		$this->wf   = $wf;
@@ -115,6 +119,10 @@ class core_dataset {
 		$this->rows_per_page = max(0, $nb);
 	}
 
+	public function set_range_rows_per_page($ar) {
+		$this->range_rows_per_page = $ar;
+	}
+
 	public function set_page_nb($nb) {
 		$this->page_nb = max(1, $nb);
 	}
@@ -127,27 +135,12 @@ class core_dataset {
 	public function auto_rows_per_page() {
 		/* retrieve number of rows per page */
 		$p = $this->wf->get_var($this->dsrc->get_name().'_rows_per_page');
-		if($p==25 || $p==50 || $p==100 || $p==500){
+		
+		if(in_array($p,$this->range_rows_per_page))
 			$this->set_rows_per_page($p);
-		}else{		
-			switch($p) {
-				case 3:
-					$p = 500;
-					break;
-				case 2:
-					$p = 100;
-					break;
-				case 1:
-					$p = 50;
-					break;
-					
-				case 0:
-				default:
-					$p = 25;
-					break;
-			}
-		}
-		$this->set_rows_per_page($p);
+		else
+			$this->set_rows_per_page($this->range_rows_per_page[0]);
+			
 	}
 
 	public function set_cols($cols) {
@@ -169,7 +162,11 @@ class core_dataset {
 	public function get_rows_per_page() {
 		return($this->rows_per_page);
 	}
-
+	
+	public function get_range_rows_per_page() {
+		return($this->range_rows_per_page);
+	}
+	
 	public function get_page_nb() {
 		return($this->page_nb);
 	}
