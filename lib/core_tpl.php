@@ -28,6 +28,8 @@ class core_tpl {
 	
 	private $vars = array();
 
+	public $src_dir = "/var/tpl";
+	public $src_ext = ".tpl";
 
 	// Constructor
 
@@ -90,8 +92,8 @@ class core_tpl {
 			$r = $this->locate($tpl_name, true);
 			if($r == true)
 				return(true);
-				
-			$sdir = '/var/tpl/';
+			
+			$sdir = $this->src_dir."/";
 			$tpl_name_cache = $tpl_name;
 		}
 	
@@ -99,15 +101,14 @@ class core_tpl {
 		$cache_to = end($this->wf->modules);
 		foreach($modrev as $mod => $mod_infos) {
 			$tmp = $this->wf->modules[$mod][0].
-				$sdir.$tpl_name.'.tpl';
-				
+				$sdir.$tpl_name.$this->src_ext;
 				
 			if(file_exists($tmp)) {
 				$this->tpl_file = $tmp;
 				$this->cache_file = $cache_to[0].
-					'/var/tpl_cache/'.
+					$this->src_dir.'_cache/'.
 					$this->wf->modules[$mod][1].
-					"/$tpl_name_cache.tpl";
+					"/$tpl_name_cache".$this->src_ext;
 				return(true);
 			}
 		}
