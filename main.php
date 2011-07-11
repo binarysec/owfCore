@@ -583,6 +583,25 @@ class web_framework {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Function use to remove directories recursively
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function remove_dir($dir) {
+		if (!file_exists($dir)) 
+			return true;
+		if (!is_dir($dir) || is_link($dir)) 
+			return unlink($dir);
+		foreach (scandir($dir) as $item) {
+			if ($item == '.' || $item == '..') continue;
+			if (!$this->remove_dir($dir . "/" . $item)) {
+			chmod($dir . "/" . $item, 0777);
+			if (!$this->remove_dir($dir . "/" . $item)) return false;
+			};
+		}
+		return(rmdir($dir));
+	} 
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Get a variable
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_var($name) {
