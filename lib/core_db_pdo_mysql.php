@@ -839,6 +839,8 @@ class core_db_pdo_mysql extends core_db {
 			case WF_INT :
 			case WF_TIME :
 				$ret .= "INT NULL";break;
+			case WF_BIGINT :
+				$ret .= "BIGINT NULL";break;
 			case WF_FLOAT :
 				$ret .= "FLOAT NULL";break;
 			case WF_DATA :

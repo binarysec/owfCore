@@ -35,6 +35,7 @@ define("WF_INT",		0x30);
 define("WF_FLOAT",		0x40);
 define("WF_TIME",		0x50);
 define("WF_DATA",		0x60);
+define("WF_BIGINT",		0x70);
 
 /* Deprecated, backyard compatibility only */
 define("WF_PRI",		WF_INT | WF_AUTOINC | WF_PRIMARY);
