@@ -763,6 +763,8 @@ class core_db_pdo_pgsql extends core_db {
 			case WF_INT :
 			case WF_TIME :
 				return("INT NULL");
+			case WF_BIGINT :
+				return("BIGINT NULL");
 			case WF_FLOAT :
 				return("FLOAT NULL");
 			case WF_DATA :

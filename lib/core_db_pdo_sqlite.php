@@ -754,6 +754,8 @@ class core_db_pdo_sqlite extends core_db {
 			case WF_INT :
 			case WF_TIME :
 				return("INT");
+			case WF_BIGINT :
+				return("BIGINT");
 			case WF_FLOAT :
 				return("FLOAT");
 			case WF_DATA :
