@@ -795,7 +795,33 @@ class web_framework {
 			return(NULL);
 		return($file);
 	}
-	 
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Safe descriptor write
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	function safe_write($fp, $string) {
+		for($written = 0; $written < strlen($string); $written += $fwrite) {
+			$fwrite = fwrite($fp, substr($string, $written));
+			if($fwrite == false)
+				return(false);
+		}
+		return($written);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Safe descriptor write for socket
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	function safe_sockwrite($fp, $string) {
+		for($written = 0; $written < strlen($string); $written += $fwrite) {
+			$fwrite = socket_write($fp, substr($string, $written));
+			if($fwrite == false)
+				return(false);
+		}
+		return($written);
+	}
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Get the last priority filename
