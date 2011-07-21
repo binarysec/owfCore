@@ -50,11 +50,11 @@ class wfr_core_dao extends wf_route_request {
 						"kind" => $val["kind"],
 					);
 					if(isset($data[$key])) {
-						$result[$key]["value"] = htmlentities($data[$key]);
+						$result[$key]["value"] = htmlspecialchars($data[$key]);
 					}
 					else {
 						if(array_key_exists("value", $val))
-							$result[$key]["value"] = htmlentities($val["value"]);
+							$result[$key]["value"] = htmlspecialchars($val["value"]);
 					}
 					
 					if(array_key_exists("size", $val))
