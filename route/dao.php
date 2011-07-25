@@ -140,7 +140,11 @@ class wfr_core_dao extends wf_route_request {
 		foreach($item->data as $key => $val) {
 			/* check permission */
 			$ret = $this->a_session->check_permission($val["perm"]);
-			if($ret && $val["perm"]) {
+			if($ret && $val["perm"] && $val["kind"] == OWF_DAO_RADIO) {
+				$var = $this->wf->get_var($key);
+				$insert[$key] = $var;
+			}
+			else if($ret && $val["perm"]) {
 				if(isset($val["kind"])) {
 					/* get var */
 					$var = $this->wf->get_var($key);

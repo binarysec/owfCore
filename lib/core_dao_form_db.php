@@ -3,17 +3,17 @@
 
 class core_dao_form_db {
 	public $id;
-	private $wf;
+	protected $wf;
 	
-	private $a_dao;
+	protected $a_dao;
 	
-	private $capable;
+	protected $capable;
 	public $struct;
 	public $name;
 	public $description;
 	public $aggregator;
 	
-	private $db = array();
+	protected $db = array();
 	public $data;
 	
 	public function __construct(
@@ -92,25 +92,42 @@ class core_dao_form_db {
 	}
 	
 	public function button_add($text) {
-		$html = '<span class="dao_button_add">'.
-			'<a href="">'.$text.'</a>'.
+		$name = $this->aggregator.$this->id."_add";
+
+		$html = '<span id="'.$name.'" '.
+			' data-agg="'.$this->aggregator.'"'.
+			' data-aggid="'.$this->id.'"'.
+		
+			'class="dao_button_add">'.
+			$text.
 			'</span>';
 		return($html);
 		
 	}
 	
 	public function button_remove($text, $id) {
-		
-		$html = '<span class="dao_button_del">'.
-			'<a href="" name="'.$id.'">'.$text.'</a>'.
+		$name = $this->aggregator.$this->id."_remove";
+		$html = '<span id="'.$name.'" '.
+			' data-agg="'.$this->aggregator.'"'.
+			' data-aggid="'.$this->id.'"'.
+			' data-id="'.$id.'"'.
+			' class="dao_button_del">'.
+			$text.
 			'</span>';
 		return($html);
 		
 	}
 	
 	public function button_modify($text, $id) {
-		$html = '<span class="dao_button_mod">'.
-			'<a href="" name="'.$id.'">'.$text.'</a>'.
+		$name = $this->aggregator.$this->id."_".$id."modify";
+		$html = '<span id="'.$name.'" '.
+			
+			' data-agg="'.$this->aggregator.'"'.
+			' data-aggid="'.$this->id.'"'.
+			' data-id="'.$id.'"'.
+			
+			' class="dao_button_mod">'.
+			$text.
 			'</span>';
 		return($html);
 	}

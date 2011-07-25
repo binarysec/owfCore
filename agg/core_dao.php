@@ -2,10 +2,13 @@
 
 define("OWF_DAO_INPUT",           1);
 define("OWF_DAO_INPUT_REQ",       2);
-define("OWF_DAO_DATA_DIR",        3);
-define("OWF_DAO_UPLOAD",          4);
-define("OWF_DAO_SELECT",          5);
-define("OWF_DAO_HIDDEN",          6);
+define("OWF_DAO_INPUT_READON",    3);
+define("OWF_DAO_DATA_DIR",        4);
+define("OWF_DAO_UPLOAD",          5);
+define("OWF_DAO_SELECT",          6);
+define("OWF_DAO_HIDDEN",          7);
+define("OWF_DAO_RADIO",           8);
+define("OWF_DAO_RADIO_READON",    9);
 
 class core_dao extends wf_agg {
 	private $position = 0;
