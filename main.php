@@ -863,6 +863,54 @@ class web_framework {
 		return(sha1($data));
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Rendomize letters
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function random_letters($rot=3) {
+		$buf = NULL;
+		for($a=0; $a<$rot; $a++)
+			$buf .= chr(rand(0x41, 0x5A));
+		return($buf);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Generate good password letters
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public $pass_tab = array('!', '_', '-', '%', '*', '=');
+	public function generate_password($rot=10) {
+		$t = 100;
+		$buf = NULL;
+		for($a=0; $a<$rot; $a++) {
+			$swt = rand(0, $t);
+			if($swt < $t/4)
+				$buf .= chr(rand(0x31, 0x39));
+			else if($swt <= $t/4*1.5) {
+				$p = rand(0, count($this->pass_tab));
+				$buf .= $this->pass_tab[$p];
+			}
+			else if($swt <= $t/4*2) {
+				while(1) {
+					$ch = chr(rand(0x41, 0x5A));
+					if($ch != 'O')
+						break;
+				}
+				$buf .= $ch;
+			}
+			else if($swt <= $t/4*4) {
+				while(1) {
+					$ch = chr(rand(0x61, 0x7A));
+					if($ch != 'O')
+						break;
+				}
+				$buf .= $ch;
+			}
+		}
+		return($buf);
+	}
+	
+	
 /*
 get_first_filename
 locate_files
