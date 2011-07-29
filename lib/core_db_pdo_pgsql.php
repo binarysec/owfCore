@@ -642,6 +642,10 @@ class core_db_pdo_pgsql extends core_db {
 			$res = $this->sql_query($query);
 			$query_obj->result = $this->fetch_result($res);
 		}
+		/* Index creation */
+		if($query_obj->type == WF_INDEX) {
+			// ..
+		}
 	}
 	
 	public function get_configuration() {
