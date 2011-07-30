@@ -8,21 +8,23 @@
 		
 		var form_name = {
 			base: form_name_id,
-			add: form_name_id + "_add",
-			dialog: form_name_id + "_dialog",
-			form: form_name_id + "_form",
+			add: "dao-button-add-" + form_name_id,
+			modify: "dao-button-mod-" + form_name_id,
+			remove: "dao-button-rm-" + form_name_id,
+			dialog: "dao-dialog-" + form_name_id,
+			form: "dao-form-" + form_name_id,
 		};
 		
 		/* adding */
 		if(options.add) {
-			$('#'+form_name.add).button({ 
+			$('.'+form_name.add).button({ 
 				icons: {
 					primary: options.add.icon
 				}
 			});
 			
-			$('#'+form_name.add).click(function() {
-				var gd = $('#'+form_name.dialog);
+			$('.'+form_name.add).click(function() {
+				var gd = $('.'+form_name.dialog);
 				
 				gd.html(options.add.loading);
 				
@@ -67,13 +69,13 @@
 		
 		/* deleting */
 		if(options.del) {
-			$('.dao_button_del').button({ 
+			$('.'+form_name.remove).button({ 
 				icons: {
 					primary: options.del.icon
 				}
 			});
 			
-			$('.dao_button_del').click(function() {
+			$('.'+form_name.remove).click(function() {
 				var agg =  $(this).attr('data-agg');
 				var aggid =  $(this).attr('data-aggid');
 				var id = $(this).attr('data-id');
@@ -82,12 +84,14 @@
 				
 				var form_name = {
 					base: form_name_id,
-					add: form_name_id + "_add",
-					dialog: form_name_id + "_dialog",
-					form: form_name_id + "_form",
+					add: "dao-button-add-" + form_name_id,
+					modify: "dao-button-mod-" + form_name_id,
+					remove: "dao-button-rm-" + form_name_id,
+					dialog: "dao-dialog-" + form_name_id,
+					form: "dao-form-" + form_name_id,
 				};
 				
-				var gd = $('#'+form_name.dialog);
+				var gd = $('.'+form_name.dialog);
 				
 				gd.html(options.del.text);
 				
@@ -122,13 +126,13 @@
 
 		/* modification */
 		if(options.mod) {
-			$('.dao_button_mod').button({ 
+			$('.'+form_name.modify).button({ 
 				icons: {
 					primary: options.mod.icon
 				}
 			});
 
-			$('.dao_button_mod').click(function() {
+			$('.'+form_name.modify).click(function() {
 				var agg =  $(this).attr('data-agg');
 				var aggid =  $(this).attr('data-aggid');
 				var id = $(this).attr('data-id');
@@ -137,12 +141,14 @@
 				
 				var form_name = {
 					base: form_name_id,
-					add: form_name_id + "_add",
-					dialog: form_name_id + "_dialog",
-					form: form_name_id + "_form",
+					add: "dao-button-add-" + form_name_id,
+					modify: "dao-button-mod-" + form_name_id,
+					remove: "dao-button-rm-" + form_name_id,
+					dialog: "dao-dialog-" + form_name_id,
+					form: "dao-form-" + form_name_id,
 				};
 				
-				var gd = $('#'+form_name.dialog);
+				var gd = $('.'+form_name.dialog);
 				
 				gd.html(options.mod.loading);
 				
@@ -188,7 +194,7 @@
 
 
 	methods.drawform = function(form_name, options, data, id) {
-		var gd = $('#'+form_name.dialog);
+		var gd = $('.'+form_name.dialog);
 		var form_res = '';
 		
 		if(options.dao.args){
@@ -329,7 +335,7 @@
 		});
 		form_res += '</table></form>'
 	
-		$('#'+form_name.dialog).html(form_res);
+		$('.'+form_name.dialog).html(form_res);
 		
 		$('#'+form_name.form).submit(function(event) {
 			event.preventDefault(); 
