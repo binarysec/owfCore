@@ -155,7 +155,8 @@ class core_db_pdo_mysql extends core_db {
 	 * 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function manage_index($zone, $name, $struct) {
-		$cvar = "core_db_pdo_mysql_manage_index_$zoneid/$name";
+		$cvar = "core_db_pdo_mysql_manage_index_$zone/$name";
+
 		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
 			return($res);
 
