@@ -84,21 +84,22 @@ class core_dao_form_db {
 	}
 
 	public function get_dialog() {
-		$name = $this->aggregator.$this->id."_dialog";
+		$class = "dao-dialog-".$this->aggregator.$this->id;
+		$name = "dao-id-dialog-".rand();
 		return(
-			'<div id="'.$name.'" class="dao_dialog">'.
+			'<div id="'.$name.'" class="'.$class.' dao-dialog">'.
 			'</div>'
 		);
 	}
 	
 	public function button_add($text) {
-		$name = $this->aggregator.$this->id."_add";
-
+		$class = "dao-button-add-".$this->aggregator.$this->id;
+		$name = "dao-id-add-".rand();
 		$html = '<span id="'.$name.'" '.
 			' data-agg="'.$this->aggregator.'"'.
 			' data-aggid="'.$this->id.'"'.
 		
-			'class="dao_button_add">'.
+			'class="'.$class.' dao-button-add">'.
 			$text.
 			'</span>';
 		return($html);
@@ -106,12 +107,13 @@ class core_dao_form_db {
 	}
 	
 	public function button_remove($text, $id) {
-		$name = $this->aggregator.$this->id."_remove";
+		$class = "dao-button-rm-".$this->aggregator.$this->id;
+		$name = "dao-id-rm-".rand();
 		$html = '<span id="'.$name.'" '.
 			' data-agg="'.$this->aggregator.'"'.
 			' data-aggid="'.$this->id.'"'.
 			' data-id="'.$id.'"'.
-			' class="dao_button_del">'.
+			' class="'.$class.' dao-button-del">'.
 			$text.
 			'</span>';
 		return($html);
@@ -119,14 +121,15 @@ class core_dao_form_db {
 	}
 	
 	public function button_modify($text, $id) {
-		$name = $this->aggregator.$this->id."_".$id."modify";
+		$class = "dao-button-mod-".$this->aggregator.$this->id;
+		$name = "dao-id-md-".rand();
 		$html = '<span id="'.$name.'" '.
 			
 			' data-agg="'.$this->aggregator.'"'.
 			' data-aggid="'.$this->id.'"'.
 			' data-id="'.$id.'"'.
 			
-			' class="dao_button_mod">'.
+			' class="'.$class.' dao-button-mod">'.
 			$text.
 			'</span>';
 		return($html);
