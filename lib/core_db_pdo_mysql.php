@@ -45,10 +45,10 @@ function core_gettype($value) {
 
 class core_db_pdo_mysql extends core_db {
 	private $a_core_cacher;
-	var $hdl = NULL;
-	var $request_c = 0;
+	public $hdl = NULL;
+	public $request_c = 0;
 	
-	var $schema = array();
+	public $schema = array();
 	
 	public function load($dbconf) {
 		/* open mysql database */
@@ -130,6 +130,102 @@ class core_db_pdo_mysql extends core_db {
 		}
 		
 		$this->schema[$name] = $struct;
+	}
+	
+	
+	private function load_index($zone) {
+		$r = array();
+		
+		$sq = $this->sql_query("SHOW INDEX FROM $zone");
+		$sif = $this->fetch_result($sq);
+		
+		foreach($sif as $index) {
+			if(!array_key_exists($index['Key_name'], $r))
+				$r[$index['Key_name']] = array();
+			$p = &$r[$index['Key_name']];
+			
+			if(!array_key_exists($index['Column_name'], $p))
+				$p[$index['Column_name']] = true;
+		}
+		return($r);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * 
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private function manage_index($zone, $name, $struct) {
+		$cvar = "core_db_pdo_mysql_manage_index_$zone/$name";
+
+		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+			return($res);
+
+		$z = $this->get_zone($zone);
+		if(!is_array($z[0]))
+			return(false);
+			
+		/* get id */
+		$idx = $this->get_index($z[0]['a.id'], $name);
+
+		/* transpose information */
+		$all = array();
+		foreach($idx as $k => $v)
+			$all[$v["colname"]] = true;
+	
+		/* load table indexes */
+		$sif = $this->load_index($zone);
+
+		/* check if the index key must be removed */
+		foreach($all as $k => $v) {
+			if(!array_key_exists($k, $struct)) {
+				if(array_key_exists($name, $sif)) {
+					$q = "ALTER TABLE `$zone` DROP INDEX `$name`";
+					$this->sql_query($q);
+					$q = new core_db_delete(
+						"zone_index",
+						array(
+							"zone_id" => $z[0]['a.id'],
+							"indexname" => $name
+						)
+					);
+					$this->query($q);
+				}
+				break;
+			}
+		}
+		
+		/* check which one needs to be added */
+		$chain_to_add = "ALTER TABLE `$zone` ADD INDEX `$name` (";
+		$chain_to_add_vir = false;
+		foreach($struct as $k => $v) {
+			if(!array_key_exists($k, $all)) {
+				$insert = array(
+					"zone_id" => $z[0]['a.id'],
+					"indexname" => $name,
+					"colname" => $k,
+				);
+				$q = new core_db_insert("zone_index", $insert);
+				$this->query($q);
+				if($chain_to_add_vir)
+					$chain_to_add .= ", `$k`";
+				else {
+					$chain_to_add .= " `$k`";
+					$chain_to_add_vir = true;
+				}
+			}
+		}
+		$chain_to_add .= ')';
+		
+		/* index has to be added */
+		if($chain_to_add_vir)
+			$this->sql_query($chain_to_add);
+
+		$this->a_core_cacher->store(
+			$cvar,
+			$struct
+		);
+		
+		return($struct);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -719,11 +815,21 @@ class core_db_pdo_mysql extends core_db {
 			$res = $this->sql_query($query);
 			$query_obj->result = $this->fetch_result($res);
 		}
+		/* Index creation */
+		if($query_obj->type == WF_INDEX) {
+			foreach($query_obj->indexes as $name => $s) {
+				$this->manage_index(
+					$query_obj->zone,
+					$name,
+					$s
+				);
+			}
+		}
 	}
 	
 	public function get_configuration() {
 	
-				$dsn .= "dbname=".$dbconf["dbname"].';';
+			$dsn .= "dbname=".$dbconf["dbname"].';';
 			$dsn .= "host=".$dbconf["host"];
 			$user = $dbconf["user"];
 			$pass = $dbconf["pass"];
@@ -1012,6 +1118,53 @@ class core_db_pdo_mysql extends core_db {
 		return($res);
 	}
 	
+	public function get_index($zoneid, $name) {
+		/* try to retrieve zone from the cache */
+		$cvar = "core_db_pdo_mysql_index_$zoneid/$name";
+		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+			return($res);
+
+		$q = new core_db_adv_select;
+
+		$q->alias("b", "zone_index");
+		
+		$q->do_comp("b.zone_id", "=", $zoneid);
+		$q->do_comp("b.indexname", "=", $name);
+		
+		$this->query($q);
+		$res = $q->get_result();
+		
+		/* push the zone into the cache */
+		$this->a_core_cacher->store(
+			$cvar,
+			$res
+		);
+		
+		return($res);
+	}
+	
+	private function drop_index($zoneid, $name) {
+		$res = $this->get_zone($name);
+		$zone = &$res[0];
+		if($zone) {
+			$q = new core_db_delete(
+				"zone",
+				array("id" => $zone["a.id"])
+			);
+			$this->query($q);
+				
+			$q = new core_db_delete(
+				"zone_col",
+				array("zone_id" => $zone["a.id"])
+			);
+			$this->query($q);
+		}
+		
+		/* remove the cache */
+		$cvar = "core_db_pdo_mysql_index_$zoneid/$name";
+		$this->a_core_cacher->delete($cvar);
+	}
+	
 	private function check_zone_tab() {
 		$zone = array(
 			"id" => WF_PRI,
@@ -1027,11 +1180,22 @@ class core_db_pdo_mysql extends core_db {
 		);
 		$this->schema["zone_col"] = $zone_col;
 
+		$zone_index = array(
+			"zone_id" => WF_INT,
+			"indexname" => WF_VARCHAR,
+			"colname" => WF_VARCHAR,
+		);
+		$this->schema["zone_index"] = $zone_index;
+		
 		if(!$this->table_exists("zone")) {
 			$this->create_table("zone", $zone);
 			$this->create_table("zone_col", $zone_col);
 		}
 
+		/* for compat */
+		if(!$this->table_exists("zone_index"))
+			$this->create_table("zone_index", $zone_index);
+		
 	}
 	
 	/* gestion des transactions */

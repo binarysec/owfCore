@@ -52,7 +52,8 @@ define("WF_DELETE",            			6);
 define("WF_ADV_DELETE",        			7);
 define("WF_SELECT_DISTINCT",   			8);
 define("WF_ADV_UPDATE",        			9);
-define("WF_MULTIPLE_INSERT_OR_UPDATE",	10);
+define("WF_MULTIPLE_INSERT_OR_UPDATE", 10);
+define("WF_INDEX",                     11);
 
 /* order define */
 define("WF_ASC",              10);
@@ -350,6 +351,34 @@ class core_db_select_distinct extends core_db_query {
 	}
 }
 
+
+class core_db_index extends core_db_query {
+	public $zone;
+	public $indexes = array();
+	
+	public function __construct($table) {
+		$this->type = WF_INDEX;
+		$this->zone = $table;
+	}
+	
+	public function register($name, $cols) {
+		if(!array_key_exists($name, $this->indexes))
+			$this->indexes[$name] = array();
+		$idx = &$this->indexes[$name];
+		if(is_array($cols)) {
+			foreach($cols as $col) 
+				$this->checkup(&$idx, $col);
+		}
+		else
+			$this->checkup(&$idx, $cols);
+	}
+	
+	private function checkup($idx, $colname) {
+		$idx[$colname] = true;
+	}
+	
+}
+
 class core_db_device {
 	var $driver_arr = array();
 	
@@ -376,4 +405,4 @@ class core_db_device {
 }
 
 
-?>
+
