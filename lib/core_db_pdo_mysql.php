@@ -1119,11 +1119,6 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	public function get_index($zoneid, $name) {
-		/* try to retrieve zone from the cache */
-		$cvar = "core_db_pdo_mysql_index_$zoneid/$name";
-		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
-			return($res);
-
 		$q = new core_db_adv_select;
 
 		$q->alias("b", "zone_index");
@@ -1133,12 +1128,6 @@ class core_db_pdo_mysql extends core_db {
 		
 		$this->query($q);
 		$res = $q->get_result();
-		
-		/* push the zone into the cache */
-		$this->a_core_cacher->store(
-			$cvar,
-			$res
-		);
 		
 		return($res);
 	}
