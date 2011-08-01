@@ -142,11 +142,11 @@ class core_db_pdo_mysql extends core_db {
 		foreach($sif as $index) {
 			if(!array_key_exists($index['Key_name'], $r))
 				$r[$index['Key_name']] = array();
-			$p = &$r[$index['Key_name']];
 			
-			if(!array_key_exists($index['Column_name'], $p))
-				$p[$index['Column_name']] = true;
+			if(!array_key_exists($index['Column_name'], $r[$index['Key_name']]))
+				$r[$index['Key_name']][$index['Column_name']] = true;
 		}
+		
 		return($r);
 	}
 	
@@ -155,10 +155,10 @@ class core_db_pdo_mysql extends core_db {
 	 * 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function manage_index($zone, $name, $struct) {
-		$cvar = "core_db_pdo_mysql_manage_index_$zone/$name";
-
-		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
-			return($res);
+// 		$cvar = "core_db_pdo_mysql_manage_index_$zone/$name";
+// 
+// 		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+// 			return($res);
 
 		$z = $this->get_zone($zone);
 		if(!is_array($z[0]))
@@ -220,11 +220,11 @@ class core_db_pdo_mysql extends core_db {
 		if($chain_to_add_vir)
 			$this->sql_query($chain_to_add);
 
-		$this->a_core_cacher->store(
-			$cvar,
-			$struct
-		);
-		
+// 		$this->a_core_cacher->store(
+// 			$cvar,
+// 			$struct
+// 		);
+// 		
 		return($struct);
 	}
 	
@@ -817,13 +817,13 @@ class core_db_pdo_mysql extends core_db {
 		}
 		/* Index creation */
 		if($query_obj->type == WF_INDEX) {
-			foreach($query_obj->indexes as $name => $s) {
-				$this->manage_index(
-					$query_obj->zone,
-					$name,
-					$s
-				);
-			}
+// 			foreach($query_obj->indexes as $name => $s) {
+// 				$this->manage_index(
+// 					$query_obj->zone,
+// 					$name,
+// 					$s
+// 				);
+// 			}
 		}
 	}
 	
