@@ -917,6 +917,16 @@ class web_framework {
 		return($buf);
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function use to define a non cachable request
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function no_cache() {
+	
+		header("Pragma: no-cache");
+// 		exit(0);
+	}
+	
 	
 /*
 get_first_filename
