@@ -650,6 +650,8 @@ class web_framework {
 	 * Display login
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function display_login($message=NULL) {
+		$this->no_cache();
+		
 		/* add display login hooker */
 		$this->execute_hook("owf_display_login");
 		

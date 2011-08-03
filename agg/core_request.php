@@ -75,6 +75,7 @@ class core_request extends wf_agg {
 		/* vérification du canal */
 		if(!isset($this->channel[0])) {
 			if(!$this->channel[3]) {
+				$this->wf->no_cache();
 				header("Location: ".$this->wf->linker("/"));
 				exit(0);
 			}
