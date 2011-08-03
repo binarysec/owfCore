@@ -922,9 +922,9 @@ class web_framework {
 	 * Function use to define a non cachable request
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function no_cache() {
-	
+		header("Expires: -1");
+		header("Cache-Control: private, max-age=0");
 		header("Pragma: no-cache");
-// 		exit(0);
 	}
 	
 	
