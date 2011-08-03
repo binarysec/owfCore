@@ -626,6 +626,10 @@ class web_framework {
 	 * Display the error page
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function display_error($code, $message) {
+	
+		/* add display login hooker */
+		$this->execute_hook("owf_display_error", array($code, $message));
+		
 		header("HTTP/1.1 $code $message");
 		$tpl = new core_tpl($this);
 		$tpl->set(
@@ -646,6 +650,9 @@ class web_framework {
 	 * Display login
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function display_login($message=NULL) {
+		/* add display login hooker */
+		$this->execute_hook("owf_display_login");
+		
 		$tpl = new core_tpl($this);
 		
 		if($message != NULL) {
