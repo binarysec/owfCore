@@ -96,10 +96,12 @@ class core_cacher_group {
 	 * Delete all cached values of this group
 	 */
 	public function clear() {
-		foreach($this->ref as $key => $val) {
-			$this->core_cacher->delete($this->group.'_'.$key);
+		if(is_array($this->ref)) {
+			foreach($this->ref as $key => $val) {
+				$this->core_cacher->delete($this->group.'_'.$key);
+			}
+			$this->ref_update = TRUE;
 		}
-		$this->ref_update = TRUE;
 		return(TRUE);
 	}
 	
