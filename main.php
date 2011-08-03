@@ -923,10 +923,17 @@ class web_framework {
 	 *
 	 * Function use to define a non cachable request
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	private $no_cache_set = false;
 	public function no_cache() {
+		if($this->no_cache_set == false)
+			$this->no_cache_set = true;
+		else
+			return(true);
+			
 		header("Expires: -1");
 		header("Cache-Control: private, max-age=0");
 		header("Pragma: no-cache");
+		return(true);
 	}
 	
 	
