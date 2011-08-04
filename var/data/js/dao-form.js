@@ -192,6 +192,9 @@
 	
 	};
 
+	methods.postJSON = function(url, data, func) { 
+
+	}
 
 	methods.drawform = function(form_name, options, data, id) {
 		var gd = $('.'+form_name.dialog);
@@ -344,8 +347,8 @@
 				url = options.dao.linker + '/postadd/' + options.dao.name + '/' + options.dao.id;
 			else
 				url = options.dao.linker + '/postmod/' + options.dao.name + '/' + options.dao.id;
-			
-			$.getJSON(
+		
+			$.post(
 				url,
 				$(this).serializeArray(),
 				function(data) {
@@ -372,7 +375,8 @@
 							}
 						});
 					}
-				}
+				},
+				"json"
 			);
 		});	
 		
