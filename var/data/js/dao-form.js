@@ -192,10 +192,6 @@
 	
 	};
 
-	methods.postJSON = function(url, data, func) { 
-
-	}
-
 	methods.drawform = function(form_name, options, data, id) {
 		var gd = $('.'+form_name.dialog);
 		var form_res = '';
