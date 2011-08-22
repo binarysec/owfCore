@@ -199,23 +199,31 @@ class core_db_pdo_mysql extends core_db {
 		$chain_to_add_vir = false;
 		foreach($struct as $k => $v) {
 			if(!array_key_exists($k, $all)) {
+			
 				$insert = array(
 					"zone_id" => $z[0]['a.id'],
 					"indexname" => $name,
 					"colname" => $k,
 				);
+
 				$q = new core_db_insert("zone_index", $insert);
 				$this->query($q);
+				
+				if($this->schema[$zone][$k] == WF_DATA) 
+					$rk = "`$k`(500)";
+				else
+					$rk = "`$k`";
+					
 				if($chain_to_add_vir)
-					$chain_to_add .= ", `$k`";
+					$chain_to_add .= ", $rk";
 				else {
-					$chain_to_add .= " `$k`";
+					$chain_to_add .= " $rk";
 					$chain_to_add_vir = true;
 				}
 			}
 		}
 		$chain_to_add .= ')';
-		
+
 		/* index has to be added */
 		if($chain_to_add_vir)
 			$this->sql_query($chain_to_add);
@@ -502,7 +510,7 @@ class core_db_pdo_mysql extends core_db {
 					}
 				}
 			}
-
+	
 			/* check for group */
 			$group = NULL;
 			if($query_obj->group != NULL) {
@@ -817,13 +825,13 @@ class core_db_pdo_mysql extends core_db {
 		}
 		/* Index creation */
 		if($query_obj->type == WF_INDEX) {
-// 			foreach($query_obj->indexes as $name => $s) {
-// 				$this->manage_index(
-// 					$query_obj->zone,
-// 					$name,
-// 					$s
-// 				);
-// 			}
+			foreach($query_obj->indexes as $name => $s) {
+				$this->manage_index(
+					$query_obj->zone,
+					$name,
+					$s
+				);
+			}
 		}
 	}
 	
