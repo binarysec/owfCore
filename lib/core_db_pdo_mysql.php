@@ -826,11 +826,11 @@ class core_db_pdo_mysql extends core_db {
 		/* Index creation */
 		if($query_obj->type == WF_INDEX) {
 			foreach($query_obj->indexes as $name => $s) {
-				$this->manage_index(
-					$query_obj->zone,
-					$name,
-					$s
-				);
+// 				$this->manage_index(
+// 					$query_obj->zone,
+// 					$name,
+// 					$s
+// 				);
 			}
 		}
 	}
