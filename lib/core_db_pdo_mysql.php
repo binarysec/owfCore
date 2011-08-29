@@ -741,7 +741,7 @@ class core_db_pdo_mysql extends core_db {
 			if(is_array($query_obj->up)){
 				foreach($query_obj->up as $k => $sv) {
 					if(!$up){	
-						$up="`".$sv["col"]."` = ";
+						$up="ON DUPLICATE KEY UPDATE `".$sv["col"]."` = ";
 						foreach($sv["op"] as $k2=>$v2){
 							$up.=$v2." ";
 						}
@@ -755,7 +755,7 @@ class core_db_pdo_mysql extends core_db {
 				}
 			}
 			/* prepare and exec the query */
-			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES $val_str ON DUPLICATE KEY UPDATE $up";
+			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES $val_str $up";
 			$this->sql_query($query, $prepare_value);
 		}
 		/* Select distinct query */
