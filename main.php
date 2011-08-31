@@ -653,7 +653,7 @@ class web_framework {
 		$this->no_cache();
 		
 		/* add display login hooker */
-		$this->execute_hook("owf_display_login");
+		$this->execute_hook("owf_display_login",array($message));
 		
 		$tpl = new core_tpl($this);
 		
