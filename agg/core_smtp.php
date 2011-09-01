@@ -94,6 +94,9 @@ class core_smtp extends wf_agg {
 			$this->server["server_ip"], 
 			$this->server["server_port"]
 		);
+		
+		if(!$fd)
+			return -1;
 
 		$atom = 0;
 		$log = array(date(DATE_RFC822));
