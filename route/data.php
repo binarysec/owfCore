@@ -49,6 +49,7 @@ class wfr_core_data extends wf_route_request {
 						403,
 						"Data index listing is disabled"
 					);
+					return(TRUE);
 				}
 				
 				if($this->a_session->session_me["id"] == -1) {
