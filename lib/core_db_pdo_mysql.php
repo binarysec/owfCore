@@ -755,7 +755,7 @@ class core_db_pdo_mysql extends core_db {
 				}
 			}
 			/* prepare and exec the query */
-			if( strlen($key)>0 && srlen($val_str)>0 ){
+			if( strlen($key)>0 && strlen($val_str)>0 ){
 				$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES $val_str $up";
 				$this->sql_query($query, $prepare_value);
 			}
