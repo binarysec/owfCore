@@ -719,7 +719,7 @@ class core_db_pdo_mysql extends core_db {
 						$key .= ', `'.$k.'`';
 				}
 			}
-			foreach($query_obj->arr as $k => $sv) {		
+			if(is_array($query_obj->arr)) foreach($query_obj->arr as $k => $sv) {		
 				foreach($sv as $k2 => $sv2){	
 					$v2 = $this->safe_input($sv2);
 					if(!$val[$k]) 
@@ -730,7 +730,7 @@ class core_db_pdo_mysql extends core_db {
 				}
 			}
 			$val_str = NULL;
-			foreach($val as $k => $v){
+			if(is_array($val)) foreach($val as $k => $v){
 				if(!$val_str)
 					$val_str.="(".$v.")";
 				else
@@ -755,8 +755,10 @@ class core_db_pdo_mysql extends core_db {
 				}
 			}
 			/* prepare and exec the query */
-			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES $val_str $up";
-			$this->sql_query($query, $prepare_value);
+			if( strlen($key)>0 && srlen($val_str)>0 ){
+				$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES $val_str $up";
+				$this->sql_query($query, $prepare_value);
+			}
 		}
 		/* Select distinct query */
 		if($query_obj->type == WF_SELECT_DISTINCT) {
