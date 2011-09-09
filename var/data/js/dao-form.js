@@ -360,6 +360,38 @@
 					'</tr>'
 				;
 			}
+			/* OWF_DAO_SLIDER */
+			else if(val.kind == 12) {
+				var idn = key+'_in';
+				console.debug(val);
+				executor = executor.concat(
+					'$( "#'+idn+'" ).slider({min: ' +
+					val.startnum + ',' +
+					(val.step ? 'step:' + val.step + ',' : '') +
+					'max: ' + val.endnum + '});'
+				);
+				
+				insert = '<div id="' + 
+					idn +
+					'" name="' +
+					key +
+					'" value=' +
+					val.startnum +
+					'></div>';
+				
+				form_res += 
+					'<tr>' +
+					'<td width="50%" align="right">' +
+					val.text + ' : ' +
+					'<span id="' + 
+					key + 
+					'_sp"></span></td>' +
+					'<td width="50%">' +
+					insert +
+					'</td>' +
+					'</tr>'
+				;
+			}
 		});
 		form_res += '</table></form>'
 	

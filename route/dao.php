@@ -66,6 +66,17 @@ class wfr_core_dao extends wf_route_request {
 					
 						$result[$key]["list"] = $list;
 					}
+					elseif($val["kind"] == OWF_DAO_SLIDER) {
+						if(isset($val["startnum"]))
+							$result[$key]["startnum"] = (int) $val["startnum"];
+						
+						if(isset($val["endnum"]))
+							$result[$key]["endnum"] = (int) $val["endnum"];
+						
+						if(isset($val["step"]))
+							$result[$key]["step"] = (int) $val["step"];
+					}
+					
 					if(isset($val["reader_cb"]))
 						$result[$key]["value"] = call_user_func($val["reader_cb"], $item, $data[$key]);
 				}
