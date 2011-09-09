@@ -9,6 +9,8 @@ define("OWF_DAO_SELECT",          6);
 define("OWF_DAO_HIDDEN",          7);
 define("OWF_DAO_RADIO",           8);
 define("OWF_DAO_RADIO_READON",    9);
+define("OWF_DAO_DATE",           10);
+define("OWF_DAO_DATE_READON",    11);
 
 class core_dao extends wf_agg {
 	private $position = 0;
