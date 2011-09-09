@@ -334,21 +334,18 @@
 				;
 			}
 			/* date picker */
-			else if(val.kind == 10) {
+			else if(val.kind == 10 || val.kind == 11) {
 				var idn = key+'_in';
 				
-				executor = executor.concat('$( "'+idn+'" ).datepicker();');
+				executor = executor.concat('$( "#'+idn+'" ).datepicker();');
+				if(val.kind == 11)
+					executor = executor.concat('$( "#'+idn+'" ).datepicker("disable");');
 				
 				insert = '<input id="' + 
 					idn + 
 					'" name="' + 
 					key + 
-					'" value="1" type="text"';
-				
-				if(val.kind == 11)
-					insert += ' readonly="readonly">';
-				else
-					insert += '>';
+					'" value="1" type="text">';
 				
 				form_res += 
 					'<tr>' +
