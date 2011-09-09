@@ -209,9 +209,12 @@
 			'<form id="'+form_name.form+'" action="/">' +
 			'<table width="100%">'
 		;
+// 		06 77 79 21 
 		
 		if(id != -1) 
 			form_res += '<input type="hidden" name="id" value="'+id+'"/>';
+		
+		var executor = '';
 		
 		$.each(data, function(key, val) {
 			/* Input form */
@@ -302,7 +305,7 @@
 				;
 			
 			}
-			/* radio button */
+			/* radio button 8/9 */
 			else if(val.kind == 8) {
 				insert = '<input id="' + 
 					key + 
@@ -330,11 +333,43 @@
 					'</tr>'
 				;
 			}
-			
+			/* date picker */
+			else if(val.kind == 10) {
+				var idn = key+'_in';
+				
+				executor = executor.concat('$( "'+idn+'" ).datepicker();');
+				
+				insert = '<input id="' + 
+					idn + 
+					'" name="' + 
+					key + 
+					'" value="1" type="text"';
+				
+				if(val.kind == 11)
+					insert += ' readonly="readonly">';
+				else
+					insert += '>';
+				
+				form_res += 
+					'<tr>' +
+					'<td width="50%" align="right">' +
+					val.text + ' : ' +
+					'<span id="' + 
+					key + 
+					'_sp"></span></td>' +
+					'<td width="50%">' +
+					insert +
+					'</td>' +
+					'</tr>'
+				;
+			}
 		});
 		form_res += '</table></form>'
 	
 		$('.'+form_name.dialog).html(form_res);
+		
+		/* post handler */
+		eval(executor);
 		
 		$('#'+form_name.form).submit(function(event) {
 			event.preventDefault(); 
