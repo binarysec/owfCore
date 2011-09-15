@@ -281,6 +281,9 @@ class web_framework {
 	 * Get language code
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function get_lang_code() {
+		if(!isset($_SERVER["PATH_INFO"]))
+			return(NULL);
+		
 		$t = explode("/", $_SERVER["PATH_INFO"]);
 		return(isset($t[1]) ? $t[1] : NULL);
 	}
@@ -509,7 +512,7 @@ class web_framework {
 	 * Function used to get the rail
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_rail() {
-		return($_SERVER["PATH_INFO"]);
+		return(isset($_SERVER["PATH_INFO"]) ? $_SERVER["PATH_INFO"] : NULL);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
