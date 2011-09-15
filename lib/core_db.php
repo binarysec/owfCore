@@ -58,6 +58,7 @@ define("WF_INDEX",                     11);
 /* order define */
 define("WF_ASC",              10);
 define("WF_DES",              11);
+define("WF_DESC",             11);
 
 /* Request function */
 define("WF_REQ_FCT_COUNT",		0x1);
