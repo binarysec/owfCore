@@ -159,7 +159,7 @@ class core_tpl_compiler extends wf_agg {
 		$body = preg_replace_callback('/'.$ld.'((.).*?)'.$rd.'/s', array($this, 'parse'), $res);
 		
 		/* generate a lang context for the template */
-		$res = '<?php '.$this->get_headers($tpl_name).' ?>'.$body;
+		$res = '<?php '.$this->get_headers($tpl_name).$this->func_alt_init().' ?>'.$body;
 		
 		if(count($this->block_stack)) {
 			throw new wf_exception(
@@ -522,14 +522,14 @@ class core_tpl_compiler extends wf_agg {
 
 	/* alternating text */
 	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
-		if($argv[1]) {
+		if(isset($argv[1])) {
 			return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : '.$argv[1].';');
 		}
 		return('$alt = !$alt; echo ($alt) ? '.$argv[0].' : \'\';');
 	}
 
 	/* init alternating text */
-	public function func_alt_init(core_tpl_compiler $tpl_compiler, $argv) {
+	public function func_alt_init() {
 		return('$alt = false;');
 	}
 
@@ -540,7 +540,7 @@ class core_tpl_compiler extends wf_agg {
 
 	/* format date */
 	public function func_date(core_tpl_compiler $tpl_compiler, $argv) {
-		$time = $argv[1] ? ', '.$argv[1] : '';
+		$time = isset($argv[1]) ? ', '.$argv[1] : '';
 		return('echo date('.$argv[0].$time.');');
 	}
 
