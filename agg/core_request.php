@@ -127,7 +127,8 @@ class core_request extends wf_agg {
 		}
 
 		$display_login = $this->_session->check_permission(
-			$need
+			$need,
+			false
 		);
 
 		/* do we need to display login ? */
