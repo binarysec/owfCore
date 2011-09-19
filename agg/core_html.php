@@ -131,7 +131,7 @@ class core_html extends wf_agg {
 		/* hehe */
 		if(isset($this->_session->session_my_perms["session:god"]))
 			$this->title .= " (as god)";
-		else if($this->_session->session_my_perms["session:admin"])
+		else if(isset($this->_session->session_my_perms["session:admin"]))
 			$this->title .= " (as admin)";
 		
 		/* merge toute les variables */
