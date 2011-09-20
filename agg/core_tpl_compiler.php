@@ -228,7 +228,7 @@ class core_tpl_compiler extends wf_agg {
 				);
 				return('');
 			}
-			if(count($m) == 4)
+			if(isset($m) && count($m) == 4)
 				$m[2] = $m[3];
 			if(!isset($m[2]))
 				$m[2] = '';
