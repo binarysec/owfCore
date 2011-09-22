@@ -2,6 +2,16 @@
 	
 	var data_responder = '%{$form_responder}%';
 	
+	function form_submit() {
+		if(data_responder != '')
+			f = document.getElementById(data_responder);
+		else
+			f = document.getElementById('form_%{$name}%');
+		f.method = 'GET';
+		f.action = '';	
+		f.submit();
+	}
+	
 	function dataset_set_order(col, order) {
 		%{foreach $cols as $id => $col}%
 		%{if $col['orderable']}%
@@ -9,53 +19,26 @@
 		%{/if}%
 		%{/foreach}%
 		document.getElementById('form_%{$name}%_order_' + col).value = order;
-		
-		if(data_responder != '')
-			f = document.getElementById(data_responder);
-		else
-			f = document.getElementById('form_%{$name}%');
-		f.method = 'GET';
-		f.action = '';	
-		f.submit();
+		form_submit();
 	}
 	
 	function dataset_set_page(nb) {
 		document.getElementById('form_%{$name}%_page').value = nb;
-		if(data_responder != '')
-			f = document.getElementById(data_responder);
-		else
-			f = document.getElementById('form_%{$name}%');
-		f.method = 'GET';
-		f.action = '';	
-		f.submit();
+		form_submit();
 	}
 	
 	function dataset_set_rows_per_page(nb) {
 		document.getElementById('form_%{$name}%_rows_per_page').value = nb;
-		if(data_responder != '')
-			f = document.getElementById(data_responder);
-		else
-			f = document.getElementById('form_%{$name}%');
-		f.method = 'GET';
-		f.action = '';	
-		f.submit();
+		form_submit();
 	}
 	
 	function dataset_set_option(name, value) {
 		document.getElementById('dataset_opt_' + name).value = value;
-		if(data_responder != '')
-			f = document.getElementById(data_responder);
-		else
-			f = document.getElementById('form_%{$name}%');
-		f.method = 'GET';
-		f.action = '';	
-		f.submit();
+		form_submit();
 	}
-
 	
 </script>
 
-%{$scripts}%
 <form method="get" id="form_%{$name}%" action="">
 <div class="dataset_filters">
 	

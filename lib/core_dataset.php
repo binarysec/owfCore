@@ -26,11 +26,9 @@ define('WF_CORE_DATASET_SELECT',   1);
 define('WF_CORE_DATASET_SLIDE',    2);
 define('WF_CORE_DATASET_ACTIVATE', 3);
 
-
 define('WF_CORE_DATASET_SELECT_BAR_ALL',		1);
 define('WF_CORE_DATASET_SELECT_BAR_ONLY_PAGE',	2);
 define('WF_CORE_DATASET_SELECT_BAR_NONE',		3);
-
 
 class core_dataset {
 
@@ -146,6 +144,13 @@ class core_dataset {
 	}
 
 	public function set_cols($cols) {
+		// Sanatize ...
+		foreach($cols as $k => $col) {
+			if(!isset($col["name"]))
+				$cols[$k]['name'] = '';
+			if(!isset($col["orderable"]))
+				$cols[$k]['orderable'] = false;
+		}
 		$this->cols = $cols;
 	}
 
@@ -238,7 +243,7 @@ class core_dataset {
 		foreach($data as $datum) {
 			$row = array();
 			foreach($this->cols as $col => $conf) {
-				$row[$col] = $datum[$col];
+				$row[$col] = isset($datum[$col]) ? $datum[$col] : NULL;
 			}
 
 			/* consider row callback */

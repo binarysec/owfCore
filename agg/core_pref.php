@@ -357,7 +357,7 @@ class core_pref extends wf_agg {
 			$this->contexts[$name]->name = $data[0]["name"];
 			
 			$this->contexts[$name]->description = base64_decode(
-				$insert["description"] ?
+				isset($insert["description"]) ?
 					$insert["description"] :
 					$data[0]["description"]
 			);
