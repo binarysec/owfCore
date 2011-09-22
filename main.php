@@ -680,7 +680,7 @@ class web_framework {
 			);
 		}
 
-		if($_SERVER["HTTP_X_REAL_IP"]) {
+		if(isset($_SERVER["HTTP_X_REAL_IP"])) {
 			$tpl->set(
 				"via_ip", 
 				htmlspecialchars($_SERVER["REMOTE_ADDR"])
@@ -699,7 +699,7 @@ class web_framework {
 				gethostbyaddr($_SERVER["HTTP_X_REAL_IP"])
 			);
 		}
-		else if($_SERVER["HTTP_X_FORWARDED_FOR"]) {
+		else if(isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
 			$tpl->set(
 				"via_ip", 
 				htmlspecialchars($_SERVER["REMOTE_ADDR"])

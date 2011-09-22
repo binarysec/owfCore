@@ -69,7 +69,7 @@ a, a:hover {
 	</table>
 </form>
 <h4>
-%{if $via_addr}%
+%{if isset($via_addr)}%
 %{@ 'from'}% %{$remote_ip}% (%{$remote_addr}%) via %{$via_addr}% (%{$via_addr}%)
 %{else}%
 %{@ 'from'}% %{$remote_ip}% (%{$remote_addr}%)

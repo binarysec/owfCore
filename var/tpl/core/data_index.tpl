@@ -1,7 +1,5 @@
 <h1><img src="%{link '/data/core/index/title.png'}%" alt="%{@ "Index directory"}%"/>%{@ "Index directory of"}% %{$dir}%</h1>
 
-
-
 <table class="dataset_data_table" width="100%">
 	<thead>
 		<tr>
@@ -16,7 +14,7 @@
 	<tbody>
 		%{if $up_dir}%
 			<tr class="alt">
-				<td><img src="%{link '/data/icons/16x16/cat_open.png'}%" alt="[FILE]" /></td>
+				<td><img src="%{link '/data/icons/cat_open.png'}%" alt="[FILE]" /></td>
 					<td class="id title"><a href="%{$up_dir}%">..</a></td>
 					<td>-</td>
 					<td>-</td>
@@ -42,4 +40,3 @@
 		</tr>
 	</tfoot>
 </table>
-
