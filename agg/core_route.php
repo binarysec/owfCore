@@ -41,13 +41,15 @@ class core_route extends wf_agg {
 			$actions = $info[8]->get_actions();
 			
 			/* parcours et ajoute les actions */
-			foreach($actions as $k => $value) {
-				$this->parse_and_add_link(
-					$k, 
-					$info[0],
-					$info[1],
-					$value
-				);
+			if(is_array($actions)) {
+				foreach($actions as $k => $value) {
+					$this->parse_and_add_link(
+						$k, 
+						$info[0],
+						$info[1],
+						$value
+					);
+				}
 			}
 		}
 
@@ -87,15 +89,16 @@ class core_route extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function execute_route($channel) {
 		if($channel[0][2] == WF_ROUTE_ACTION) {
-			$filename = $channel[0][0].
-				"/route/".
-				$channel[0][3].
-				".php";
-				
+			$finfo = $this->wf->locate_file("route/".$channel[0][3].".php", true);
+			$filename = $finfo[0];
 			$objectname = 
 				"wfr_".
-				$channel[0][1]."_".
+				$finfo[2]."_".
 				preg_replace("/\//", "_", $channel[0][3]);
+			
+			/* Old Code
+			$filename = $channel[0][0]."/route/".$channel[0][3].".php";
+			$objectname = "wfr_".$channel[0][1]."_".preg_replace("/\//", "_", $channel[0][3]);*/
 			
 			/* loading concerned object */
 			if(!file_exists($filename)) {

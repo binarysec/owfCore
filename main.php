@@ -652,13 +652,14 @@ class web_framework {
 	 *
 	 * Display login
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function display_login($message=NULL) {
+	public function display_login($message=NULL, array $vars = array()) {
 		$this->no_cache();
 		
 		/* add display login hooker */
 		$this->execute_hook("owf_display_login",array($message));
 		
 		$tpl = new core_tpl($this);
+		$tpl->set_vars($vars);
 		
 		if($message != NULL) {
 			$tpl->set(
@@ -794,7 +795,8 @@ class web_framework {
 				if($return_array) {
 					$file = array(
 						$tmp,
-						&$this->modules[$mod][0]
+						&$this->modules[$mod][0],
+						$this->modules[$mod][1]
 					);
 				}
 				else
