@@ -29,7 +29,6 @@ class core_dao_form_db {
 		
 		$this->wf = $wf;
 		$this->a_dao = $this->wf->core_dao();
-		$this->capable = $capable;
 		$this->struct = $struct;
 		$this->name = $name;
 		$this->description = $description;

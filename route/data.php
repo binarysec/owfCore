@@ -257,11 +257,12 @@ class wfr_core_data extends wf_route_request {
 			$this->wf->linker("/data/logo.png")
 		);
 
-		if(strlen($_directory) > 0 && $directory != "/")
-			$tpl->set(
-				"up_dir",
-				$this->wf->linker("/data$up_dir")
-			);
+		$tpl->set(
+			"up_dir",
+			(strlen($_directory) > 0 && $directory != "/") ?
+				$this->wf->linker("/data$up_dir") :
+				""
+		);
 
 		$this->wf->admin_html()->rendering(
 			$tpl->fetch("core/data_index")
