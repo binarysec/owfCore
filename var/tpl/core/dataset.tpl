@@ -100,7 +100,7 @@
 		%{if $page_nb > 1}%
 		<a href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb - 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="%{@ 'Page pr&eacute;c&eacute;dente'}%" alt="%{@ 'Page pr&eacute;c&eacute;dente'}%" /></a>
+			><img src="%{link '/data/icons/core/agt_back.png'}%" title="%{@ 'Page pr&eacute;c&eacute;dente'}%" alt="%{@ 'Page pr&eacute;c&eacute;dente'}%" /></a>
 	%{/if}%
 
 	%{if $nb_pages<5}%
@@ -140,7 +140,7 @@
 		<a
 			href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb + 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_forward.png'}%" title="%{@ 'Page suivante'}%" alt="%{@ 'Page suivante'}%" /></a>
+			><img src="%{link '/data/icons/core/agt_forward.png'}%" title="%{@ 'Page suivante'}%" alt="%{@ 'Page suivante'}%" /></a>
 	%{/if}%
 </div>
 </td>
@@ -172,8 +172,8 @@
 				<th style="text-align: center;">
 					%{if $col['orderable']}%<a href="javascript: void(0);" onclick="javascript: dataset_set_order('%{$id}%', '%{if $form_order[$id] == 'A'}%D%{elseif !$form_order[$id]}%A%{else}%%{/if}%');">%{/if}%%{$col['name']}%%{if $col['orderable']}%</a>%{/if}%
 					%{if $form_order[$id]}%
-					%{if $form_order[$id] == 'D'}%<img src="%{link '/data/yui/build/assets/skins/sam/dt-arrow-dn.png'}%" alt="[DESC]" title="%{@ 'Tri d&eacute;croissant'}%" />
-					%{else}%<img src="%{link '/data/yui/build/assets/skins/sam/dt-arrow-up.png'}%" alt="[ASC]" title="%{@ 'Tri croissant'}%" />
+					%{if $form_order[$id] == 'D'}%<img src="%{link '/data/icons/core/dt-arrow-dn.png'}%" alt="[DESC]" title="%{@ 'Tri d&eacute;croissant'}%" />
+					%{else}%<img src="%{link '/data/icons/core/dt-arrow-up.png'}%" alt="[ASC]" title="%{@ 'Tri croissant'}%" />
 					%{/if}%
 					%{/if}%
 				</th>
@@ -220,7 +220,7 @@
 		<a
 			href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb - 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_back.png'}%" title="%{@ 'Page pr&eacute;c&eacute;dente'}%" alt="%{@ 'Page pr&eacute;c&eacute;dente'}%" /></a>
+			><img src="%{link '/data/icons/core/agt_back.png'}%" title="%{@ 'Page pr&eacute;c&eacute;dente'}%" alt="%{@ 'Page pr&eacute;c&eacute;dente'}%" /></a>
 	%{/if}%
 
 	%{if $nb_pages<5}%
@@ -262,7 +262,7 @@
 		<a
 			href="javascript: void(0);"
 			onclick="javascript: dataset_set_page('%{$page_nb + 1}%');"
-			><img src="%{link '/data/icons/16x16/agt_forward.png'}%" title="%{@ 'Page suivante'}%" alt="%{@ 'Page suivante'}%" /></a>
+			><img src="%{link '/data/icons/core/agt_forward.png'}%" title="%{@ 'Page suivante'}%" alt="%{@ 'Page suivante'}%" /></a>
 	%{/if}%
 </div>
 </td>
