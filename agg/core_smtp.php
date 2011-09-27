@@ -83,11 +83,24 @@ class core_smtp extends wf_agg {
 		return(true);
 	}
 	
+	public function encode_subject($subject, $encoding = 'ISO-8859-1', $transfer_encoding = 'B', $linefeed = '\r\n', $indent = 0) {
+		$enc = mb_detect_encoding($subject, 'UTF-8', true);
+		if($enc != 'UTF-8')
+			$subject = utf8_encode($subject);
+		
+		return mb_encode_mimeheader(
+			mb_convert_encoding($subject, $encoding, 'UTF-8'),
+			$encoding,
+			$transfer_encoding,
+			$linefeed,
+			$indent
+		);
+	}
+	
 	public function sendmail($mailfrom, $rcpt, $content, $sid=-1) {
 		$queue = NULL;
 		/* select best server */
 		$this->select_server($sid);
-
 
 		/* open connection */
 		$fd = fsockopen(
@@ -104,7 +117,6 @@ class core_smtp extends wf_agg {
 			$data = fread($fd, 1024);
 
 			$log[] = trim($data);
-			
 
 			/* 220 */
 			if($atom == 0) {
@@ -174,6 +186,5 @@ class core_smtp extends wf_agg {
 		$this->server = &$this->servers[$this->servers_id];
 		
 	}
-	
-	
+		
 }
