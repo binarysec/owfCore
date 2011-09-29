@@ -60,7 +60,7 @@ class core_request extends wf_agg {
 		if(isset($this->channel[0]) && $this->channel[0][2] == WF_ROUTE_ACTION)
 			$ranon = $this->channel[0][7][0];
 		else if(isset($this->channel[0]) && $this->channel[0][2] == WF_ROUTE_REDIRECT)
-			$ranon = $this->channel[0][6][0];
+			$ranon = isset($this->channel[0][6][0]) ? $this->channel[0][6][0] : null;
 		else
 			$ranon = null;
 			
