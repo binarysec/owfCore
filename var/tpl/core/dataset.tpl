@@ -171,7 +171,7 @@
 				%{foreach $cols as $id => $col}%
 				<th style="text-align: center;">
 					%{if $col['orderable']}%<a href="javascript: void(0);" onclick="javascript: dataset_set_order('%{$id}%', '%{if $form_order[$id] == 'A'}%D%{elseif !$form_order[$id]}%A%{else}%%{/if}%');">%{/if}%%{$col['name']}%%{if $col['orderable']}%</a>%{/if}%
-					%{if $form_order[$id]}%
+					%{if isset($form_order[$id]) && $form_order[$id]}%
 					%{if $form_order[$id] == 'D'}%<img src="%{link '/data/icons/core/dt-arrow-dn.png'}%" alt="[DESC]" title="%{@ 'Tri d&eacute;croissant'}%" />
 					%{else}%<img src="%{link '/data/icons/core/dt-arrow-up.png'}%" alt="[ASC]" title="%{@ 'Tri croissant'}%" />
 					%{/if}%

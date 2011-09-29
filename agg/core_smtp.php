@@ -77,7 +77,7 @@ class core_smtp extends wf_agg {
 	public function check_port($item, $var) {
 		if($var <= 0)
 			return($this->lang->ts("Port number too low"));
-		if($var >= 65535)
+		if($var > 65535)
 			return($this->lang->ts("Port number too high"));
 			
 		return(true);

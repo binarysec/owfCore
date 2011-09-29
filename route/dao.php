@@ -41,9 +41,9 @@ class wfr_core_dao extends wf_route_request {
 		foreach($item->data as $key => $val) {
 		
 			/* check permissions */
-			$ret = $this->a_session->check_permission($val["perm"]);
+			$ret = isset($val["perm"]) ? $this->a_session->check_permission($val["perm"]) : true;
 		
-			if($ret && $val["perm"]) {
+			if($ret && isset($val["perm"])) {
 				if(isset($val["kind"])) {
 					$result[$key] = array(
 						"text" => $val["name"],
@@ -150,12 +150,12 @@ class wfr_core_dao extends wf_route_request {
 		/* read variable */
 		foreach($item->data as $key => $val) {
 			/* check permission */
-			$ret = $this->a_session->check_permission($val["perm"]);
-			if($ret && $val["perm"] && $val["kind"] == OWF_DAO_RADIO) {
+			$ret = isset($val["perm"]) ? $this->a_session->check_permission($val["perm"]) : true;
+			if($ret && isset($val["perm"]) && isset($val["kind"]) && $val["kind"] == OWF_DAO_RADIO) {
 				$var = $this->wf->get_var($key);
 				$insert[$key] = $var;
 			}
-			else if($ret && $val["perm"]) {
+			else if($ret && isset($val["perm"])) {
 				if(isset($val["kind"])) {
 					/* get var */
 					$var = $this->wf->get_var($key);
