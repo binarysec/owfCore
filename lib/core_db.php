@@ -59,6 +59,8 @@ define("WF_INDEX",                     11);
 define("WF_ASC",              10);
 define("WF_DES",              11);
 define("WF_DESC",             11);
+define("WF_RAND",             12);
+define("WF_RANDOM",           12);
 
 /* Request function */
 define("WF_REQ_FCT_COUNT",		0x1);

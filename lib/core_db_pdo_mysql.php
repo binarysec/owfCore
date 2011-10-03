@@ -349,23 +349,21 @@ class core_db_pdo_mysql extends core_db {
 			}
 			
 			/* check for order */
-			$order = NULL;
+			$order = "";
 			if($query_obj->order != NULL) {
+				$first = TRUE;
 				foreach($query_obj->order as $k => $v) {
-					if(!$order) {
-						$order = 'ORDER BY `'.$k.'`';
-						if($v == WF_ASC)
-							$order .= ' ASC';
-						else
-							$order .= ' DESC';
-					}
+					$order .= $first ? "ORDER BY " : ", ";
+					if($v == WF_RAND)
+						$order .= "RAND()";
 					else {
-						$order .= ', `'.$k.'`';
+						$order .= "`$k`";
 						if($v == WF_ASC)
-							$order .= ' ASC';
-						else
-							$order .= ' DESC';
+							$order .= " ASC";
+						else//if($v == WF_DESC)
+							$order .= " DESC";
 					}
+					$first = FALSE;
 				}
 			}
 
@@ -491,23 +489,21 @@ class core_db_pdo_mysql extends core_db {
 			}
 			
 			/* check for order */
-			$order = NULL;
-			if(is_array($query_obj->order)) {
+			$order = "";
+			if($query_obj->order != NULL) {
+				$first = TRUE;
 				foreach($query_obj->order as $k => $v) {
-					if(!$order) {
-						$order = 'ORDER BY `'.$k.'`';
-						if($v == WF_ASC)
-							$order .= " ASC";
-						else
-							$order .= " DESC";
-					}
+					$order .= $first ? "ORDER BY " : ", ";
+					if($v == WF_RAND)
+						$order .= "RAND()";
 					else {
-						$order .= ', `'.$k.'`';
+						$order .= "`$k`";
 						if($v == WF_ASC)
 							$order .= " ASC";
-						else
+						else//if($v == WF_DESC)
 							$order .= " DESC";
 					}
+					$first = FALSE;
 				}
 			}
 	
@@ -775,23 +771,21 @@ class core_db_pdo_mysql extends core_db {
 				$fields = "*";
 			
 			/* check for order */
-			$order = NULL;
+			$order = "";
 			if($query_obj->order != NULL) {
+				$first = TRUE;
 				foreach($query_obj->order as $k => $v) {
-					if(!$order) {
-						$order = 'ORDER BY `'.$k.'`';
-						if($v == WF_ASC)
-							$order .= ' ASC';
-						else
-							$order .= ' DESC';
-					}
+					$order .= $first ? "ORDER BY " : ", ";
+					if($v == WF_RAND)
+						$order .= "RAND()";
 					else {
-						$order .= ', `'.$k.'`';
+						$order .= "`$k`";
 						if($v == WF_ASC)
-							$order .= ' ASC';
-						else
-							$order .= ' DESC';
+							$order .= " ASC";
+						else//if($v == WF_DESC)
+							$order .= " DESC";
 					}
+					$first = FALSE;
 				}
 			}
 
