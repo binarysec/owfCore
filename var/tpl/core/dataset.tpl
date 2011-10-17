@@ -82,7 +82,7 @@
 
 %{set nb_pages, ceil($total_num_rows / $rows_per_page)}%
 
-%{if $total_num_rows > $rows_per_page}%
+%{if $total_num_rows_filterless > $rows_per_page}%
 %{if $display_dataset_select_bar != 3}%
 <div class="dataset_header dataset_header_color">
 <table width="100%">
@@ -94,7 +94,7 @@
 	%{@ 'sur'}% %{$total_num_rows}%
 </td>
 %{/if}%
-%{if $rows_per_page > 1}%
+%{if $rows_per_page > 1 && $total_num_rows > $rows_per_page}%
 <td align="center">
 <div class="dataset_pager">
 		%{if $page_nb > 1}%

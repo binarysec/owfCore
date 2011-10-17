@@ -62,7 +62,7 @@ class core_datasource_db extends core_datasource {
 		return($q->get_result());
 	}
 
-	public function get_num_rows($conds) {
+	public function get_num_rows($conds, $ignore_preconds = false) {
 		if(!$this->cache)
 			$this->cache = $this->wf->core_cacher();
 			
@@ -72,9 +72,11 @@ class core_datasource_db extends core_datasource {
 		
 		/* create cache line */
 		$cl = "core_ddb_src_".$this->get_name();
-		foreach($this->preconds as $cond) {
-			$q->do_comp($cond[0], $cond[1], $cond[2]);
-			$cl .= "_p$cond[0]$cond[1]$cond[2]";
+		if(!$ignore_preconds) {
+			foreach($this->preconds as $cond) {
+				$q->do_comp($cond[0], $cond[1], $cond[2]);
+				$cl .= "_p$cond[0]$cond[1]$cond[2]";
+			}
 		}
 		foreach($conds as $cond) {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
