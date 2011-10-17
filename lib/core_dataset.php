@@ -263,5 +263,8 @@ class core_dataset {
 	public function get_total_num_rows() {
 		return($this->dsrc->get_num_rows($this->conds));
 	}
-
+	
+	public function get_total_num_rows_filterless() {
+		return($this->dsrc->get_num_rows(array(), true));
+	}
 }
