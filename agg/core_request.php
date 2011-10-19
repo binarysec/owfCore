@@ -163,7 +163,7 @@ class core_request extends wf_agg {
 	 * Allow to get a request arguments
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_argv($pos) {
-		return($this->channel[1][$pos]);
+		return(isset($this->channel[1][$pos]) ? $this->channel[1][$pos] : NULL);
 	}
 	
 	public function get_argc() {
