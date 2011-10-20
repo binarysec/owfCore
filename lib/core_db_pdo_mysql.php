@@ -905,12 +905,20 @@ class core_db_pdo_mysql extends core_db {
 				array_push($prepare_values, $val);
 				break;
 			case '>':
-				$cond = "$var > ?";
-				array_push($prepare_values, $val);
+				if(core_gettype($val) != WF_T_STRING) {
+					$cond = "$var > ?";
+					array_push($prepare_values, $val);
+				}
+				else
+					$cond = "$var > $sval";
 				break;
 			case '<':
-				$cond = "$var < ?";
-				array_push($prepare_values, $val);
+				if(core_gettype($val) != WF_T_STRING) {
+					$cond = "$var < ?";
+					array_push($prepare_values, $val);
+				}
+				else
+					$cond = "$var > $sval";
 				break;
 			case '>=':
 				$cond = "$var >= ?";
