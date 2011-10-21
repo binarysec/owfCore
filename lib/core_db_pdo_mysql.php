@@ -718,7 +718,7 @@ class core_db_pdo_mysql extends core_db {
 			if(is_array($query_obj->arr)) foreach($query_obj->arr as $k => $sv) {		
 				foreach($sv as $k2 => $sv2){	
 					$v2 = $this->safe_input($sv2);
-					if(!$val[$k]) 
+					if(!is_array($val) || !array_key_exists($k, $val))
 						$val[$k] .= '?';
 					else 
 						$val[$k] .= ', ?';
