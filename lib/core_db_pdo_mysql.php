@@ -715,41 +715,52 @@ class core_db_pdo_mysql extends core_db {
 						$key .= ', `'.$k.'`';
 				}
 			}
-			if(is_array($query_obj->arr)) foreach($query_obj->arr as $k => $sv) {		
-				foreach($sv as $k2 => $sv2){	
-					$v2 = $this->safe_input($sv2);
-// 					if(!is_array($val) || !array_key_exists($k, $val))
-// 						$val[$k] .= '?';
-// 					else 
-// 						$val[$k] .= ', ?';
-					array_push($prepare_value, $v2);
+			if(is_array($query_obj->arr))	{
+				foreach($query_obj->arr as $k => $sv) {		
+					foreach($sv as $k2 => $sv2){	
+						$v2 = $this->safe_input($sv2);
+						if(!is_array($val) || !array_key_exists($k, $val))
+							if(isset($val[$k]))
+								$val[$k] .= '?';
+							else
+								$val[$k] = '?';
+						else 
+							if(isset($val[$k]))
+								$val[$k] .= ', ?';
+							else
+								$val[$k] = ', ?';
+						array_push($prepare_value, $v2);
+					}
 				}
 			}
 			$val_str = NULL;
-			if(is_array($val)) foreach($val as $k => $v){
-				if(!$val_str)
-					$val_str.="(".$v.")";
-				else
-					$val_str.=",(".$v.")";
+			if(is_array($val)) {
+				foreach($val as $k => $v){
+					if(!$val_str)
+						$val_str.="(".$v.")";
+					else
+						$val_str.=",(".$v.")";
+				}
 			}
 			/* fill fields */
 			$up = NULL;
 			if(is_array($query_obj->up)){
-				foreach($query_obj->up as $k => $sv) {
-					if(!$up){	
-						$up="ON DUPLICATE KEY UPDATE `".$sv["col"]."` = ";
-						foreach($sv["op"] as $k2=>$v2){
-							$up.=$v2." ";
+				foreach($query_obj->up as $k => $sv){
+					if(!$up) {	
+						$up = "ON DUPLICATE KEY UPDATE `".$sv["col"]."` = ";
+						foreach($sv["op"] as $k2 => $v2){
+							$up .= $v2." ";
 						}
 					}
 					else{
-						$up.=" , `".$sv["col"]."` = ";
-						foreach($sv["op"] as $k2=>$v2){
-							$up.=$v2." ";
+						$up .= " , `".$sv["col"]."` = ";
+						foreach($sv["op"] as $k2 => $v2){
+							$up .= $v2." ";
 						}
 					}
 				}
 			}
+			
 			/* prepare and exec the query */
 			if( strlen($key)>0 && strlen($val_str)>0 ){
 				$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES $val_str $up";
