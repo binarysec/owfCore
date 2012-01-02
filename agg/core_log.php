@@ -82,7 +82,7 @@ class core_log extends wf_agg {
 		foreach($this->logs as $k => $v) {
 			/* get channel */
 			$res = $this->get("channel", $k);
-			if(!is_array($res[0])) {
+			if(count($res) <= 0) {
 				$k = "core_log";
 				$res = $this->default;
 			}
