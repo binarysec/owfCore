@@ -940,7 +940,10 @@ class core_db_pdo_mysql extends core_db {
 				array_push($prepare_values, $val);
 				break;
 			case '!=':
-				$cond = "$var != ?";
+				$cond = "$var != $val";
+				break;
+			case '!==':
+				$cond = "$var <> ?";
 				array_push($prepare_values,$val);
 				break;
 			/* added by keo on 11/12/2008 : IS NULL and IS NOT NULL conditions */
