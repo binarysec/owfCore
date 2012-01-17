@@ -101,7 +101,12 @@ class core_smtp extends wf_agg {
 		$queue = NULL;
 		/* select best server */
 		$this->select_server($sid);
-
+		
+		if(!isset($this->server["server_ip"],
+			$this->server["server_port"]
+		))
+			return -1;
+		
 		/* open connection */
 		$fd = fsockopen(
 			$this->server["server_ip"], 
