@@ -903,6 +903,7 @@ class core_db_pdo_mysql extends core_db {
 	private function get_query_var($var, $sign, $sval, $prepare_values) {
 		$cond = NULL;
 		$val = $this->safe_input($sval);
+		$val_type = core_gettype($val);
 		switch($sign) {
 			case '=':
 				$cond = "$var = ?";
@@ -916,7 +917,7 @@ class core_db_pdo_mysql extends core_db {
 				array_push($prepare_values, $val);
 				break;
 			case '>':
-				if(core_gettype($val) != WF_T_STRING) {
+				if($val_type != WF_T_STRING) {
 					$cond = "$var > ?";
 					array_push($prepare_values, $val);
 				}
@@ -924,7 +925,7 @@ class core_db_pdo_mysql extends core_db {
 					$cond = "$var > $sval";
 				break;
 			case '<':
-				if(core_gettype($val) != WF_T_STRING) {
+				if($val_type != WF_T_STRING) {
 					$cond = "$var < ?";
 					array_push($prepare_values, $val);
 				}
