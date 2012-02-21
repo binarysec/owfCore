@@ -86,6 +86,7 @@ class core_tpl_compiler extends wf_agg {
 		'escurl'       => 'rawurlencode',
 		'capitalize'   => 'ucwords',
 		'stripslashes' => 'stripslashes',
+		'addslashes'   => 'addslashes',
 		'entities'     =>  array('htmlentities', 'ENT_COMPAT', '"UTF-8"'),
 		'type'         => 'gettype',
 		'nl2br'        => 'nl2br',
