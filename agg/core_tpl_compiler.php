@@ -565,6 +565,11 @@ class core_tpl_compiler extends wf_agg {
 	public function func_hsize(core_tpl_compiler $tpl_compiler, $argv) {
 		return('echo $t->wf->bit8_scale('.$argv[0].');');
 	}
+	
+	/* display a constant */
+	public function func_const(core_tpl_compiler $tpl_compiler, $argv) {
+		return('echo constant(\''.$argv[0].'\');');
+	}
 
 	private function parse_tpl_var($var) {
 		return(trim($var, '"\' '));
