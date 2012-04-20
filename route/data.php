@@ -142,6 +142,10 @@ class wfr_core_data extends wf_route_request {
 			$mime
 		);
 		
+		$this->a_core_request->unset_header(
+			"Set-Cookie"
+		);
+
 		/* Cache control by expires */
 // 		$mtime = time()+3600;
 // 		$expires = date("D, d M Y H:i:s \G\M\T", $mtime);

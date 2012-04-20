@@ -229,7 +229,7 @@ class core_request extends wf_agg {
 		$this->headers[$key] = $val;
 	}
 	
-	public function unset_header() {
+	public function unset_header($key) {
 		unset($this->headers[$key]);
 	}
 	
