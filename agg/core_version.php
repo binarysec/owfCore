@@ -140,7 +140,7 @@ class core_version extends wf_agg {
 		return($d_version);
 	}
 
-	public function apply($section, $eid=0) {
+	public function apply($section, $version, $eid=0) {
 		/* get section */
 		$d_section = $this->get_section($section);
 		if(count($d_section) <= 0) {
@@ -177,7 +177,7 @@ class core_version extends wf_agg {
 
 		/* update version */
 		$update = array(
-			"prev_version" => $v["next_version"],
+			"prev_version" => $version,
 		);
 			
 		$this->dao_version->modify(array(
@@ -239,17 +239,16 @@ class core_version extends wf_agg {
 		$v = $this->get($section, $eid=0);
 		$p = &$v[0];
 		if($p["prev_version"] != $p["next_version"])
-			return(false);
-		return(true);
+			return($p["next_version"]);
+		return(null);
 	}
 	
 	private function get_section($section) {
 		$cvar = "core_version:section:".$section;
 		$cache = $this->_core_cacher->get($cvar);
-		if(count($cache) > 0) {
-			echo "HIT\n";
+		if(count($cache) > 0) 
 			return($cache);
-		}
+	
 		
 		/* get section */
 		$d_section = $this->dao_section->get(array(
@@ -269,10 +268,8 @@ class core_version extends wf_agg {
 		$cvar = "core_version:ver:".$section_id.":".$eid;
 
 		$cache = $this->_core_cacher->get($cvar);
-		if(count($cache) > 0) {
-			echo "HIT\n";
+		if(count($cache) > 0) 
 			return($cache);
-		}
 
 		/* get version */
 		$d_version = $this->dao_version->get(array(
