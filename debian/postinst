@@ -1,0 +1,3 @@
+#!/bin/bash
+ln -s /usr/share/owf/core/1.2/owfloader.php /usr/bin/owfloader-1.2
+exit $?
