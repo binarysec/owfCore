@@ -120,6 +120,13 @@ if(is_link("$home/.owf.core.link"))
 else
 	system("ln -s $home/.owf.core.link $main_file");
 
+/* Fixing permissions */
+echo "* Fixing permissions: ...";
+$uid = getmyuid();
+system("chown -R $uid $config[public_html]");
+system("chown -R $uid $config[data_dir]");
+echo "OK\n";
+
 /* creating MySQL database */
 if($config['mysql_root_password'] != false) {
 	replace($config, "$install_dir/initdb.mysql.sql", $config['data_dir']."/initdb.mysql.sql");
