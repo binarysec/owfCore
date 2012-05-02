@@ -1,3 +1,5 @@
 #!/bin/bash
-rm /usr/bin/owfloader-1.2
+rm -rf rm -rf /usr/share/owf/core/1.2
+rm /usr/bin/owfloader-1.2 /usr/bin/owfloader
+rm /usr/bin/owfinit-1.2 /usr/bin/owfinit
 exit $?
