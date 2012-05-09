@@ -260,8 +260,10 @@
 					/* read list */
 					select += '<select name="'+key+'">';
 					$.each(val.list, function(lkey, lval) {
-						
-						select += '<option value="' + lkey + '">'+ lval +'</option>'
+						if(val.value == lkey) 
+							select += '<option value="' + lkey + '" selected>'+ lval +'</option>'
+						else
+							select += '<option value="' + lkey + '">'+ lval +'</option>'
 					});
 					select += '</select>';
 				}
