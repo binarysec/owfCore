@@ -63,7 +63,8 @@ class wfr_core_dao extends wf_route_request {
 					if($val["kind"] == OWF_DAO_SELECT) {
 						if(isset($val["select_cb"]))
 							$list = call_user_func($val["select_cb"], $item, $val);
-					
+						else
+							$list = $val["list"];
 						$result[$key]["list"] = $list;
 					}
 					elseif($val["kind"] == OWF_DAO_SLIDER) {
