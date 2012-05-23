@@ -108,7 +108,7 @@ class core_cacher extends wf_agg {
 	 * @param $timeout Maximum time (in milliseconds) to keep the value cached
 	 */
 	public function store($var, $val, $timeout=NULL) {
-		if (is_null($timeout))
+		if(is_null($timeout) && isset($this->wf->ini_arr["common"]["max_cache_timeout"]))
 			$timeout = $this->wf->ini_arr["common"]["max_cache_timeout"];
 	
 		if($this->system)
