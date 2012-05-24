@@ -156,7 +156,7 @@ class core_tpl {
 		$t->vars['_AV_LANGS']     = $this->wf->core_lang()->get_list();
 		$t->vars['_URI']          = $this->a_core_request->get_uri();
 		$t->vars['_GHOST']        = $this->a_core_request->get_ghost();
-		$t->vars['_BACK_URL']     = base64_encode($_SERVER["REQUEST_URI"]);
+		$t->vars['_BACK_URL']     = isset($_SERVER["REQUEST_URI"]) ? base64_encode($_SERVER["REQUEST_URI"]) : $this->wf->linker("/");
 		$t->vars['_CURRENT_TIME'] = time();
 		$t->vars['_HTTPS']        = isset($_SERVER["HTTPS"]) ? $_SERVER["HTTPS"] : NULL;
 		
