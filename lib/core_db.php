@@ -42,6 +42,15 @@ define("WF_PRI",		WF_INT | WF_AUTOINC | WF_PRIMARY);
 define("WF_VARCHAR_PRI",WF_VARCHAR | WF_PRIMARY);
 define("WF_DATA_PRI",	WF_DATA | WF_PRIMARY);
 
+/* type of joins */
+define("WF_JOIN_NATURAL", 	0x001);
+define("WF_JOIN_OUTER", 	0x002);
+define("WF_JOIN_LEFT",    	0x010);
+define("WF_JOIN_RIGHT",    	0x020);
+define("WF_JOIN_INNER",    	0x040);
+define("WF_JOIN_CROSS",    	0x080);
+define("WF_JOIN_STRAIGHT", 	0x100);
+
 /* type of query */
 define("WF_SELECT",            			1);
 define("WF_ADV_SELECT",        			2);
@@ -175,11 +184,13 @@ class core_db_adv_select extends core_db_query {
 		array_push($this->fields, $fields);
 	}
 	
-	public function alias($alias, $tab) {
+	public function alias($alias, $tab, $join = null) {
 		$insert = array(
 			"A" => $alias,
 			"T" => $tab
 		);
+		if(!is_null($join) && is_a($join, "core_db_join"))
+			$insert["J"] = $join;
 		array_push($this->as, $insert);
 	}
 	
@@ -407,5 +418,51 @@ class core_db_device {
 	
 }
 
+class core_db_join {
+	public function __construct($join) {
+		$this->join = $join;
+	}
+	
+	public function build() {
+		$ret = "";
+		if(($this->join & WF_JOIN_INNER) == WF_JOIN_INNER)
+			$ret = "INNER JOIN";
+		elseif(($this->join & WF_JOIN_CROSS) == WF_JOIN_CROSS)
+			$ret = "CROSS JOIN";
+		elseif(($this->join & WF_JOIN_STRAIGHT) == WF_JOIN_STRAIGHT)
+			$ret = "STRAIGHT_JOIN";
+		elseif(
+			($this->join & WF_JOIN_LEFT) == WF_JOIN_LEFT ||
+			($this->join & WF_JOIN_RIGHT) == WF_JOIN_RIGHT
+			) {
+				if(($this->join & WF_JOIN_NATURAL) == WF_JOIN_NATURAL)
+					$ret .= "NATURAL ";
+				if(($this->join & WF_JOIN_LEFT) == WF_JOIN_LEFT)
+					$ret .= "LEFT ";
+				elseif(($this->join & WF_JOIN_RIGHT) == WF_JOIN_RIGHT)
+					$ret .= "RIGHT ";
+				if(($this->join & WF_JOIN_OUTER) == WF_JOIN_OUTER)
+					$ret .= "OUTER ";
+				$ret .= "JOIN";
+		}
+		return $ret;
+	}
+	
+	var $cond_matrix = array();
 
-
+	public function do_open() {
+		array_push($this->cond_matrix, array(1));
+	}
+	public function do_close() {
+		array_push($this->cond_matrix, array(2));
+	}
+	public function do_or() {
+		array_push($this->cond_matrix, array(3));
+	}
+	public function do_and() {
+		array_push($this->cond_matrix, array(4));
+	}
+	public function do_comp($var, $sign, $val) {
+		array_push($this->cond_matrix, array(5, $var, $sign, $val));
+	}
+}
