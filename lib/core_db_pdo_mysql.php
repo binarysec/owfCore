@@ -435,15 +435,62 @@ class core_db_pdo_mysql extends core_db {
 				}
 			}
 			/* ensuite les AS si yen a */
-			
 			$as = NULL;
 			if(count($query_obj->as) > 0) {
 				for($a=0; $a<count($query_obj->as); $a++) {
-					if($as != NULL) 
-						$as .= ",";
+					$cond = "";
+					if($as != NULL) {
+						if(	isset($query_obj->as[$a]["J"]) &&
+							!is_null($query_obj->as[$a]["J"])
+							) {
+								$as .= " ".$query_obj->as[$a]["J"]->build()." ";
+								
+								if(	($query_obj->as[$a]["J"]->join & WF_JOIN_LEFT) == WF_JOIN_LEFT ||
+									($query_obj->as[$a]["J"]->join & WF_JOIN_RIGHT) == WF_JOIN_RIGHT ||
+									($query_obj->as[$a]["J"]->join & WF_JOIN_STRAIGHT) == WF_JOIN_STRAIGHT
+									) {
+									$atom = 0;
+									if(count($query_obj->as[$a]["J"]->cond_matrix) > 0)
+										$cond .= "ON ";
+									
+									foreach($query_obj->as[$a]["J"]->cond_matrix as $k) {
+										switch($k[0]) {
+											case 1:
+												switch($atom) {
+													case 1: $cond .= ' OR '; break;
+													case 2: case 3: $cond .= ' AND '; break;
+												}
+												$atom = 0;
+												$cond .= '(';
+												break;
+											case 2: $cond .= ')'; break;
+											case 3: $atom = 1; break;
+											case 4: $atom = 2; break;
+											case 5:
+												switch($atom) {
+													case 0: $cond .= ' '; $atom = 3; break;
+													case 1: $cond .= ' OR '; $atom = 3; break;
+													case 2: $cond .= ' AND '; $atom = 3; break;
+													case 3: $cond .= ' AND '; break;
+												}
+												$cond .= $this->get_query_var(
+													$k[1], 
+													$k[2], 
+													$k[3], 
+													&$prepare_value
+												);
+												break;
+										}
+									}
+								}
+						}
+						else
+							$as .= ",";
+					}
 					$as .= $query_obj->as[$a]["T"];
 					$as .= " AS ";
 					$as .= $query_obj->as[$a]["A"];
+					$as .= " $cond ";
 				}
 			}
 			else {

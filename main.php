@@ -520,9 +520,7 @@ class web_framework {
 	 * Function to check if module exists
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function mod_exists($name) {
-		if(is_array($this->modules[$name]))
-			return(TRUE);
-		return(FALSE);
+		return(is_array($this->modules[$name]));
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
