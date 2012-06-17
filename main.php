@@ -891,15 +891,15 @@ class web_framework {
 	 * Generate good password letters
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public $pass_tab = array('!', '_', '-', '%', '*', '=');
-	public function generate_password($rot=10) {
+	public function generate_password($rot=10, $no_special=false) {
 		$t = 100;
 		$buf = NULL;
 		for($a=0; $a<$rot; $a++) {
 			$swt = rand(0, $t);
 			if($swt < $t/4)
 				$buf .= chr(rand(0x31, 0x39));
-			else if($swt <= $t/4*1.5) {
-				$p = rand(0, count($this->pass_tab));
+			else if($swt <= $t/4*1.5 && $no_special == false) {
+				$p = rand(0, count($this->pass_tab)-1);	
 				$buf .= $this->pass_tab[$p];
 			}
 			else if($swt <= $t/4*2) {
