@@ -27,7 +27,7 @@ define("WF_VERSION",   "1.2.6");
 define("WF_T_INTEGER", 1);
 define("WF_T_DOUBLE",  2);
 define("WF_T_STRING",  6);
-w
+
 define("WF_USER_GOD",     "session:god");
 define("WF_USER_ADMIN",   "session:admin");
 define("WF_USER_SIMPLE",  "session:simple");
@@ -738,11 +738,11 @@ class web_framework {
 	 * Return the 8bit scale
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function bit8_scale($sz, $init_pow=0, $base=1024, $g="Go", $m="Mo", $k="Ko", $o="Octets") {
-		if($sz > pow($base, 3+$init_pow))
+		if($sz >= pow($base, 3+$init_pow))
 			return(sprintf("%.2f $g", ($sz/pow($base, 3+$init_pow))));
-		else if($sz > pow($base, 2+$init_pow))
+		else if($sz >= pow($base, 2+$init_pow))
 			return(sprintf("%.2f $m", ($sz/pow($base, 2+$init_pow))));
-		if($sz > $base) 
+		if($sz >= $base) 
 			return(sprintf("%.2f $k", ($sz/$base)));
 		else
 			return($sz." $o");
