@@ -45,7 +45,7 @@ function replace($patterns, $src, $dst) {
 
 echo "* Welcome to Open Web Framework installer v".WF_VERSION."\n* Ctrl+C to exit\n*\n";
 $home = getenv("HOME");
-$config = array();
+$config = array('main_file' => $main_file);
 
 $config['chroot'] = question("Use chroot environnement ? [Y/n]", "y");
 
