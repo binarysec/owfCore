@@ -1,65 +1,65 @@
- boundary="------------050202070803070706060506"
+ boundary="------------060302000505040406030709"
 
 This is a multi-part message in MIME format.
---------------050202070803070706060506
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--------------060302000505040406030709
+Content-Type: multipart/alternative;
+ boundary="------------070703080708080807080907"
+
+
+--------------070703080708080807080907
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 %{$body_text}%
 
-
 ------------------------------------------------------------------------
-Open Web Framework	Cette email à été envoyé par le système Open Web 
+Open Web Framework 	Cette email à été envoyé par le système Open Web 
 Framework
 Produit Open Source sous LIcence GPL v3
 Plus d'information sur http://www.owf.re/
 
-
-
---------------050202070803070706060506
+--------------070703080708080807080907
 Content-Type: multipart/related;
- boundary="------------040909040105000309060201"
+ boundary="------------000200060804010400040407"
 
 
---------------040909040105000309060201
-Content-Type: text/html; charset=ISO-8859-1
+--------------000200060804010400040407
+Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 <html>
   <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="content-type" content="text/html;
+      charset=ISO-8859-1">
   </head>
-  <body bgcolor="#FFFFFF" text="#000000">
+  <body text="#000000" bgcolor="#FFFFFF">
 %{$body_html}%
-
-    <hr size="2" width="100%">
-    <table border="0" cellpadding="1" cellspacing="1" width="100%">
-      <tbody>
-        <tr>
-          <td valign="top" width="1"><small><img
-                src="cid:part1.04050002.09020508@owf"
-                alt="Open Web Framework" title="Open Web Framework"
-                width="250px"></small><small></small></td>
-          <td valign="top"><small>Cette email &agrave; &eacute;t&eacute; envoy&eacute; par le
-              syst&egrave;me Open Web Framework<br>
-              Produit Open Source sous Licence GPL v3<br>
-              Plus d'information sur <a class="moz-txt-link-freetext" href="http://www.owf.re/">http://www.owf.re/</a></small></td>
-        </tr>
-      </tbody>
-    </table>
-    <small><br>
-    </small>
+      <hr size="2" width="100%">
+      <table width="100%" border="0" cellpadding="1" cellspacing="1">
+        <tbody>
+          <tr>
+            <td valign="top" width="1"><small><img
+                  src="cid:part1.03090107.00090001@binarysec.com"
+                  alt="Open Web Framework" title="Open Web Framework"
+                  width="250px"></small></td>
+            <td valign="top"><small>Cette email &agrave; &eacute;t&eacute; envoy&eacute; par le
+                syst&egrave;me Open Web Framework<br>
+                Produit Open Source sous LIcence GPL v3<br>
+                Plus d'information sur <a moz-do-not-send="true"
+                  class="moz-txt-link-freetext"
+                  href="http://www.owf.re/">http://www.owf.re/</a></small></td>
+          </tr>
+        </tbody>
+      </table>
+      <small><br>
+      </small>
   </body>
 </html>
 
---------------040909040105000309060201
-Content-Type: image/png;
- name="OpenWF_Logo.png"
+--------------000200060804010400040407
+Content-Type: image/png
 Content-Transfer-Encoding: base64
-Content-ID: <part1.04050002.09020508@owf>
-Content-Disposition: inline;
- filename="OpenWF_Logo.png"
+Content-ID: <part1.03090107.00090001@binarysec.com>
 
 iVBORw0KGgoAAAANSUhEUgAAAZAAAACECAYAAAC+j331AAAAAXNSR0IArs4c6QAAAAZiS0dE
 AP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB9sFGAkwIuyX+tQAACAA
@@ -363,4 +363,6 @@ NInkZJNHssj8flnS/wA8DWCWaXb1HMnnJT1XLRdnu/f3jMPDw8MzkDchM7EEXhJAgHA1EQAi
 BKN1AKCw/H/7ORCV8ooMIpXNo+qZhoeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eH
 h4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4fHWxf/H276HwIvMwoWAAAA
 AElFTkSuQmCC
---------------040909040105000309060201--
+--------------000200060804010400040407--
+
+--------------070703080708080807080907--

@@ -18,7 +18,7 @@ class core_mail {
 	
 	private $attachments = array();
 	//A '--' is added at the beginning of each boundary, and should be here too.
-	private $boundary = "--------------050202070803070706060506";
+	private $boundary = "--------------060302000505040406030709";
 	
 	private $template = 'core/mail';
 	private $render = null;
@@ -67,7 +67,7 @@ class core_mail {
 		foreach($this->headers as $k => $v) {
 			$this->render .= $k.": ".$v."\r\n";
 		}
-		$this->render .= "Content-Type: multipart/alternative;\r\n";
+		$this->render .= "Content-Type: multipart/mixed;\r\n";
 		
 		//Filter html tags to have a raw text
 		$non_html = $this->html2text($this->body);
@@ -85,13 +85,12 @@ class core_mail {
 			foreach($this->attachments as $v) {
 				$this->render .= "\r\n".$this->boundary."\r\n";
 				$this->render .=
-					'Content-Type: '.$v['mime'].";\r\n".
+					'Content-Type: '.'application/x-php'.";\r\n".
 					' name="'.$v['name']."\"\r\n".
 					"Content-Transfer-Encoding: base64\r\n".
 					"Content-Disposition: attachment;\r\n".
 					' filename="'.$v['name']."\"\r\n\r\n".
-					base64_encode($v['data']).
-					"\r\n";
+					base64_encode($v['data']);
 			}
 			$this->render .= "\r\n".$this->boundary."--\r\n";
 		}
