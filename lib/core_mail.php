@@ -44,14 +44,20 @@ class core_mail {
 		$this->headers[$header_name] = $data;
 	}
 	
-	public function attach($file, $name) {
+	public function attach($filepath, $name) {
 		$item = array();
 		
-		$item['data'] = $file;
+		$data = file_get_contents($filepath);
+		if($data == null)
+			return false;
+		
+		$item['data'] = $data;
 		$item['name'] = $name;
-		$item['mime'] = $this->core_mime->get_mime($name);
+		$item['mime'] = $this->core_mime->get_mime($filepath);
 		
 		$this->attachments[] = $item;
+		
+		return true;
 	}
 
 	public function render() {
@@ -85,7 +91,7 @@ class core_mail {
 			foreach($this->attachments as $v) {
 				$this->render .= "\r\n".$this->boundary."\r\n";
 				$this->render .=
-					'Content-Type: '.'application/x-php'.";\r\n".
+					'Content-Type: '.$v['mime'].";\r\n".
 					' name="'.$v['name']."\"\r\n".
 					"Content-Transfer-Encoding: base64\r\n".
 					"Content-Disposition: attachment;\r\n".
