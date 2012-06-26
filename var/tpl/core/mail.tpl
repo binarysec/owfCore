@@ -5,7 +5,8 @@ This is a multi-part message in MIME format.
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 8bit
 
-%CONTENT_NON_HTML%
+%{$body_text}%
+
 
 ------------------------------------------------------------------------
 Open Web Framework	Cette email à été envoyé par le système Open Web 
@@ -30,7 +31,8 @@ Content-Transfer-Encoding: 7bit
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   </head>
   <body bgcolor="#FFFFFF" text="#000000">
-%CONTENT_HTML%
+%{$body_html}%
+
     <hr size="2" width="100%">
     <table border="0" cellpadding="1" cellspacing="1" width="100%">
       <tbody>
@@ -41,7 +43,7 @@ Content-Transfer-Encoding: 7bit
                 width="250px"></small><small></small></td>
           <td valign="top"><small>Cette email &agrave; &eacute;t&eacute; envoy&eacute; par le
               syst&egrave;me Open Web Framework<br>
-              Produit Open Source sous LIcence GPL v3<br>
+              Produit Open Source sous Licence GPL v3<br>
               Plus d'information sur <a class="moz-txt-link-freetext" href="http://www.owf.re/">http://www.owf.re/</a></small></td>
         </tr>
       </tbody>
@@ -362,5 +364,3 @@ BKN1AKCw/H/7ORCV8ooMIpXNo+qZhoeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eH
 h4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4fHWxf/H276HwIvMwoWAAAA
 AElFTkSuQmCC
 --------------040909040105000309060201--
-
---------------050202070803070706060506--
