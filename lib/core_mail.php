@@ -56,7 +56,7 @@ class core_mail {
 
 	public function render() {
 		//Set some headers
-		$this->set_header("User-Agent", "OWF/1.2");
+		$this->set_header("User-Agent", "OWF/".WF_VERSION);
 		$this->set_header("Date", date("r"));
 		$this->set_header("Subject", $this->subject);
 		$this->set_header("From", $this->mail_from);

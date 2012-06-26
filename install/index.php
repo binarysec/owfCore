@@ -4,7 +4,7 @@
  * 
  * Config selector
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-require(%MAIN_FILE%);
+require("%MAIN_FILE%");
 $ini = "%INI_FILE%";
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
