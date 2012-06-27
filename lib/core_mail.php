@@ -23,18 +23,26 @@ class core_mail {
 	private $template = 'core/mail';
 	private $render = null;
 	
-	public function __construct($wf, $mail_from, $rcpt_to, $subject, $content) {
+	public function __construct($wf, $subject, $content, $rcpt_to=null, $mail_from=null) {
 		$this->wf = $wf;
 		$this->core_smtp = $this->wf->core_smtp();
 		$this->core_lang = $this->wf->core_lang();
 		$this->core_mime = $this->wf->core_mime();
+		$core_pref = $this->wf->core_pref()->register_group("session",  "Session");
 		$this->tpl = new core_tpl($this->wf);
 		
-		$this->mail_from = $mail_from;
-		if(is_array($rcpt_to))
+		if($mail_from == null)
+			$this->mail_from = $this->core_pref->get_value("sender");
+		else
+			$this->mail_from = $mail_from;
+		
+		if($rcpt_to == null)
+			$this->rcpt_to = array($this->core_pref->get_value("sender"));
+		else if(is_array($rcpt_to))
 			$this->rcpt_to = $rcpt_to;
 		else
 			$this->rcpt_to = array($rcpt_to);
+		
 		$this->subject = $subject;
 		$this->body = $content;
 		
