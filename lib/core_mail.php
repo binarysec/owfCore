@@ -18,9 +18,11 @@ class core_mail {
 	
 	private $attachments = array();
 	//A '--' is added at the beginning of each boundary, and should be here too.
-	private $boundary = "--------------060302000505040406030709";
+	private $boundary_normal = "--------------000502060407050709070002";
+	private $boundary_attachment = "--------------060302000505040406030709";
 	
-	private $template = 'core/mail';
+	private $template_normal = 'core/mail';
+	private $template_attachment = 'core/mail-attachment';
 	private $render = null;
 	
 	public function __construct($wf, $subject, $content, $rcpt_to=null, $mail_from=null) {
@@ -32,12 +34,12 @@ class core_mail {
 		$this->tpl = new core_tpl($this->wf);
 		
 		if($mail_from == null)
-			$this->mail_from = $this->core_pref->get_value("sender");
+			$this->mail_from = $core_pref->get_value("sender");
 		else
 			$this->mail_from = $mail_from;
 		
 		if($rcpt_to == null)
-			$this->rcpt_to = array($this->core_pref->get_value("sender"));
+			$this->rcpt_to = array($core_pref->get_value("sender"));
 		else if(is_array($rcpt_to))
 			$this->rcpt_to = $rcpt_to;
 		else
@@ -69,6 +71,8 @@ class core_mail {
 	}
 
 	public function render() {
+		$attach_count = count($this->attachments);
+		
 		//Set some headers
 		$this->set_header("User-Agent", "OWF/".WF_VERSION);
 		$this->set_header("Date", date("r"));
@@ -81,7 +85,14 @@ class core_mail {
 		foreach($this->headers as $k => $v) {
 			$this->render .= $k.": ".$v."\r\n";
 		}
-		$this->render .= "Content-Type: multipart/mixed;\r\n";
+		if($attach_count == 0) {
+			$this->render .= "Content-Type: multipart/alternative;\r\n";
+			$boundary = $this->boundary_normal;
+		}
+		else {
+			$this->render .= "Content-Type: multipart/mixed;\r\n";
+			$boundary = $this->boundary_attachment;
+		}
 		
 		//Filter html tags to have a raw text
 		$non_html = $this->html2text($this->body);
@@ -89,15 +100,18 @@ class core_mail {
 		//Render body
 		$this->tpl->set('body_text', $non_html);
 		$this->tpl->set('body_html', $this->body);
-		$this->render .= $this->tpl->fetch($this->template);
+		if($attach_count == 0)
+			$this->render .= $this->tpl->fetch($this->template_normal);
+		else
+			$this->render .= $this->tpl->fetch($this->template_attachment);
 		
 		//Render attachments
 		if(count($this->attachments) == 0) {
-			$this->render .= "\r\n".$this->boundary."--\r\n";
+			$this->render .= "\r\n".$boundary."--\r\n";
 		}
 		else {
 			foreach($this->attachments as $v) {
-				$this->render .= "\r\n".$this->boundary."\r\n";
+				$this->render .= "\r\n".$boundary."\r\n";
 				$this->render .=
 					'Content-Type: '.$v['mime'].";\r\n".
 					' name="'.$v['name']."\"\r\n".
@@ -106,7 +120,7 @@ class core_mail {
 					' filename="'.$v['name']."\"\r\n\r\n".
 					base64_encode($v['data']);
 			}
-			$this->render .= "\r\n".$this->boundary."--\r\n";
+			$this->render .= "\r\n".$boundary."--\r\n";
 		}
 		
 		return $this->render;

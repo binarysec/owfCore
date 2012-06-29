@@ -1,8 +1,13 @@
- boundary="------------000502060407050709070002"
+ boundary="------------060302000505040406030709"
 
 This is a multi-part message in MIME format.
---------------000502060407050709070002
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--------------060302000505040406030709
+Content-Type: multipart/alternative;
+ boundary="------------070703080708080807080907"
+
+
+--------------070703080708080807080907
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 %{$body_text}%
@@ -13,50 +18,48 @@ Framework
 Produit Open Source sous LIcence GPL v3
 Plus d'information sur http://www.owf.re/
 
-
-
-
---------------000502060407050709070002
+--------------070703080708080807080907
 Content-Type: multipart/related;
- boundary="------------080900080805070300090309"
+ boundary="------------000200060804010400040407"
 
 
---------------080900080805070300090309
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+--------------000200060804010400040407
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html;
       charset=ISO-8859-1">
   </head>
-  <body bgcolor="#FFFFFF" text="#000000">
+  <body text="#000000" bgcolor="#FFFFFF">
 %{$body_html}%
-    <hr size="2" width="100%">
-    <table border="0" cellpadding="1" cellspacing="1" width="100%">
-      <tbody>
-        <tr>
-          <td valign="top" width="1"><small><img
-                src="cid:part1.08040903.01080107@binarysec.com"
-                alt="Open Web Framework" title="Open Web Framework"
-                width="250px"></small></td>
-          <td valign="top"><small>Cette email &agrave; &eacute;t&eacute; envoy&eacute; par le
-              syst&egrave;me Open Web Framework<br>
-              Produit Open Source sous LIcence GPL v3<br>
-              Plus d'information sur <a class="moz-txt-link-freetext"
-                href="http://www.owf.re/">http://www.owf.re/</a></small></td>
-        </tr>
-      </tbody>
-    </table>
-    <small><br>
-    </small> <br>
+      <hr size="2" width="100%">
+      <table width="100%" border="0" cellpadding="1" cellspacing="1">
+        <tbody>
+          <tr>
+            <td valign="top" width="1"><small><img
+                  src="cid:part1.03090107.00090001@binarysec.com"
+                  alt="Open Web Framework" title="Open Web Framework"
+                  width="250px"></small></td>
+            <td valign="top"><small>Cette email &agrave; &eacute;t&eacute; envoy&eacute; par le
+                syst&egrave;me Open Web Framework<br>
+                Produit Open Source sous LIcence GPL v3<br>
+                Plus d'information sur <a moz-do-not-send="true"
+                  class="moz-txt-link-freetext"
+                  href="http://www.owf.re/">http://www.owf.re/</a></small></td>
+          </tr>
+        </tbody>
+      </table>
+      <small><br>
+      </small>
   </body>
 </html>
 
---------------080900080805070300090309
+--------------000200060804010400040407
 Content-Type: image/png
 Content-Transfer-Encoding: base64
-Content-ID: <part1.08040903.01080107@binarysec.com>
+Content-ID: <part1.03090107.00090001@binarysec.com>
 
 iVBORw0KGgoAAAANSUhEUgAAAZAAAACECAYAAAC+j331AAAAAXNSR0IArs4c6QAAAAZiS0dE
 AP8A/wD/oL2nkwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB9sFGAkwIuyX+tQAACAA
@@ -360,6 +363,6 @@ NInkZJNHssj8flnS/wA8DWCWaXb1HMnnJT1XLRdnu/f3jMPDw8MzkDchM7EEXhJAgHA1EQAi
 BKN1AKCw/H/7ORCV8ooMIpXNo+qZhoeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eH
 h4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4fHWxf/H276HwIvMwoWAAAA
 AElFTkSuQmCC
---------------080900080805070300090309--
+--------------000200060804010400040407--
 
---------------000502060407050709070002--
+--------------070703080708080807080907--
