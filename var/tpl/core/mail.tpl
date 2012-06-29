@@ -2,7 +2,7 @@
 
 This is a multi-part message in MIME format.
 --------------000502060407050709070002
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 %{$body_text}%
@@ -22,8 +22,8 @@ Content-Type: multipart/related;
 
 
 --------------080900080805070300090309
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 <html>
   <head>
