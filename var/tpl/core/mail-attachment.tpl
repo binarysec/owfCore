@@ -13,10 +13,16 @@ Content-Transfer-Encoding: 8bit
 %{$body_text}%
 
 ------------------------------------------------------------------------
-Open Web Framework 	Cette email à été envoyé par le système Open Web 
+Open Web Framework 	Cet e-mail a été envoyé par le système Open Web 
 Framework
-Produit Open Source sous LIcence GPL v3
-Plus d'information sur http://www.owf.re/
+Produit Open Source sous _Licence GPL v3_
+/Plus d'informations sur http://www.owf.re//
+------------------------------------------------------------------------
+This e-mail may contain confidential and/or privileged information. If 
+you are not the intended recipient (or have received this e-mail in 
+error) please notify the sender immediately and destroy this e-mail. Any 
+unauthorised copying, disclosure or distribution of the material in this 
+e-mail or of parts hereof is strictly forbidden.
 
 --------------070703080708080807080907
 Content-Type: multipart/related;
@@ -29,30 +35,37 @@ Content-Transfer-Encoding: 8bit
 
 <html>
   <head>
-    <meta http-equiv="content-type" content="text/html;
-      charset=ISO-8859-1">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   </head>
-  <body text="#000000" bgcolor="#FFFFFF">
+  <body alink="#EE0000" bgcolor="#cfcfcf" link="#009900" text="#333333"
+    vlink="#006600">
 %{$body_html}%
-      <hr size="2" width="100%">
-      <table width="100%" border="0" cellpadding="1" cellspacing="1">
-        <tbody>
-          <tr>
-            <td valign="top" width="1"><small><img
-                  src="cid:part1.03090107.00090001@binarysec.com"
-                  alt="Open Web Framework" title="Open Web Framework"
-                  width="250px"></small></td>
-            <td valign="top"><small>Cette email &agrave; &eacute;t&eacute; envoy&eacute; par le
-                syst&egrave;me Open Web Framework<br>
-                Produit Open Source sous LIcence GPL v3<br>
-                Plus d'information sur <a moz-do-not-send="true"
+    <br>
+    <hr size="2" width="100%">
+    <table border="0" cellpadding="1" cellspacing="1" width="100%">
+      <tbody>
+        <tr>
+          <td valign="top" width="1"><small><img
+                src="cid:part1.08040903.01080107@binarysec.com"
+                alt="Open Web Framework" title="Open Web Framework"
+                height="46" width="146"></small></td>
+          <td valign="top"><small>Cet e-mail a été envoyé par le système
+              Open Web Framework<br>
+              Produit Open Source sous <u>Licence GPL v3</u><br>
+              <i>Plus d'informations sur <a moz-do-not-send="true"
                   class="moz-txt-link-freetext"
-                  href="http://www.owf.re/">http://www.owf.re/</a></small></td>
-          </tr>
-        </tbody>
-      </table>
-      <small><br>
-      </small>
+                  href="http://www.owf.re/">http://www.owf.re/</a></i></small></td>
+        </tr>
+      </tbody>
+    </table>
+    <hr noshade="noshade" size="1" width="100%"><small><small>This
+        e-mail may contain confidential and/or privileged information.
+        If you are not the intended recipient (or have received this
+        e-mail in error) please notify the sender immediately and
+        destroy this e-mail. Any unauthorised copying, disclosure or
+        distribution of the material in this e-mail or of parts hereof
+        is strictly forbidden. </small> </small><br>
+    <br>
   </body>
 </html>
 
