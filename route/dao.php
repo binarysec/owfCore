@@ -35,58 +35,6 @@ class wfr_core_dao extends wf_route_request {
 		return(TRUE);
 	}
 	
-	private function draw_form($item, $data=array()) {
-		$result = array();
-		/* follow and build form */
-		foreach($item->data as $key => $val) {
-		
-			/* check permissions */
-			$ret = isset($val["perm"]) ? $this->a_session->check_permission($val["perm"]) : true;
-		
-			if($ret && isset($val["perm"])) {
-				if(isset($val["kind"])) {
-					$result[$key] = array(
-						"text" => $val["name"],
-						"kind" => $val["kind"],
-					);
-					if(isset($data[$key])) {
-						$result[$key]["value"] = htmlspecialchars($data[$key]);
-					}
-					else {
-						if(array_key_exists("value", $val))
-							$result[$key]["value"] = htmlspecialchars($val["value"]);
-					}
-					
-					if(array_key_exists("size", $val))
-						$result[$key]["size"] = $val["size"];
-						
-					if($val["kind"] == OWF_DAO_SELECT) {
-						if(isset($val["select_cb"]))
-							$list = call_user_func($val["select_cb"], $item, $val);
-						else
-							$list = $val["list"];
-						$result[$key]["list"] = $list;
-					}
-					elseif($val["kind"] == OWF_DAO_SLIDER) {
-						if(isset($val["startnum"]))
-							$result[$key]["startnum"] = (int) $val["startnum"];
-						
-						if(isset($val["endnum"]))
-							$result[$key]["endnum"] = (int) $val["endnum"];
-						
-						if(isset($val["step"]))
-							$result[$key]["step"] = (int) $val["step"];
-					}
-					
-					if(isset($val["reader_cb"]))
-						$result[$key]["value"] = call_user_func($val["reader_cb"], $item, $data[$key]);
-				}
-			}
-		}	
-		echo json_encode($result);
-		exit(0);
-	}
-	
 	public function form() {
 		$this->mode = $this->a_core_request->get_argv(0);
 		$this->agg = $this->a_core_request->get_argv(1);
@@ -113,7 +61,7 @@ class wfr_core_dao extends wf_route_request {
 		}
 			
 		if($this->mode == 'add') {
-			$this->draw_form($item);
+			$this->a_core_dao->draw_form($item);
 		}
 		else if($this->mode  == 'postadd') {
 			$this->add_post($item);
@@ -124,7 +72,7 @@ class wfr_core_dao extends wf_route_request {
 			if(!array_key_exists(0, $ret))
 				exit(0);
 			
-			$this->draw_form($item, $ret[0]);
+			$this->a_core_dao->draw_form($item, $ret[0]);
 		}
 		else if($this->mode  == 'postmod') {
 			$id = $this->wf->get_var("id");
