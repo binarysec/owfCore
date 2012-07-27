@@ -16,7 +16,8 @@ class core_smtp extends wf_agg {
 		$this->struct = array(
 			"form" => array(
 				"perm" => array("core:smtp"),
-				
+				"add_title" => $this->lang->ts("Add SMTP relay"),
+				"mod_title" => $this->lang->ts("SMTP modification"),
 			),
 			"data" => array(
 				"id" => array(
