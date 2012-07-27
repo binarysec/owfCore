@@ -57,7 +57,7 @@ class core_dao extends wf_agg {
 					
 					if(array_key_exists("size", $val))
 						$result[$key]["size"] = $val["size"];
-						
+
 					if($val["kind"] == OWF_DAO_SELECT) {
 						if(isset($val["select_cb"]))
 							$list = call_user_func($val["select_cb"], $item, $val);
@@ -76,7 +76,7 @@ class core_dao extends wf_agg {
 							$result[$key]["step"] = (int) $val["step"];
 					}
 					
-					if(isset($val["reader_cb"]))
+					if(isset($val["reader_cb"]) && array_key_exists($key, $data))
 						$result[$key]["value"] = call_user_func($val["reader_cb"], $item, $data[$key]);
 				}
 			}
