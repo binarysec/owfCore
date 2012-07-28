@@ -28,16 +28,16 @@ class core_smtp extends wf_agg {
 					"name" => $this->lang->ts("Server description"),
 					"kind" => OWF_DAO_INPUT,
 					"perm" => array("core:smtp"),
-					"filter_cb" => array($this, "check_description"),
-					"type" => WF_VARCHAR
+					"type" => WF_VARCHAR,
+					"filter_cb" => array($this, "filter_description"),
 				),
 				"server_ip" => array(
 					"size" => 22,
 					"name" => $this->lang->ts("Server IP or Hostname"),
 					"kind" => OWF_DAO_INPUT,
 					"perm" => array("core:smtp"),
-					
-					"type" => WF_VARCHAR
+					"type" => WF_VARCHAR,
+					"filter_cb" => array($this, "filter_server_ip"),
 				),
 				"server_port" => array(
 					"size" => 10,
@@ -45,7 +45,7 @@ class core_smtp extends wf_agg {
 					"name" => $this->lang->ts("Serveur port number"),
 					"kind" => OWF_DAO_INPUT,
 					"perm" => array("core:smtp"),
-					"filter_cb" => array($this, "check_port"),
+					"filter_cb" => array($this, "filter_server_port"),
 					"type" => WF_VARCHAR
 				),
 				"mail_sent" => array(
@@ -68,19 +68,29 @@ class core_smtp extends wf_agg {
 	
 	}
 	
-	public function check_description($item, $var) {
+	public function filter_description($item, $var) {
 		if(strlen($var) < 2)
 			return($this->lang->ts("Description too short"));
-
 		return(true);
 	}
 	
-	public function check_port($item, $var) {
+	public function filter_server_ip($item, $var) {
+		if(strlen($var) < 2)
+			return($this->lang->ts("Server IP or hostname is too short"));
+		$r = @gethostbyname($var);
+		if($r == $var) {
+			if(ip2long($var) <= 0)
+				return($this->lang->ts("Invalid server IP or hostname"));
+		}
+		return(true);
+	}
+	
+	
+	public function filter_server_port($item, $var) {
 		if($var <= 0)
 			return($this->lang->ts("Port number too low"));
 		if($var > 65535)
 			return($this->lang->ts("Port number too high"));
-			
 		return(true);
 	}
 	
