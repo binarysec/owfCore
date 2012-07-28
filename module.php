@@ -29,10 +29,10 @@ class wfm_core extends wf_module {
 				WF_ROUTE_SHOW,
 				array("session:god")
 			),
-			"/admin/system/preferences/smtp" => array(
+			"/admin/system/smtp" => array(
 				WF_ROUTE_ACTION,
-				"smtp",
-				"page",
+				"admin/system/smtp",
+				"show",
 				$this->ts("SMTP Service configuration"),
 				WF_ROUTE_SHOW,
 				array("core:smtp")
@@ -45,15 +45,22 @@ class wfm_core extends wf_module {
 				WF_ROUTE_HIDE,
 				array("session:ranon")
 			),
-			"/dao/form" => array(
+			"/dao" => array(
 				WF_ROUTE_ACTION,
 				"dao",
-				"form",
-				$this->ts("Add form DAO "),
+				"show",
+				$this->ts("Add form DAO"),
 				WF_ROUTE_HIDE,
 				array("session:ranon")
 			),
-			
+			"/dialog" => array(
+				WF_ROUTE_ACTION,
+				"dialog",
+				"show",
+				$this->ts("Core dialog"),
+				WF_ROUTE_HIDE,
+				array("session:ranon")
+			),
 			"/json" => array(
 				WF_ROUTE_ACTION,
 				"json",

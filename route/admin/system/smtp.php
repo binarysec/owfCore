@@ -1,6 +1,6 @@
 <?php
 
-class wfr_core_smtp extends wf_route_request {
+class wfr_core_admin_system_smtp extends wf_route_request {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
@@ -15,10 +15,16 @@ class wfr_core_smtp extends wf_route_request {
 		
 		$this->a_session = $this->wf->session();
 		
+		$this->a_core_html->set_meta_name(
+			"viewport", 
+			array(
+				"content" => "width=device-width, initial-scale=1"
+			)
+		);
 		
 	}
 
-	public function page() {
+	public function show() {
 		
 		$dsrc  = new core_datasource_db($this->wf, "core_smtp");
 		$dset  = new core_dataset($this->wf, $dsrc);
@@ -50,24 +56,30 @@ class wfr_core_smtp extends wf_route_request {
 		$dview = new core_dataview($this->wf, $dset);
 		$tpl = new core_tpl($this->wf);
 
+		$add_link = $this->a_core_smtp->dao->add_link();
+		
 		$in = array(
-			"dao_name" => $this->a_core_smtp->dao->aggregator,
-			"dao_id" => $this->a_core_smtp->dao->id,
-			"dao_dialog" => $this->a_core_smtp->dao->get_dialog(),
-			"dao_button_add" => $this->a_core_smtp->dao->button_add($this->a_core_smtp->lang->ts("Add SMTP server")),
+			"dao_link_add" => $add_link,
 			"dataset" => $dview->render(NULL, $tplset)
 		);	 
 		$tpl->set_vars($in);
 
-		$this->a_admin_html->rendering($tpl->fetch('core/smtp/list'));
+		$this->a_admin_html->rendering($tpl->fetch('admin/system/smtp'));
 		exit(0);
 
 	}
 
 	public function callback_row($row, $datum) {
-		$action = $this->a_core_smtp->dao->button_remove($this->a_core_smtp->lang->ts("Delete"), $datum['id']);
-		$action .= $this->a_core_smtp->dao->button_modify($this->a_core_smtp->lang->ts("Edit"), $datum['id']);
+		$add = htmlspecialchars($datum['server_ip']).':'.htmlspecialchars($datum['server_port']);
 		
+		$link = $this->a_core_smtp->dao->mod_link($datum['id']);
+		$r = '<li><a href="'.$link.'">'.
+				'<h3>'.htmlspecialchars($datum['description']).'</h3>'.
+				'<p>Service address: '.$add.'</strong></p>'.
+			'</a></li>';
+		return($r);
+		
+		return("null");
 		return(array(
 			'description' => htmlspecialchars($datum['description']),
 			'server_ip' => htmlspecialchars($datum['server_ip']),

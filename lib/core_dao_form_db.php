@@ -33,6 +33,7 @@ class core_dao_form_db {
 		$this->name = $name;
 		$this->description = $description;
 		$this->data = &$this->struct["data"];
+		$this->cipher = $this->wf->core_cipher();
 		
 		/* create DB schemas */
 		foreach($this->struct["data"] as $key => $val)
@@ -50,7 +51,7 @@ class core_dao_form_db {
 		$q = new core_db_insert($this->name, $data);
 		$this->wf->db->query($q);
 		$uid = $this->wf->db->get_last_insert_id($this->name.'_id_seq');
-		return(TRUE);
+		return($uid);
 	}
 	
 	public function remove($where=array()) {
@@ -81,57 +82,24 @@ class core_dao_form_db {
 		
 		return($res);
 	}
-
-	public function get_dialog() {
-		$class = "dao-dialog-".$this->aggregator.$this->id;
-		$name = "dao-id-dialog-".rand();
-		return(
-			'<div id="'.$name.'" class="'.$class.' dao-dialog">'.
-			'</div>'
-		);
+	
+	public function add_link($uid=null) {
+		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
+		$l = $this->wf->linker("/dao/".$this->aggregator)."?oid=".$this->id;
+		if($uid)
+			$l .= "&uid=".$uid;
+		$l .= "&back=$back_url";
+		return($l);
 	}
 	
-	public function button_add($text) {
-		$class = "dao-button-add-".$this->aggregator.$this->id;
-		$name = "dao-id-add-".rand();
-		$html = '<span id="'.$name.'" '.
-			' data-agg="'.$this->aggregator.'"'.
-			' data-aggid="'.$this->id.'"'.
-		
-			'class="'.$class.' dao-button-add">'.
-			$text.
-			'</span>';
-		return($html);
-		
-	}
-	
-	public function button_remove($text, $id) {
-		$class = "dao-button-rm-".$this->aggregator.$this->id;
-		$name = "dao-id-rm-".rand();
-		$html = '<span id="'.$name.'" '.
-			' data-agg="'.$this->aggregator.'"'.
-			' data-aggid="'.$this->id.'"'.
-			' data-id="'.$id.'"'.
-			' class="'.$class.' dao-button-del">'.
-			$text.
-			'</span>';
-		return($html);
-		
-	}
-	
-	public function button_modify($text, $id) {
-		$class = "dao-button-mod-".$this->aggregator.$this->id;
-		$name = "dao-id-md-".rand();
-		$html = '<span id="'.$name.'" '.
+	public function mod_link($uid) {
+		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
+		$l = $this->wf->linker("/dao/".$this->aggregator).
+			"?oid=".$this->id.
+			"&uid=".$uid.
+			"&back=$back_url";
 			
-			' data-agg="'.$this->aggregator.'"'.
-			' data-aggid="'.$this->id.'"'.
-			' data-id="'.$id.'"'.
-			
-			' class="'.$class.' dao-button-mod">'.
-			$text.
-			'</span>';
-		return($html);
+		return($l);
 	}
 	
 	
