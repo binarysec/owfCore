@@ -1,42 +1,21 @@
-<h1><img src="%{link '/data/core/index/title.png'}%" alt="%{@ "Index directory"}%"/>%{@ "Index directory of"}% %{$dir}%</h1>
+<div data-role="content">
+<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="f">
+	<li data-role="list-divider"><h1>There are %{$files|count}% files into %{$dir}%</h1></li>
+	%{if count($files)}%
+	%{foreach $files as $file => $data}%
+		<li>
+			<a href="%{$data['link']}%" %{if $data['mimetype'] != 'httpd/unix-directory'}%data-ajax="false"%{/if}%>
+				<img src="%{link '/data/icons/'}%%{$data['mimetype']}%.png" alt="?" class="ui-li-icon"/>
+				<h1>%{$file}%</h1>
+				<p class="ui-li-aside">
+				Size: %{$data['size']}%<br/>
+				Type: %{$data['mimetype']}%<br/>
+				Modification: %{date 'd/m/Y H:i', $data['lastmod']}%
+				</p>
+			</a>
+		</li>
+	%{/foreach}%
+	%{/if}%
+</ul>
+</div>
 
-<table class="dataset_data_table" width="100%">
-	<thead>
-		<tr>
-			<th class="icon"></th>
-			<th class="title">%{@ 'Nom'}%</th>
-			<th>%{@ 'Taille'}%</th>
-			<th>%{@ 'Type'}%</th>
-			<th>%{@ 'Derni&egrave;re modification'}%</th>
-		</tr>
-	</thead>
-
-	<tbody>
-		%{if $up_dir}%
-			<tr class="alt">
-				<td><img src="%{link '/data/icons/cat_open.png'}%" alt="[FILE]" /></td>
-					<td class="id title"><a href="%{$up_dir}%">..</a></td>
-					<td>-</td>
-					<td>-</td>
-					<td>-</td>
-			</tr>
-		%{/if}%
-		%{foreach $files as $file => $data}%
-			<tr class="alt">
-				<td class="icon">
-					<img src="%{link '/data/icons/'}%%{$data['mimetype']}%.png" alt="?" />
-				</td>
-				<td width="25%"><a href="%{$data['link']}%">%{$file}%</a></td>
-				<td>%{$data['size']}%</td>
-				<td>%{$data['mimetype']}%</td>
-				<td>%{date 'd/m/Y H:i', $data['lastmod']}%</td>
-			</tr>
-		%{/foreach}%
-	</tbody>
-	
-	<tfoot>
-		<tr>
-			<th colspan="5">Total (%{$files|count}%)</th>
-		</tr>
-	</tfoot>
-</table>

@@ -23,8 +23,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class core_route extends wf_agg {
-	var $routes = array();
-	var $a_core_cacher;
+	public $routes = array();
+	public $a_core_cacher;
 	
 	public function loader($wf) {
 		$this->wf = $wf;
@@ -189,6 +189,50 @@ class core_route extends wf_agg {
 		}
 		$result[3] = $link;
 		
+		return($result);
+	}
+	
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Function used to get channel node
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_sub_channel($link) {
+		$lang = $this->wf->core_lang();
+		
+		$result = array();
+		
+		$dir = explode("/", $link);
+		$nav = &$this->routes;
+		$start = 1;
+		
+		/* checking lang context if available */
+		if($lang->check_lang_route(isset($dir[1]) ? $dir[1] : NULL))
+			$start++;
+		for($i=$start; $i<count($dir); $i++) {
+			if(isset($nav[0][$dir[$i]]))
+				$nav = &$nav[0][$dir[$i]];
+			else {
+				foreach($nav[0] as $k => $v) {
+					if(array_key_exists(1, $v)) {
+					if($v[1][2] == WF_ROUTE_REDIRECT)
+						$result[] = array(
+							"key" => $k, 
+							"name" => $v[1][4],
+							"perm" => $v[1][6],
+						);
+					else
+						$result[] = array(
+							"key" => $k, 
+							"name" => $v[1][5],
+							"perm" => $v[1][7],
+						);
+					}
+				}
+				break;
+			}
+		}
+	
 		return($result);
 	}
 	

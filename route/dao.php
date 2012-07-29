@@ -21,6 +21,7 @@ class wfr_core_dao extends wf_route_request {
 			"waf/dao"
 		);
 		$this->cipher = $this->wf->core_cipher();
+		$this->admin_html = $this->wf->admin_html();
 	}
 	
 	private function selector() {
@@ -34,31 +35,6 @@ class wfr_core_dao extends wf_route_request {
 				return($dao[$this->oid]);
 		}
 		return(TRUE);
-	}
-	
-	public function dialog() {
-		$type = $this->wf->get_var("type");
-		
-		
-		$back = $this->wf->get_var("back");
-		
-		$title = $this->wf->get_var("title");
-		$body = $this->wf->get_var("body");
-		
-		
-	// confirmation
-	// erreur
-// 		type = confirm/error
-		
-		$tpl = new core_tpl($this->wf);
-		$in = array(
-			"title" => $title,
-			"body" => $body,
-		);	 
-		$tpl->set_vars($in);
-		$this->wf->admin_html()->set_title(htmlentities($title));
-		$this->wf->admin_html()->rendering($tpl->fetch('bsf/waf/dao/dialog'));
-		exit(0);
 	}
 	
 	
@@ -163,8 +139,9 @@ class wfr_core_dao extends wf_route_request {
 			"rand" => rand()
 		);	 
 		$tpl->set_vars($in);
-		$this->wf->admin_html()->set_title($this->lang->ts("Data access object"));
-		$this->wf->admin_html()->rendering($tpl->fetch('core/dao/index'));
+		$this->admin_html->set_backlink($this->back);
+		$this->admin_html->set_title($title);
+		$this->admin_html->rendering($tpl->fetch('core/dao/index'));
 		exit(0);
 	}
 	

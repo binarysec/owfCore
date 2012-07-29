@@ -64,6 +64,9 @@ class wfr_core_admin_system_smtp extends wf_route_request {
 		);	 
 		$tpl->set_vars($in);
 
+		/* Add back button */
+		$this->a_admin_html->set_backlink($this->wf->linker('/admin/system'), "Home", "home");
+		
 		$this->a_admin_html->rendering($tpl->fetch('admin/system/smtp'));
 		exit(0);
 

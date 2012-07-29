@@ -12,6 +12,10 @@ class wfr_core_data extends wf_route_request {
 		
 		$this->a_core_html = $this->wf->core_html();
 		$this->a_session = $this->wf->session();
+		
+		$this->lang = $this->wf->core_lang()->get_context(
+			"core/data_index"
+		);
 	}
 
 
@@ -197,6 +201,7 @@ class wfr_core_data extends wf_route_request {
 	 * Draw the listing
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function show_listing($_directory) {
+		$ah = $this->wf->admin_html();
 		/* trouve s'il y a un répertoire supérieur */
 		$directory = " ";
 		$up_dir = NULL;
@@ -238,7 +243,8 @@ class wfr_core_data extends wf_route_request {
 					'mimetype' => $this->wf->core_mime()->get_mime($file),
 					'lastmod'  => filemtime($file),
 					'realpath' => $file,
-					'path'     => $link
+					'path'     => $link,
+					'is_file'  => is_file($file)
 				);
 			}
 		}
@@ -261,14 +267,22 @@ class wfr_core_data extends wf_route_request {
 			$this->wf->linker("/data/logo.png")
 		);
 
+		$up_dir_link = (strlen($_directory) > 0 && $directory != "/") ?
+				$this->wf->linker("/data$up_dir") :
+				"";
+				
 		$tpl->set(
 			"up_dir",
-			(strlen($_directory) > 0 && $directory != "/") ?
-				$this->wf->linker("/data$up_dir") :
-				""
+			$up_dir_link
 		);
 
-		$this->wf->admin_html()->rendering(
+		$ah->set_title($this->lang->ts("Directory index"));
+		if(strlen($up_dir_link) > 0)
+			$ah->set_backlink($up_dir_link);
+		else
+			$ah->set_backlink($this->wf->linker('/'), "Home", "home");
+			
+		$ah->rendering(
 			$tpl->fetch("core/data_index")
 		);
 		exit(0);

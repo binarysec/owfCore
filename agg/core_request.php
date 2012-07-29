@@ -93,7 +93,8 @@ class core_request extends wf_agg {
 		$ret = $this->_session->check_session();
 		if($ret == SESSION_TIMEOUT) {
 			$this->wf->display_login(
-				"Session destroyed"
+				"Session destroyed",
+				null, true
 			);
 		}
 

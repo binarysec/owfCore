@@ -22,6 +22,7 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+
 define("WF_VERSION",   "1.3.0");
 
 define("WF_T_INTEGER", 1);
@@ -646,18 +647,28 @@ class web_framework {
 		$html->rendering($tpl->fetch("core/html/error"));
 	}
 	
+	public function redirector($url) {
+		$tpl = new core_tpl($this);
+		$tpl->set("url", $url);
+		echo $tpl->fetch("core/html/redirect");
+		exit(0);
+	}
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Display login
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function display_login($message=NULL, array $vars = array()) {
+	public function display_login($message=NULL, $vars=null, $back=false) {
+		$ci = $this->core_cipher();
+		
 		$this->no_cache();
 		
 		/* add display login hooker */
 		$this->execute_hook("owf_display_login",array($message));
 		
 		$tpl = new core_tpl($this);
-		$tpl->set_vars($vars);
+		if($vars)
+			$tpl->set_vars($vars);
 		
 		if($message != NULL) {
 			$tpl->set(
@@ -666,19 +677,20 @@ class web_framework {
 			);
 		}
 		
-		if($_SERVER["REQUEST_URI"] == $this->linker("/session/login")) {
-			$tpl->set(
-				"back_url", 
-				base64_encode("/")
-			);
-		}
+		/* generate back URL */
+		$back_url = null;
+		if($back)
+			$back_url = $ci->encode($_SERVER["REQUEST_URI"]);
 		else {
-			$tpl->set(
-				"back_url", 
-				base64_encode($_SERVER["REQUEST_URI"])
-			);
+			$back = $ci->get_var('back_url');
+			if(strlen($back) > 0)
+				$back_url = $ci->encode($back);
+			else
+				$back_url = $ci->encode($this->linker("/admin"));
 		}
+		$tpl->set("back_url", $back_url);
 
+			
 		if(isset($_SERVER["HTTP_X_REAL_IP"])) {
 			$tpl->set(
 				"via_ip", 
