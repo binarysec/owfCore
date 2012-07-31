@@ -17,33 +17,32 @@ class wfr_core_dialog extends wf_route_request {
 			"core/dialog"
 		);
 		$this->cipher = $this->wf->core_cipher();
+		$this->admin_html = $this->wf->admin_html();
+		
 	}
 	
 	public function show() {
-		$type = $this->wf->get_var("type");
+		$data = $this->cipher->get_var("data");
 		
-		
-		$back = $this->wf->get_var("back");
-		
-		$title = $this->wf->get_var("title");
-		$body = $this->wf->get_var("body");
-		
-		
-	// confirmation
-	// erreur
-// 		type = confirm/error
+		if($data['type'] == "confirm")
+			$tpl = 'core/dialog/confirm';
+		else if($data['type'] == "error")
+			$tpl = 'core/dialog/error';
+		else 
+			exit(0);
+
+		$this->admin_html->set_title(htmlentities($data['title']));
 		
 		$tpl = new core_tpl($this->wf);
 		$in = array(
-			"title" => $title,
-			"body" => $body,
+			"title" => $data['title'],
+			"body" => $data['body'],
 		);	 
 		$tpl->set_vars($in);
-		$this->wf->admin_html()->set_title(htmlentities($title));
-		$this->wf->admin_html()->rendering($tpl->fetch('core/dialog/confirm'));
+		
+		$this->admin_html->rendering($tpl->fetch($tpl));
 		exit(0);
 	}
-	
 	
 
 }

@@ -4,7 +4,7 @@
 		<p>%{@ 'Configuration des relais SMTP'}%</p>
 	</div>
 
-	<p class="intro">%{@ 'Pour envoyer des mails, <strong>OWF</strong> utilise des serveurs de relais SMTP externe. C\'est ici que vous pourrez les configurer.'}%: </p>
+	<p class="intro">%{@ 'Pour envoyer des mails, <strong>OWF</strong> utilise des serveurs de relais SMTP externes. C\'est ici que vous pourrez les configurer.'}%</p>
 	
 	<a href="%{$dao_link_add|html}%" data-role="button" data-transition="slidedown">%{@ 'Add SMTP relay'}%</a>
 </div>

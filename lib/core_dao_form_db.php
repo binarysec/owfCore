@@ -47,6 +47,11 @@ class core_dao_form_db {
 	
 	}
 	
+	
+	public function set_join($table, $colname) {
+	
+	}
+	
 	public function add($data) {
 		$q = new core_db_insert($this->name, $data);
 		$this->wf->db->query($q);

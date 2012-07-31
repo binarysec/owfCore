@@ -647,6 +647,14 @@ class web_framework {
 		$html->rendering($tpl->fetch("core/html/error"));
 	}
 	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Give you the link of dialog page
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function dialog($options) {
+		
+	}
+	
 	public function redirector($url) {
 		$tpl = new core_tpl($this);
 		$tpl->set("url", $url);

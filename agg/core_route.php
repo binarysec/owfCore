@@ -213,20 +213,24 @@ class core_route extends wf_agg {
 			if(isset($nav[0][$dir[$i]]))
 				$nav = &$nav[0][$dir[$i]];
 			else {
-				foreach($nav[0] as $k => $v) {
-					if(array_key_exists(1, $v)) {
-					if($v[1][2] == WF_ROUTE_REDIRECT)
-						$result[] = array(
-							"key" => $k, 
-							"name" => $v[1][4],
-							"perm" => $v[1][6],
-						);
-					else
-						$result[] = array(
-							"key" => $k, 
-							"name" => $v[1][5],
-							"perm" => $v[1][7],
-						);
+				if(array_key_exists(0, $nav)) {
+					foreach($nav[0] as $k => $v) {
+						if(array_key_exists(1, $v)) {
+						if($v[1][2] == WF_ROUTE_REDIRECT)
+							$result[] = array(
+								"key" => $k, 
+								"name" => $v[1][4],
+								"perm" => array_key_exists(6, $v[1]) ? $v[1][6] : null,
+								"visible" => $v[1][5],
+							);
+						else
+							$result[] = array(
+								"key" => $k, 
+								"name" => $v[1][5],
+								"perm" => $v[1][7],
+								"visible" => $v[1][6],
+							);
+						}
 					}
 				}
 				break;
