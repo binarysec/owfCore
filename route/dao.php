@@ -95,6 +95,11 @@ class wfr_core_dao extends wf_route_request {
 // 				}
 				$ret = $item->get(array("id" => $this->uid));
 			}
+			else if($this->action == 'del') {
+				$ret = $item->remove(array("id" => $this->uid));
+				$this->wf->redirector($this->back);
+				exit(0);
+			}
 		
 			$elements = $this->a_core_dao->draw_form($item, $ret[0], false);
 			$this->type_mod = true;
@@ -227,8 +232,11 @@ class wfr_core_dao extends wf_route_request {
 		$forms .= '<button type="submit" data-theme="b">Submit</button>';
 
 		$sup_text = $this->lang->ts("Delete");
-		if($this->uid > 0) 
-			$forms .= '<a href="#" data-theme="f" data-role="button">'.$sup_text.'</a>';
+		
+		if($this->uid > 0){
+			$del_link = $this->selector()->del_link($this->uid, TRUE);
+			$forms .= '<a href="'.$del_link.'" data-theme="f" data-role="button">'.$sup_text.'</a>';
+		}
 			
 		$forms .= "</form>";
 		

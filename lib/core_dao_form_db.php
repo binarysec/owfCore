@@ -93,7 +93,7 @@ class core_dao_form_db {
 		$l = $this->wf->linker("/dao/".$this->aggregator)."?oid=".$this->id;
 		if($uid)
 			$l .= "&uid=".$uid;
-		$l .= "&back=$back_url";
+			$l .= "&back=$back_url";
 		return($l);
 	}
 	
@@ -103,6 +103,23 @@ class core_dao_form_db {
 			"?oid=".$this->id.
 			"&uid=".$uid.
 			"&back=$back_url";
+			
+		return($l);
+	}
+	
+	public function del_link($uid, $back_back=FALSE) {
+		
+		/*If del link is in a modification page, back to a list view*/
+		if($back_back)
+			$back_url = $this->wf->get_var('back');
+		else
+			$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
+			
+		$l = $this->wf->linker("/dao/".$this->aggregator).
+			"?oid=".$this->id.
+			"&uid=".$uid.
+			"&back=$back_url".
+			"&action=del";
 			
 		return($l);
 	}
