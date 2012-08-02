@@ -83,7 +83,7 @@ class core_cipher extends wf_agg {
 	}
 	
 	public function get_var($varname) {
-		$v = $this->wf->get_var("back");
+		$v = $this->wf->get_var($varname);
 		return($this->decode($v));
 	}
 
