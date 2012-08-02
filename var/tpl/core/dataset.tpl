@@ -174,7 +174,7 @@
 </form>
 
 <div data-role="content" class="ui-corner-all">
-<ul data-role="listview" data-theme="d" data-divider-theme="d">
+<ul data-role="listview" data-theme="d" data-divider-theme="d" data-mini="true">
 %{if $rows}%
 %{foreach $rows as $row}%
 	%{$row}%
