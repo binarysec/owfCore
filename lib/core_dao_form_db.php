@@ -78,10 +78,13 @@ class core_dao_form_db {
 		return(TRUE);
 	}
 	
-	public function get($where=NULL, $order=NULL) {
+	public function get($where=NULL, $order=NULL, $limit=NULL, $offset=NULL) {
 		$q = new core_db_select($this->name);
 		if($where)
 			$q->where($where);
+		$limit = ($limit != NULL ? $limit : -1);
+		$offset = ($offset != NULL ? $offset : -1);
+		$q->limit($limit, $offset);
 		$this->wf->db->query($q);
 		$res = $q->get_result();
 		
