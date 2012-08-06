@@ -87,7 +87,6 @@ class core_cacher extends wf_agg {
 	 * @param $wf The web_framework object
 	 */
 	public function loader($wf) {
-		$this->wf = $wf;
 
 		/* use the framework instance name as namespace */
 		if(property_exists($this->wf,"modkey"))

@@ -19,7 +19,6 @@ class core_dao extends wf_agg {
 	private $registered = array();
 	
 	public function loader($wf) {
-		$this->wf = $wf;
 		$this->a_session = $this->wf->session();
 	}
 	

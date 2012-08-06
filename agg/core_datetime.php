@@ -38,7 +38,6 @@ class core_datetime extends wf_agg {
 	private $a_lang;
 
 	public function loader($wf) {
-		$this->wf = $wf;
 		$this->a_lang = $this->wf->core_lang()->get_context('core/datetime');
 	}
 

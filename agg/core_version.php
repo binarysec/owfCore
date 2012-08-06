@@ -25,7 +25,6 @@
 class core_version extends wf_agg {
 	
 	public function loader($wf) {
-		$this->wf = $wf;
 
 		$this->_core_cacher = $wf->core_cacher();
 

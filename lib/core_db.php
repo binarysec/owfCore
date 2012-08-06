@@ -381,13 +381,13 @@ class core_db_index extends core_db_query {
 		$idx = &$this->indexes[$name];
 		if(is_array($cols)) {
 			foreach($cols as $col) 
-				$this->checkup(&$idx, $col);
+				$this->checkup($idx, $col);
 		}
 		else
-			$this->checkup(&$idx, $cols);
+			$this->checkup($idx, $cols);
 	}
 	
-	private function checkup($idx, $colname) {
+	private function checkup(&$idx, $colname) {
 		$idx[$colname] = true;
 	}
 	

@@ -8,7 +8,6 @@ class core_smtp extends wf_agg {
 	public $lang;
 	
 	public function loader($wf) {
-		$this->wf = $wf;
 		$this->wf->core_dao();
 		
 		$this->lang = $this->wf->core_lang()->get_context("tpl/core/smtp/list");

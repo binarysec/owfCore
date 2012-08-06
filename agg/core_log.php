@@ -34,7 +34,6 @@ class core_log extends wf_agg {
 	 * 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function loader($wf) {
-		$this->wf = $wf;
 		
 		$struct = array(
 			"id" => WF_PRI,

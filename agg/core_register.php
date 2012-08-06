@@ -7,7 +7,6 @@ class core_register extends wf_agg {
 	private $data_cache = array();
 	
 	public function loader($wf) {
-		$this->wf = $wf;
 		
 		$struct = array(
 			"id" => WF_PRI,

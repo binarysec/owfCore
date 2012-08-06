@@ -26,7 +26,6 @@ class core_mime extends wf_agg {
 	var $ini = NULL;
 	
 	public function loader($wf) {
-		$this->wf = &$wf;
 		
 		/* prend le fichier ini */
 		$file = dirname(dirname(__FILE__))."/var/mime.ini";

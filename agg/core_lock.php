@@ -3,7 +3,6 @@
 class core_lock extends wf_agg {
 
 	public function loader($wf) {
-		$this->wf = &$wf;
 		
 		$this->lock_dir = $this->wf->get_last_filename("core/locks");
 		$this->wf->create_dir($this->lock_dir."/pad");

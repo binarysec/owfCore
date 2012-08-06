@@ -20,7 +20,6 @@ class core_pref_context {
 	private $need_up = FALSE;
 	
 	public function loader($wf) {
-		$this->wf = $wf;
 
 		$struct = array(
 			"id" => WF_PRI,
@@ -149,8 +148,8 @@ class core_pref_context {
 				$this->variables[$var] = array();
 				
 			$this->variables[$var] = array_merge(
-				&$data,
-				&$insert
+				$data,
+				$insert
 			);
 
 			/* need cacher update */
@@ -257,7 +256,6 @@ class core_pref extends wf_agg {
 	private $_core_cacher;
 	
 	public function loader($wf) {
-		$this->wf = $wf;
 
 		$this->_core_cacher = $wf->core_cacher();
 		

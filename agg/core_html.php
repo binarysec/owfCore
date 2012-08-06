@@ -27,7 +27,6 @@ class core_html extends wf_agg {
 	private $_session;
 	
 	public function loader($wf) {
-		$this->wf = $wf;
 		$this->_core_request = $this->wf->core_request();
 		$this->_session = $this->wf->session();
 		
@@ -157,7 +156,7 @@ class core_html extends wf_agg {
 	public function add_managed_tpl($title, $core_tpl) {
 		$this->managed_list[] = array(
 			$title,
-			&$core_tpl
+			$core_tpl
 		);
 	}
 	

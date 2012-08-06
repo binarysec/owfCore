@@ -477,7 +477,7 @@ class core_db_pdo_mysql extends core_db {
 													$k[1], 
 													$k[2], 
 													$k[3], 
-													&$prepare_value
+													$prepare_value
 												);
 												break;
 										}
@@ -529,7 +529,7 @@ class core_db_pdo_mysql extends core_db {
 							$k[1], 
 							$k[2], 
 							$k[3], 
-							&$prepare_value
+							$prepare_value
 						);
 						break;
 				}
@@ -738,7 +738,7 @@ class core_db_pdo_mysql extends core_db {
 							$k[1], 
 							$k[2], 
 							$k[3], 
-							&$prepare_value
+							$prepare_value
 						);
 						break;
 				}
@@ -947,7 +947,7 @@ class core_db_pdo_mysql extends core_db {
 		return(TRUE);
 	}
 	
-	private function get_query_var($var, $sign, $sval, $prepare_values) {
+	private function get_query_var($var, $sign, $sval, &$prepare_values) {
 		$cond = NULL;
 		$val = $this->safe_input($sval);
 		$val_type = core_gettype($val);

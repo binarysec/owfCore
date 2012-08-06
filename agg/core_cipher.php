@@ -3,7 +3,6 @@
 class core_cipher extends wf_agg {
 
 	public function loader($wf) {
-		$this->wf = $wf;
 
 		$this->struct = array(
 			"form" => array(

@@ -113,7 +113,6 @@ class core_tpl_compiler extends wf_agg {
 	// Loader
 
 	public function loader($wf) {
-		$this->wf = $wf;
 		
 		$this->allowed_in_var  = array_merge($this->vartype, $this->op);
 		$this->allowed_in_expr = array_merge($this->vartype, $this->assign_op, $this->op);
