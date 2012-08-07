@@ -135,8 +135,7 @@ class core_mail {
 		return $queueid;
 	}
 	
-	private function html2text($html)
-	{
+	private function html2text($html) {
 		$tags = array (
 		'~<h[123][^>]+>~si',
 		'~<h[456][^>]+>~si',

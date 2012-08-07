@@ -700,8 +700,14 @@ class web_framework {
 				$back_url = $ci->encode($this->linker("/admin"));
 		}
 		$tpl->set("back_url", $back_url);
-
-			
+		
+		/* encode my url */
+		$tpl->set("here_url", $ci->encode($this->linker($_SERVER["REQUEST_URI"])));
+		
+		/* get account & password */
+		$tpl->set("allow_account_creation", $this->ini_arr['session']['allow_account_creation']);
+		$tpl->set("allow_pass_recovering", $this->ini_arr['session']['allow_pass_recovering']);
+		
 		if(isset($_SERVER["HTTP_X_REAL_IP"])) {
 			$tpl->set(
 				"via_ip", 
