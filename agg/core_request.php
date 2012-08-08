@@ -108,24 +108,7 @@ class core_request extends wf_agg {
 		$need_arranged = array();
 		
 		/* get uid */
-		$uid = &$this->_session->me["id"];
-		
-		/* special handle form anon session */
-		if($uid == -1) {
-			$display_login = FALSE;
-			if(is_array($need)) {
-				foreach($need as $c) {
-					if($c != WF_USER_ANON)
-						$display_login = TRUE;
-				}
-			}
-
-			/* do we need to display login ? */
-			if($display_login)
-				$this->wf->display_login(
-					"You don't have enough permissions"
-				);
-		}
+		$uid = isset($this->_session->session_me) ? (int) $this->_session->session_me["id"] : -1 ;
 
 		$display_login = $this->_session->check_permission(
 			$need,
@@ -133,10 +116,16 @@ class core_request extends wf_agg {
 		);
 
 		/* do we need to display login ? */
-		if(!$display_login)
-			$this->wf->display_login(
-				"You must be connected"
-			);
+		if(!$display_login) {
+			if($uid < 1)
+				$this->wf->display_login(
+					"You must be connected"
+				);
+			else
+				$this->wf->display_error(403, "You don't have enough permissions");
+			
+			exit(0);
+		}
 		
 		/* terminate */
 		$this->wf->execute_hook("core_request_init");

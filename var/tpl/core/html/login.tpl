@@ -13,8 +13,9 @@
 	.ui-dialog .ui-header .ui-btn-icon-notext { display:none;} 
 	.ui-footer { font-size: 12px; }
 	.owf-links { font-size: 12px; text-align: center; }
+	.owf-login-field { text-align: right; padding-right: 5%; }
 </style>
-    
+
 </head>
 
 <body>
@@ -33,11 +34,15 @@
 			<input type="hidden" name="back_url" value="%{$back_url}%" />
 			%{/if}%
 			
-			<label for="user">%{@ 'Username :'}%</label>
-			<input type="text" name="user" placeholder="%{@ 'Username'}%"/>
+			<div class="owf-login-field" data-role="fieldcontain">
+				<label for="user">%{@ 'Username :'}%</label>
+				<input type="text" name="user" placeholder="%{@ 'Username'}%" data-mini="true" />
+			</div>
 			
-			<label for="pass">%{@ 'Your password :'}%</label>
-			<input type="password" name="pass" placeholder="%{@ 'Password'}%"/>
+			<div class="owf-login-field" data-role="fieldcontain">
+				<label for="pass">%{@ 'Your password :'}%</label>
+				<input type="password" name="pass" placeholder="%{@ 'Password'}%" data-mini="true" />
+			</div>
 			
 			<button type="submit" name="submit" value="submit-value">%{@ 'Login'}%</button>
 			<p class="owf-links">

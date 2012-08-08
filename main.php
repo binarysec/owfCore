@@ -631,23 +631,36 @@ class web_framework {
 	 * Display the error page
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function display_error($code, $message) {
-	
+		
 		/* add display login hooker */
 		$this->execute_hook("owf_display_error", array($code, $message));
 		
 		header("HTTP/1.1 $code $message");
+		
+		if($code == 404)
+			$code = "404 - Not found";
+		elseif($code == 403)
+			$code = "403 - Forbidden";
+		
+		$message = "Sorry your request could not be delivered<br/><strong>$message</strong>";
+		
 		$tpl = new core_tpl($this);
-		$tpl->set(
-			"message",
-			$message
-		);
-		$tpl->set(
-			"code",
-			$code
-		);
-		$html = $this->core_html();
-		$html->set_title($message);
-		$html->rendering($tpl->fetch("core/html/error"));
+		$tpl->set("header", "Error $code");
+		$tpl->set("message", $message);
+		$tpl->set("title", "Error $code");
+		echo $tpl->fetch("core/html/message");
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Display a message page
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function display_msg($header, $message, $title = "") {
+		$tpl = new core_tpl($this);
+		$tpl->set("header", $header);
+		$tpl->set("message", $message);
+		$tpl->set("title", empty($title) ? "OpenWF Message" : $title);
+		echo $tpl->fetch("core/html/message");
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
