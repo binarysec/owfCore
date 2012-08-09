@@ -173,14 +173,12 @@
 
 </form>
 
-<div data-role="content" class="ui-corner-all">
-<ul data-role="listview" data-theme="d" data-divider-theme="d" data-mini="true">
+<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="d" data-mini="true">
 %{if $rows}%
 %{foreach $rows as $row}%
-	%{$row}%
+        %{$row}%
 %{/foreach}%
 %{else}%
 %{@ 'La recherche n\'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.'}%
 %{/if}%
-</ul>		
-</div><!-- /footer -->
+</ul>
