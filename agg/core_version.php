@@ -235,7 +235,7 @@ class core_version extends wf_agg {
 	}
 
 	public function compare($section, $eid=0) {
-		$v = $this->get($section, $eid=0);
+		$v = $this->get($section, $eid);
 		$p = &$v[0];
 		if($p["prev_version"] != $p["next_version"])
 			return($p["next_version"]);
