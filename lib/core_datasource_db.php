@@ -53,6 +53,7 @@ class core_datasource_db extends core_datasource {
 			$q->do_or();
 		}
 		$q->do_close();
+		return(true);
 	}
 	
 	public function get_data($conds = array(), $order = array(), $offset = null, $nb = null) {
@@ -108,11 +109,13 @@ class core_datasource_db extends core_datasource {
 		}
 
 		/* manage search counter */
-		$this->process_search($q);
-		foreach($this->search_opts["cols"] as $c)
-			$cl .= "_s$c";
-		if($this->search_opts["input"])
-			$cl .= "_i$c";
+		$r = $this->process_search($q);
+		if($r) {
+			foreach($this->search_opts["cols"] as $c)
+				$cl .= "_s$c";
+			if($this->search_opts["input"])
+				$cl .= "_i$c";
+		}
 		
 		/* get cache */
 		if(($cache = $this->cache->get($cl)))

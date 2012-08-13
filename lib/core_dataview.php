@@ -63,8 +63,10 @@ class core_dataview {
 		
 		/* prepare search */
 		$searchi = 0;
-		foreach($cols as $col)
-			$searchi++;
+		foreach($cols as $col) {
+			if(array_key_exists('search', $col) && $col["search"])
+				$searchi++;
+		}
 		
 		/* ajout des variables interne */
 		$tpl->set('name',    $this->dset->get_name());
