@@ -58,11 +58,20 @@ class core_dataview {
 		/* ajout des variables utilisateur */
 		foreach($tplset as $k => $v)
 			$tpl->set($k, $v);
-			
+		
+		$cols = $this->dset->get_cols();
+		
+		/* prepare search */
+		$searchi = 0;
+		foreach($cols as $col)
+			$searchi++;
+		
 		/* ajout des variables interne */
 		$tpl->set('name',    $this->dset->get_name());
-		$tpl->set('cols',    $this->dset->get_cols());
+		$tpl->set('cols',    $cols);
 		$tpl->set('rows',    $this->dset->get_rows());
+		$tpl->set('search',    $this->dset->get_search());
+		$tpl->set('searchi',    $searchi);
 		$tpl->set('filters', $this->dset->get_filters());
 		$tpl->set('page_nb', $this->dset->get_page_nb());
 		$tpl->set('display_dataset_select_bar', $this->dset->get_display_select_bar());

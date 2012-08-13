@@ -1,5 +1,5 @@
 <script type="text/javascript">
-	
+
 	var data_responder = '%{$form_responder}%';
 	
 	function form_submit() {
@@ -43,6 +43,11 @@
 		document.getElementById('dataset_opt_' + name).value = value;
 		form_submit();
 	}
+	
+	function dataset_set_search(value) {
+		document.getElementById('form_%{$name}%_search').value = value;
+		form_submit();
+	}	
 	
 </script>
 
@@ -171,9 +176,13 @@
 
 	</div><!-- /footer -->
 
-</form>
-
 <ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="d" data-mini="true">
+%{if $searchi > 0}%
+	<li>
+		<input type="search" name="%{$name}%_search" id="form_%{$name}%_search" value="%{$search}%" data-mini="true" placeholder="Type here to search" onchange="javascript: dataset_set_search(this.value);"/>
+	</li>
+%{/if}%
+	</form>
 %{if $rows}%
 %{foreach $rows as $row}%
         %{$row}%
@@ -182,3 +191,5 @@
 %{@ 'La recherche n\'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.'}%
 %{/if}%
 </ul>
+
+

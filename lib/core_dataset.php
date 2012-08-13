@@ -45,7 +45,6 @@ class core_dataset {
 	private $display_select_bar = WF_CORE_DATASET_SELECT_BAR_ALL;
 	private $range_rows_per_page = array(25,50,100);
 	
-	
 	public function __construct($wf, $dsrc) {
 		$this->wf   = $wf;
 		$this->dsrc = $dsrc;
@@ -59,6 +58,22 @@ class core_dataset {
 		}
 	}
 
+	public function get_search() {
+		return(htmlentities($this->wf->get_var($this->dsrc->get_name().'_search')));
+	}
+	
+	public function auto_search() {
+		$search = $this->wf->get_var($this->dsrc->get_name().'_search');
+		if(strlen($search) > 0) {
+			$sc = array();
+			foreach($this->cols as $col => $way) {
+				if(array_key_exists('search', $way) && $way['search'] == true)
+					$sc[] = $col;
+			}
+			$this->dsrc->set_search($sc, $search);
+		}
+	}
+	
 	public function set_display_select_bar($display) {
 		if($display >= WF_CORE_DATASET_SELECT_BAR_ALL &&
 		$display <= WF_CORE_DATASET_SELECT_BAR_NONE)
@@ -105,7 +120,7 @@ class core_dataset {
 		}
 		$this->conds = $pconds;
 	}
-
+	
 	public function auto_conds() {
 		/* retrieve conds */
 		$conds = $this->wf->get_var($this->dsrc->get_name().'_filter');
@@ -221,6 +236,7 @@ class core_dataset {
 
 		/* apply auto conditions, page number, number of rows per page and ordering */
 		$this->auto_conds();
+		$this->auto_search();
 		$this->auto_page_nb();
 		$this->auto_rows_per_page();
 		$this->auto_order();
@@ -267,4 +283,7 @@ class core_dataset {
 	public function get_total_num_rows_filterless() {
 		return($this->dsrc->get_num_rows(array(), true));
 	}
+	
+	
+	
 }

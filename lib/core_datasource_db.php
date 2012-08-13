@@ -34,6 +34,27 @@ class core_datasource_db extends core_datasource {
 		return($struct);
 	}
 
+	private $search_opts = array(
+		"cols" => array(),
+		"input" => null
+	);
+	
+	public function set_search($cols, $input) {
+		$this->search_opts["cols"] = $cols;
+		$this->search_opts["input"] = $input;
+	}
+	
+	private function process_search($q) {
+		if(count($this->search_opts["cols"]) == 0 || !$this->search_opts["input"])
+			return(false);
+		$q->do_open();
+		foreach($this->search_opts["cols"] as $c) {
+			$q->do_comp($c, "~=", "%".$this->search_opts["input"]."%");
+			$q->do_or();
+		}
+		$q->do_close();
+	}
+	
 	public function get_data($conds = array(), $order = array(), $offset = null, $nb = null) {
 		$q = new core_db_adv_select();
 		$q->alias('t', $this->get_name());
@@ -45,6 +66,9 @@ class core_datasource_db extends core_datasource {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
 			$q->do_and();
 		}
+		
+		$this->process_search($q);
+		
 		if($order) {
 			$q->order($order);
 		}
@@ -83,6 +107,13 @@ class core_datasource_db extends core_datasource {
 			$cl .= "_c$cond[0]$cond[1]$cond[2]";
 		}
 
+		/* manage search counter */
+		$this->process_search($q);
+		foreach($this->search_opts["cols"] as $c)
+			$cl .= "_s$c";
+		if($this->search_opts["input"])
+			$cl .= "_i$c";
+		
 		/* get cache */
 		if(($cache = $this->cache->get($cl)))
 			return($cache);
