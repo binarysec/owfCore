@@ -163,7 +163,7 @@
 			</td>
 			%{if $display_dataset_select_bar == 1}%
 			<td width="10%">
-				<select onchange="javascript: dataset_set_rows_per_page(this.value);">
+				<select onchange="javascript: dataset_set_rows_per_page(this.value);" data-native-menu="false">
 					%{foreach $range_rows_per_page as $v}%
 						<option value="%{$v}%"%{if $rows_per_page == $v}% selected="selected"%{/if}%  data-mini="true">%{$v}% %{@ 'r&eacute;sultats'}%</option>
 					%{/foreach}%

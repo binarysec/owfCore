@@ -208,7 +208,7 @@ class wfr_core_dao extends wf_route_request {
 					$v["value"] = '';
 
 				/* read list */
-				$select .= '<select name="'.$k.'" id="'.$k.'">';
+				$select .= '<select data-native-menu="false" name="'.$k.'" id="'.$k.'">';
 				foreach($v["list"] as $lkey => $lval) {
 				
 					if($v["value"] == $lkey) 
