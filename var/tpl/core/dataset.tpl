@@ -104,7 +104,7 @@
 
 			%{if $display_dataset_select_bar == 1 && count($rows) > 0}%
 			<td width="30%">
-				%{@ 'R&eacute;sultats'}%
+
 				%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
 				%{@ 'sur'}% %{$total_num_rows}%
 			</td>
@@ -157,7 +157,6 @@
 						<a href="javascript: dataset_set_page('%{$page_nb + 1}%');" data-iconpos="right" data-theme="a" data-role="button" data-icon="arrow-r" data-transition="fade">&nbsp;</a>
 					%{/if}%
 					
-					</ul>
 				</div>
 
 			</td>
@@ -188,7 +187,9 @@
         %{$row}%
 %{/foreach}%
 %{else}%
+<li data-theme="c">
 %{@ 'La recherche n\'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.'}%
+</li>
 %{/if}%
 </ul>
 
