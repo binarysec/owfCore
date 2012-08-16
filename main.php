@@ -630,7 +630,7 @@ class web_framework {
 	 *
 	 * Display the error page
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function display_error($code, $message) {
+	public function display_error($code, $message = "") {
 		
 		/* add display login hooker */
 		$this->execute_hook("owf_display_error", array($code, $message));
@@ -682,7 +682,7 @@ class web_framework {
 	 *
 	 * Display login
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function display_login($message=NULL, $vars=null, $back=false) {
+	public function display_login($message="", $vars=null, $back=false) {
 		$ci = $this->core_cipher();
 		
 		$this->no_cache();
@@ -694,12 +694,7 @@ class web_framework {
 		if($vars)
 			$tpl->set_vars($vars);
 		
-		if($message != NULL) {
-			$tpl->set(
-				"message", 
-				$message
-			);
-		}
+		$tpl->set("message", $message);
 		
 		/* generate back URL */
 		$back_url = null;

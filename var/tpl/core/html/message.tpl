@@ -5,6 +5,7 @@
 <head>
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/jqm-docs.css'}%" />
+	<link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/admin.css'}%" />
 	<link rel="stylesheet" type="text/css" href="%{link '/data/css/jquery.mobile.min.css'}%" />
 	
 	<!-- JS -->

@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/jqm-docs.css'}%" />
+<link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/admin.css'}%" />
 <link rel="stylesheet" type="text/css" href="%{link '/data/css/jquery.mobile.min.css'}%" />
 <script type="text/javascript" src="%{link '/data/js/jquery-1.7.js'}%"></script>
 <script type="text/javascript" src="%{link '/data/js/jquery.mobile.min.js'}%"></script>
