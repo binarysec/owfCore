@@ -1,28 +1,25 @@
 <!DOCTYPE html> 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/jqm-docs.css'}%" />
-<link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/admin.css'}%" />
-<link rel="stylesheet" type="text/css" href="%{link '/data/css/jquery.mobile.min.css'}%" />
-<script type="text/javascript" src="%{link '/data/js/jquery-1.7.js'}%"></script>
-<script type="text/javascript" src="%{link '/data/js/jquery.mobile.min.js'}%"></script>
-<meta http-equiv="Content-Language" content="fr"/>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>%{@ 'Please login'}%</title>
-<style>
-	.ui-dialog .ui-header .ui-btn-icon-notext { display:none;} 
-	.ui-footer { font-size: 12px; }
-</style>
 
+<head>
+	<link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/jqm-docs.css'}%" />
+	<link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/admin.css'}%" />
+	<link rel="stylesheet" type="text/css" href="%{link '/data/css/jquery.mobile.min.css'}%" />
+	<script type="text/javascript" src="%{link '/data/js/jquery-1.7.js'}%"></script>
+	<script type="text/javascript" src="%{link '/data/js/jquery.mobile.min.js'}%"></script>
+	<meta http-equiv="Content-Language" content="fr"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>%{@ 'Please login'}%</title>
 </head>
 
 <body>
 
-<div data-role="dialog" data-theme="b"> 
+<div data-role="dialog" data-theme="b" class="owf-dialog">
 	<div data-role="header">
 		<h1>%{@ 'Please login'}%</h1>
 	</div>
+	
 	<div data-role="content">
 		<center>
 			<p><strong>%{$message}%</strong></p>
@@ -58,7 +55,7 @@
 		</form>
 	</div>
 
-	<div data-role="footer">
+	<div data-role="footer" class="owf-footer">
 		<p><center>
 		%{if isset($via_addr)}%
 		%{@ 'Connected from'}% %{$remote_ip}% (%{$remote_addr}%) via %{$via_addr}% (%{$via_addr}%)

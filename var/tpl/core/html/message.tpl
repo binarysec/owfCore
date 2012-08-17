@@ -19,12 +19,6 @@
 	
 	<!-- Others -->
 	<title>%{$title}%</title>
-	
-	<style>
-		.ui-dialog .ui-header .ui-btn-icon-notext { display:none;} 
-		.ui-footer { font-size: 12px; }
-		.owf-links { font-size: 12px; text-align: center; }
-	</style>
 </head>
 
 <body>
@@ -39,7 +33,7 @@
 			</center>
 		</div>
 		
-		<div data-role="footer">
+		<div data-role="footer" class="owf-footer">
 			<h3><a href="%{link '/'}%">%{@ 'Site root'}%</a> / <a href="%{link '/session/login'}%">%{@ 'Login'}%</a> / <a href="http://www.binarysec.com/">BinarySEC</a> / <a href="http://www.owf.re/">OpenWF</a></h3>
 		</div>
 	</div>
