@@ -48,7 +48,7 @@
 			
 			%{if $allow_pass_recovering}%
 				%{if $allow_account_creation}%-%{/if}%
-				<a href="">Did you forget your password?</a>
+				<a href="%{link '/session/recovery'}%">Did you forget your password?</a>
 			%{/if}%
 			</p>
 			

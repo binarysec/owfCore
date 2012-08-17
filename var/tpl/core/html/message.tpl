@@ -22,7 +22,7 @@
 </head>
 
 <body>
-	<div data-role="dialog" data-theme="b"> 
+	<div data-role="dialog" data-theme="b" class="owf-dialog"> 
 		<div data-role="header">
 			<h1>%{$header}%</h1>
 		</div>

@@ -893,6 +893,18 @@ class web_framework {
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
+	 * Get default URL
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_default_url() {
+		return $this->linker(
+			isset($this->ini_arr["session"]["default_url"]) ?
+				$this->ini_arr["session"]["default_url"] :
+				'/'
+			);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
 	 * Function used to get a random buffer from available interface
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private $rfd = NULL;
