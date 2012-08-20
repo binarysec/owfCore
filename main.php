@@ -221,6 +221,20 @@ class web_framework {
 		}
 		chdir($save);
 		
+		/* check depends */
+		foreach($this->modules as $name => $data) {
+			if(isset($data[7]) && is_array($data[7]) && !empty($data[7])) {
+				foreach($data[7] as $dependency)
+					if(!isset($this->modules[$dependency]))
+						throw new wf_exception(
+							$this,
+							WF_EXC_PRIVATE,
+							"missing dependency for module $name : ".
+							"$dependency is missing"
+						);
+			}
+		}
+		
 		/* put lang context */
 // 		$l = $this->core_lang();
 // 		foreach($this->modules as $name => $mod) {
