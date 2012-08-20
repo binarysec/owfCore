@@ -135,6 +135,18 @@ class core_mail {
 		return $queueid;
 	}
 	
+	public function send_to_perm($perm) {
+		if(empty($perm))
+			return false;
+		
+		$users = $this->wf->session()->user->get_by_perm($perm);
+		$this->rcpt_to = array();
+		foreach($users as $u)
+			$this->rcpt_to[] = $u['email'];
+		
+		return $this->send();
+	}
+	
 	private function html2text($html) {
 		$tags = array (
 		'~<h[123][^>]+>~si',

@@ -4,8 +4,10 @@
 <link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/jqm-docs.css'}%" />
 <link rel="stylesheet" type="text/css" href="%{link '/data/admin/css/admin.css'}%" />
 <link rel="stylesheet" type="text/css" href="%{link '/data/css/jquery.mobile.min.css'}%" />
+<link rel="stylesheet" type="text/css" href="%{link '/data/css/jqm.simpledialog.css'}%" />
 <script type="text/javascript" src="%{link '/data/js/jquery-1.7.js'}%"></script>
 <script type="text/javascript" src="%{link '/data/js/jquery.mobile.min.js'}%"></script>
+<script type="text/javascript" src="%{link '/data/js/jqm.simpledialog2.js'}%"></script>
 <meta http-equiv="Content-Language" content="fr"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
