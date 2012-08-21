@@ -671,13 +671,15 @@ class core_db_pdo_mysql extends core_db {
 		
 			/* fill where condition */
 			$where = NULL;
-			foreach($query_obj->where as $k => $sv) {
-				$v = $this->safe_input($sv);
-				if(!$where)
-					$where .= 'WHERE `'.$k.'` = ?';
-				else
-					$where .= ' AND `'.$k.'` = ?';
-				array_push($prepare_value, $v);
+			if($query_obj->where != NULL) {
+				foreach($query_obj->where as $k => $sv) {
+					$v = $this->safe_input($sv);
+					if(!$where)
+						$where .= 'WHERE `'.$k.'` = ?';
+					else
+						$where .= ' AND `'.$k.'` = ?';
+					array_push($prepare_value, $v);
+				}
 			}
 			
 			/* prepare and exec the query */

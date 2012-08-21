@@ -212,11 +212,15 @@ class web_framework {
 		/* load the ini file */
 		$this->load_by_file($ini);
 		
+		/* get module base dir */
+		$basedir = isset($this->ini_arr['common']['base_dir']) ?
+			$this->ini_arr['common']['base_dir'] : "";
+		
 		/* load initial modules given from ini file */
 		$save = getcwd();
 		chdir(dirname($ini));
 		foreach($this->ini_arr["modules"] as $name => $dir) {
-			$rdir = realpath($dir);
+			$rdir = realpath("$basedir/$dir");
 			$this->load_module($name, $rdir);
 		}
 		chdir($save);
