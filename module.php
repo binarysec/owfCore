@@ -1,6 +1,5 @@
 <?php
 
-
 class wfm_core extends wf_module {
 	public function __construct($wf) {
 		$this->wf = $wf;
@@ -45,6 +44,7 @@ class wfm_core extends wf_module {
 				WF_ROUTE_HIDE,
 				array("session:ranon")
 			),
+			
 			"/dao" => array(
 				WF_ROUTE_ACTION,
 				"dao",
@@ -53,6 +53,7 @@ class wfm_core extends wf_module {
 				WF_ROUTE_HIDE,
 				array("session:ranon")
 			),
+			
 			"/dialog" => array(
 				WF_ROUTE_ACTION,
 				"dialog",

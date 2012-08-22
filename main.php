@@ -730,9 +730,19 @@ class web_framework {
 		/* encode my url */
 		$tpl->set("here_url", $ci->encode($this->linker($_SERVER["REQUEST_URI"])));
 		
+		$allow_account_creation =
+			isset($this->ini_arr['session']['allow_account_creation']) ?
+				$this->ini_arr['session']['allow_account_creation'] :
+				false;
+		
+		$allow_pass_recovering =
+			isset($this->ini_arr['session']['allow_pass_recovering']) ?
+				$this->ini_arr['session']['allow_pass_recovering'] :
+				false;
+		
 		/* get account & password */
-		$tpl->set("allow_account_creation", $this->ini_arr['session']['allow_account_creation']);
-		$tpl->set("allow_pass_recovering", $this->ini_arr['session']['allow_pass_recovering']);
+		$tpl->set("allow_account_creation", $allow_account_creation);
+		$tpl->set("allow_pass_recovering", $allow_pass_recovering);
 		
 		if(isset($_SERVER["HTTP_X_REAL_IP"])) {
 			$tpl->set(

@@ -1,20 +1,26 @@
 <?php
 
-
 class core_dao_form_db {
-	public $id;
 	protected $wf;
-	
 	protected $a_dao;
+	protected $cipher;
 	
-	protected $capable;
-	public $struct;
-	public $name;
-	public $description;
+	/* name of the aggregator */
 	public $aggregator;
 	
-	protected $db = array();
+	/* capabilities of the dao (add, remove, ..) */
+	protected $capable;
+	
+	/* structure */
+	public $struct;
+	
+	/* table informations */
+	public $name;
+	public $description;
+	
+	public $id;
 	public $data;
+	protected $db = array();
 	
 	public function __construct(
 			$wf,
@@ -22,31 +28,31 @@ class core_dao_form_db {
 			$capable,
 			$struct,
 			$name,
-			$description=NULL
+			$description = ""
 		) {
-		$this->capable = $capable;
-		$this->aggregator = $aggregator;
-		
+		/* fill all vars */
 		$this->wf = $wf;
 		$this->a_dao = $this->wf->core_dao();
+		$this->cipher = $this->wf->core_cipher();
+		$this->aggregator = $aggregator;
+		$this->capable = $capable;
 		$this->struct = $struct;
 		$this->name = $name;
 		$this->description = $description;
 		$this->data = &$this->struct["data"];
-		$this->cipher = $this->wf->core_cipher();
-		
-		/* create DB schemas */
 		foreach($this->struct["data"] as $key => $val)
-			$this->db[$key] = $val["type"];	
+			$this->db[$key] = $val["type"];
+		
+		/* register zone */
 		$this->wf->db->register_zone(
-			$this->name, 
+			$this->name,
 			$this->description, 
 			$this->db
 		);
+		
+		/* register dao */
 		$this->a_dao->register($this);
-	
 	}
-	
 	
 	public function set_join($table, $colname) {
 	
@@ -55,13 +61,12 @@ class core_dao_form_db {
 	public function add($data) {
 		$q = new core_db_insert($this->name, $data);
 		$this->wf->db->query($q);
-		$uid = $this->wf->db->get_last_insert_id($this->name.'_id_seq');
-		return($uid);
+		return $this->wf->db->get_last_insert_id($this->name.'_id_seq');
 	}
 	
-	public function remove($where=array()) {
+	public function remove($where = array()) {
 		$q = new core_db_delete(
-			$this->name, 
+			$this->name,
 			$where
 		);
 		$this->wf->db->query($q);
@@ -71,32 +76,26 @@ class core_dao_form_db {
 	public function modify($where, $data) {
 		if(!$data)
 			return(TRUE);
-		$q = new core_db_update($this->name);
-		$q->where($where);
-		$q->insert($data);
+		$q = new core_db_update($this->name, $data, $where);
 		$this->wf->db->query($q);
 		return(TRUE);
 	}
 	
-	public function get($where=NULL, $order=NULL, $limit=NULL, $offset=NULL) {
-		$q = new core_db_select($this->name);
-		if($where)
-			$q->where($where);
-		$limit = ($limit != NULL ? $limit : -1);
-		$offset = ($offset != NULL ? $offset : -1);
+	public function get($where=NULL, $order=NULL, $limit = -1, $offset = -1) {
+		$q = new core_db_select($this->name, null, $where);
 		$q->limit($limit, $offset);
+		if(!is_null($order))
+			$q->order($order);
 		$this->wf->db->query($q);
-		$res = $q->get_result();
-		
-		return($res);
+		return $q->get_result();
 	}
 	
 	public function add_link($uid=null) {
 		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
-		$l = $this->wf->linker("/dao/".$this->aggregator)."?oid=".$this->id;
+		$l = $this->wf->linker("/dao/".$this->aggregator).
+			"?oid=".$this->id."&back=$back_url";
 		if($uid)
 			$l .= "&uid=".$uid;
-			$l .= "&back=$back_url";
 		return($l);
 	}
 	
@@ -127,7 +126,4 @@ class core_dao_form_db {
 		return($l);
 	}
 	
-	
-	
-
 }
