@@ -98,7 +98,7 @@
 
 
 
-	<div data-role="footer" data-theme="a" class="ui-bar ui-grid-c ui-corner-all">
+	<div data-role="footer" data-theme="a" class="ui-bar ui-corner-all">
 	<table>
 		<tr>
 
