@@ -24,28 +24,26 @@ class core_smtp extends wf_agg {
 					"perm" => array("core:smtp"),
 				),
 				"description" => array(
+					"type" => WF_VARCHAR,
+					"perm" => array("core:smtp"),
 					"name" => $this->lang->ts("Server description"),
 					"kind" => OWF_DAO_INPUT,
-					"perm" => array("core:smtp"),
-					"type" => WF_VARCHAR,
 					"filter_cb" => array($this, "filter_description"),
 				),
 				"server_ip" => array(
-					"size" => 22,
+					"type" => WF_VARCHAR,
+					"perm" => array("core:smtp"),
 					"name" => $this->lang->ts("Server IP or Hostname"),
 					"kind" => OWF_DAO_INPUT,
-					"perm" => array("core:smtp"),
-					"type" => WF_VARCHAR,
 					"filter_cb" => array($this, "filter_server_ip"),
 				),
 				"server_port" => array(
-					"size" => 10,
-					"value" => 25,
-					"name" => $this->lang->ts("Serveur port number"),
-					"kind" => OWF_DAO_INPUT,
+					"type" => WF_INT,
 					"perm" => array("core:smtp"),
+					"name" => $this->lang->ts("Serveur port number"),
+					"kind" => OWF_DAO_NUMBER,
 					"filter_cb" => array($this, "filter_server_port"),
-					"type" => WF_VARCHAR
+					"value" => 25,
 				),
 				"mail_sent" => array(
 					"type" => WF_INT
@@ -59,7 +57,7 @@ class core_smtp extends wf_agg {
 		$this->dao = new core_dao_form_db(
 			$this->wf,
 			"core_smtp",
-			NULL,//OWF_DAO_ADD | OWF_DAO_REMOVE, //Not used yet
+			OWF_DAO_ADD | OWF_DAO_REMOVE,
 			$this->struct,
 			"core_smtp",
 			"Core SMTP DAO"

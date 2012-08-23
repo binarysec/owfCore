@@ -25,7 +25,8 @@
 class core_version extends wf_agg {
 	
 	public function loader($wf) {
-
+		$this->wf->core_dao();
+		
 		$this->_core_cacher = $wf->core_cacher();
 
 		$this->struct = array(
@@ -43,7 +44,7 @@ class core_version extends wf_agg {
 		$this->dao_section = new core_dao_form_db(
 			$this->wf,
 			"core_version_section",
-			0,
+			OWF_DAO_ADD | OWF_DAO_REMOVE,,
 			$this->struct,
 			"core_version_section",
 			"OWF Core version section"
@@ -73,7 +74,7 @@ class core_version extends wf_agg {
 		$this->dao_version = new core_dao_form_db(
 			$this->wf,
 			"core_version",
-			0,
+			OWF_DAO_ADD | OWF_DAO_REMOVE,,
 			$this->struct,
 			"core_version",
 			"OWF Core version"

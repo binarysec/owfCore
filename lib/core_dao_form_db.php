@@ -9,7 +9,7 @@ class core_dao_form_db {
 	public $aggregator;
 	
 	/* capabilities of the dao (add, remove, ..) */
-	protected $capable;
+	public $capable;
 	
 	/* structure */
 	public $struct;
@@ -91,6 +91,9 @@ class core_dao_form_db {
 	}
 	
 	public function add_link($uid=null) {
+		/*if(($this->capable & OWF_DAO_ADD) != OWF_DAO_ADD)
+			return "";*/
+		
 		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
 		$l = $this->wf->linker("/dao/".$this->aggregator).
 			"?oid=".$this->id."&back=$back_url";
@@ -100,6 +103,9 @@ class core_dao_form_db {
 	}
 	
 	public function mod_link($uid) {
+		/*if(($this->capable & OWF_DAO_ADD) != OWF_DAO_ADD)
+			return "";*/
+		
 		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
 		$l = $this->wf->linker("/dao/".$this->aggregator).
 			"?oid=".$this->id.
@@ -110,6 +116,8 @@ class core_dao_form_db {
 	}
 	
 	public function del_link($uid, $back_back=FALSE) {
+		/*if(($this->capable & OWF_DAO_REMOVE) != OWF_DAO_REMOVE)
+			return "";*/
 		
 		/*If del link is in a modification page, back to a list view*/
 		if($back_back)

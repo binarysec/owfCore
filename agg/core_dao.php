@@ -1,10 +1,10 @@
 <?php
 
 define("OWF_DAO_INPUT",				1);
-//define("OWF_DAO_INPUT_REQ",		2);
-define("OWF_DAO_INPUT_READON",		3);
-//define("OWF_DAO_DATA_DIR",		4);
-//define("OWF_DAO_UPLOAD",			5);
+define("OWF_DAO_INPUT_READON",		2);
+define("OWF_DAO_NUMBER",			3);
+define("OWF_DAO_NUMBER_READON",		4);
+define("OWF_DAO_UPLOAD",			5);
 define("OWF_DAO_SELECT",			6);
 define("OWF_DAO_HIDDEN",			7);
 define("OWF_DAO_RADIO",				8);
@@ -13,12 +13,16 @@ define("OWF_DAO_CHECKBOX",			10);
 define("OWF_DAO_CHECKBOX_READON",	11);
 define("OWF_DAO_SLIDER",			12);
 define("OWF_DAO_FLIP",				13);
+
+// Not ported yet
+//define("OWF_DAO_INPUT_REQ",		2);
+//define("OWF_DAO_DATA_DIR",		4);
 //define("OWF_DAO_DATE",           14);
 //define("OWF_DAO_DATE_READON",    15);
 //define("OWF_DAO_STARS",          16);
 
-//define("OWF_DAO_ADD",		0x01);
-//define("OWF_DAO_REMOVE",	0x02);
+define("OWF_DAO_ADD",		0x01);
+define("OWF_DAO_REMOVE",	0x02);
 
 class core_dao extends wf_agg {
 	private $position = 0;
@@ -60,9 +64,6 @@ class core_dao extends wf_agg {
 					$result[$key]["value"] = htmlspecialchars($data[$key]);
 				elseif(array_key_exists("value", $val))
 					$result[$key]["value"] = htmlspecialchars($val["value"]);
-				
-				if(isset($val["size"]))
-					$result[$key]["size"] = $val["size"];
 				
 				/* ... */
 				if(	$val["kind"] == OWF_DAO_SELECT ||

@@ -3,6 +3,7 @@
 class core_cipher extends wf_agg {
 
 	public function loader($wf) {
+		$this->wf->core_dao();
 
 		$this->struct = array(
 			"form" => array(
@@ -26,7 +27,7 @@ class core_cipher extends wf_agg {
 		$this->dao = new core_dao_form_db(
 			$this->wf,
 			"core_cipher",
-			NULL,
+			OWF_DAO_ADD | OWF_DAO_REMOVE,
 			$this->struct,
 			"core_cipher",
 			"Core HTTP security"

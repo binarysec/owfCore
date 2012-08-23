@@ -87,7 +87,9 @@ class wfr_core_dao extends wf_route_request {
 				$ret = $item->get(array("id" => $this->uid));
 			}
 			else if($this->action == 'del') {
-				$ret = $item->remove(array("id" => $this->uid));
+				$able = ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE;
+				if($able)
+					$ret = $item->remove(array("id" => $this->uid));
 				$this->wf->redirector($this->back);
 				exit(0);
 			}
@@ -123,7 +125,7 @@ class wfr_core_dao extends wf_route_request {
 				$body = $item->struct["form"]["add_body"];
 		}
 		
-		$forms = $this->form_rendering($elements);
+		$forms = $this->form_rendering($elements, $item);
 		
 		$tpl = new core_tpl($this->wf);
 		$in = array(
@@ -150,7 +152,7 @@ class wfr_core_dao extends wf_route_request {
 	}
 	
 
-	public function form_rendering($elements) {
+	public function form_rendering($elements, $item = null) {
 		$forms = '<form action="?" method="post" class="ui-body ui-body-a ui-corner-all">';
 		
 		$forms .= '<input type="hidden" name="oid" value="'.$this->oid.'"/>';
@@ -164,14 +166,25 @@ class wfr_core_dao extends wf_route_request {
 		foreach($elements as $k => $v) {
 			/* INPUT */ 
 			if(	$v["kind"] == OWF_DAO_INPUT ||
-				$v["kind"] == OWF_DAO_INPUT_READON
+				$v["kind"] == OWF_DAO_NUMBER ||
+				$v["kind"] == OWF_DAO_INPUT_READON ||
+				$v["kind"] == OWF_DAO_NUMBER_READON ||
+				$v["kind"] == OWF_DAO_UPLOAD
 				) {
 				
 				/* sanatize */
 				$value = isset($v["value"]) ? $v["value"] : "";
-				$size = isset($v["size"]) ? "size='$v[size]'" : "";
-				$readonly = $v["kind"] == OWF_DAO_INPUT_READON ? "disabled='disabled'" : "";
-				$insert = "<input type='text' name='$k' id='$k' value='$value' $readonly $size />";
+				$readonly =
+					$v["kind"] == OWF_DAO_INPUT_READON ||
+					$v["kind"] == OWF_DAO_NUMBER_READON
+					? "disabled='disabled'" : "";
+				$type = "text";
+				
+				if($v["kind"] == OWF_DAO_NUMBER || $v["kind"] == OWF_DAO_NUMBER_READON)
+					$type = "number";
+				/*elseif($v["kind"] == OWF_DAO_UPLOAD)
+					$type = "file";*/
+				$insert = "<input type='$type' name='$k' id='$k' value='$value' $readonly />";
 				
 				/* append to form */
 				$forms .= 
@@ -180,6 +193,11 @@ class wfr_core_dao extends wf_route_request {
 						$insert.
 					"</div>\n";
 				;
+			}
+			
+			/* UPLOAD */
+			elseif($v["kind"] == OWF_DAO_UPLOAD) {
+				
 			}
 			
 			/* SELECT */
@@ -314,11 +332,15 @@ class wfr_core_dao extends wf_route_request {
 			}
 		}
 		
-		$forms .= '<button type="submit" data-theme="b">Submit</button>';
-
+		$can_add = !is_null($item) && ($item->capable & OWF_DAO_ADD) == OWF_DAO_ADD;
+		$can_delete = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE;
+		
+		if($can_add)
+			$forms .= '<button type="submit" data-theme="b">Submit</button>';
+		
 		$sup_text = $this->lang->ts("Delete");
 		
-		if($this->uid > 0){
+		if($this->uid > 0 && $can_delete) {
 			$del_link = $this->selector()->del_link($this->uid, TRUE);
 			$forms .= '<a href="'.$del_link.'" data-theme="f" data-role="button">'.$sup_text.'</a>';
 		}
@@ -341,6 +363,13 @@ class wfr_core_dao extends wf_route_request {
 			$ret = false;
 			if(isset($val["perm"], $val["kind"]))
 				$ret = $this->session->check_permission($val["perm"]);
+			else {
+				/*$this->wf->display_error(404, "Missing parameters");
+				exit(0);*/
+			}
+			
+			if($ret)
+				$ret = ($item->capable & OWF_DAO_ADD) == OWF_DAO_ADD;
 			
 			if($ret) {
 				/* get var */
@@ -376,6 +405,10 @@ class wfr_core_dao extends wf_route_request {
 					else if($var)
 						$insert[$key] = $var;
 				}
+			}
+			else {
+				/*$this->wf->display_error(403, "Adding DAO forbidden");
+				exit(0);*/
 			}
 		}
 		
