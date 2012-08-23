@@ -8,12 +8,14 @@ class wfr_core_admin_system_smtp extends wf_route_request {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function __construct($wf) {
 		$this->wf = $wf;
-
+		
 		$this->a_core_html = $this->wf->core_html();
 		$this->a_admin_html = $this->wf->admin_html();
 		$this->a_core_smtp = $this->wf->core_smtp();
 		
 		$this->a_session = $this->wf->session();
+		
+		$this->lang = $this->wf->core_lang()->get_context("tpl/core/smtp/list");
 		
 		$this->a_core_html->set_meta_name(
 			"viewport", 
@@ -66,6 +68,7 @@ class wfr_core_admin_system_smtp extends wf_route_request {
 
 		/* Add back button */
 		$this->a_admin_html->set_backlink($this->wf->linker('/admin/system'), "Home", "home");
+		$this->a_admin_html->set_title($this->lang->ts("SMTP Management"));
 		
 		$this->a_admin_html->rendering($tpl->fetch('admin/system/smtp'));
 		exit(0);

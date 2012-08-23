@@ -44,7 +44,7 @@ class core_version extends wf_agg {
 		$this->dao_section = new core_dao_form_db(
 			$this->wf,
 			"core_version_section",
-			OWF_DAO_ADD | OWF_DAO_REMOVE,,
+			OWF_DAO_ADD | OWF_DAO_REMOVE,
 			$this->struct,
 			"core_version_section",
 			"OWF Core version section"
@@ -74,7 +74,7 @@ class core_version extends wf_agg {
 		$this->dao_version = new core_dao_form_db(
 			$this->wf,
 			"core_version",
-			OWF_DAO_ADD | OWF_DAO_REMOVE,,
+			OWF_DAO_ADD | OWF_DAO_REMOVE,
 			$this->struct,
 			"core_version",
 			"OWF Core version"
