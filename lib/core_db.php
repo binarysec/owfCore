@@ -375,20 +375,20 @@ class core_db_index extends core_db_query {
 		$this->zone = $table;
 	}
 	
-	public function register($name, $cols) {
+	public function register($name, $cols, $unique = false) {
 		if(!array_key_exists($name, $this->indexes))
 			$this->indexes[$name] = array();
 		$idx = &$this->indexes[$name];
 		if(is_array($cols)) {
 			foreach($cols as $col) 
-				$this->checkup($idx, $col);
+				$this->checkup($idx, $col, $unique);
 		}
 		else
-			$this->checkup($idx, $cols);
+			$this->checkup($idx, $cols, $unique);
 	}
 	
-	private function checkup(&$idx, $colname) {
-		$idx[$colname] = true;
+	private function checkup(&$idx, $colname, $unique) {
+		$idx[$colname] = $unique;
 	}
 	
 }

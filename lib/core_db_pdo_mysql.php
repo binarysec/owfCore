@@ -118,15 +118,32 @@ class core_db_pdo_mysql extends core_db {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register_zone($name, $description, $struct) {
 		$res = $this->get_zone($name);
-		if(!isset($res[0])) {
-			$this->create_table($name, $struct);
-			$this->create_zone($name, $struct, $description);
+		$info = array();
+		$changed = false;
+		
+		/* if table exists or not */
+		if($this->table_exists($name)) {
+			if(!isset($res[0])) {
+				foreach($this->get_table_struct($name) as $k => $v) {
+					$info[] = array(
+						"b.name" => $k,
+						"b.type" => $v - ($v & WF_PRIMARY) - ($v & WF_AUTOINC),
+					);
+				}
+				$changed = $this->check_for_data_translation($name, $description, $struct, $info);
+			}
+			else
+				$changed = $this->check_for_data_translation($name, $description, $struct, $res);
 		}
-		else {
-			if(!$this->table_exists($name))
-				$this->create_table($name, $struct);
-			
-			$this->check_for_data_translation($name, $description, $struct, $res);
+		else
+			$this->create_table($name, $struct);
+		
+		/* if zone exists or not */
+		if(!isset($res[0]))
+			$this->create_zone($name, $struct, $description);
+		elseif($changed) {
+			$this->drop_zone($name);
+			$this->create_zone($name, $struct, $description);
 		}
 		
 		$this->schema[$name] = $struct;
@@ -144,7 +161,7 @@ class core_db_pdo_mysql extends core_db {
 				$r[$index['Key_name']] = array();
 			
 			if(!array_key_exists($index['Column_name'], $r[$index['Key_name']]))
-				$r[$index['Key_name']][$index['Column_name']] = true;
+				$r[$index['Key_name']][$index['Column_name']] = !$index['Non_unique'];
 		}
 		
 		return($r);
@@ -155,11 +172,11 @@ class core_db_pdo_mysql extends core_db {
 	 * 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function manage_index($zone, $name, $struct) {
-// 		$cvar = "core_db_pdo_mysql_manage_index_$zone/$name";
-// 
-// 		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
-// 			return($res);
-
+		$cvar = "core_db_pdo_mysql_manage_index_$zone/$name";
+		
+		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
+			return($res);
+		
 		$z = $this->get_zone($zone);
 		if(!is_array($z[0]))
 			return(false);
@@ -170,14 +187,18 @@ class core_db_pdo_mysql extends core_db {
 		/* transpose information */
 		$all = array();
 		foreach($idx as $k => $v)
-			$all[$v["colname"]] = true;
+			$all[$v["colname"]] = isset($v["unique"]) ? $v["unique"] : false;
 	
 		/* load table indexes */
 		$sif = $this->load_index($zone);
+		
+		$v = array_values($struct);
+		$is_unique = array_pop($v);
+		$unique = $is_unique ? 'UNIQUE' : '';
 
 		/* check if the index key must be removed */
 		foreach($all as $k => $v) {
-			if(!array_key_exists($k, $struct)) {
+			if(!array_key_exists($k, $struct) || $v != $is_unique) {
 				if(array_key_exists($name, $sif)) {
 					$q = "ALTER TABLE `$zone` DROP INDEX `$name`";
 					$this->sql_query($q);
@@ -195,7 +216,7 @@ class core_db_pdo_mysql extends core_db {
 		}
 		
 		/* check which one needs to be added */
-		$chain_to_add = "ALTER TABLE `$zone` ADD INDEX `$name` (";
+		$chain_to_add = "ALTER TABLE `$zone` ADD $unique INDEX `$name` (";
 		$chain_to_add_vir = false;
 		foreach($struct as $k => $v) {
 			if(!array_key_exists($k, $all)) {
@@ -205,6 +226,9 @@ class core_db_pdo_mysql extends core_db {
 					"indexname" => $name,
 					"colname" => $k,
 				);
+				
+				if($is_unique)
+					$insert["unique"] = $unique;
 
 				$q = new core_db_insert("zone_index", $insert);
 				$this->query($q);
@@ -223,16 +247,23 @@ class core_db_pdo_mysql extends core_db {
 			}
 		}
 		$chain_to_add .= ')';
-
+		
 		/* index has to be added */
-		if($chain_to_add_vir)
+		
+		if($chain_to_add_vir) {
+			$arr = current($sif);
+			if(isset($sif[$name])) {
+				$q = "ALTER TABLE `$zone` DROP INDEX `$name`";
+				$this->sql_query($q);
+			}
 			$this->sql_query($chain_to_add);
-
-// 		$this->a_core_cacher->store(
-// 			$cvar,
-// 			$struct
-// 		);
-// 		
+		}
+		
+ 		$this->a_core_cacher->store(
+ 			$cvar,
+ 			$struct
+ 		);
+ 		
 		return($struct);
 	}
 	
@@ -249,7 +280,7 @@ class core_db_pdo_mysql extends core_db {
 	private function check_for_data_translation($name, $description, $struct, $info) {
 		foreach($info as $k => $v)
 			$all[$v["b.name"]] = (int)$v["b.type"];
-
+		
 		$change = FALSE;
 		
 		/* vérifi les élément à ajouter */
@@ -270,11 +301,8 @@ class core_db_pdo_mysql extends core_db {
 				$change = TRUE;
 			}
 		}
-
-		if($change == TRUE) {
-			$this->drop_zone($name);
-			$this->create_zone($name, $struct, $description);
-		}
+		
+		return $change;
 	}
 	
 	private function info($data) {
@@ -297,9 +325,10 @@ class core_db_pdo_mysql extends core_db {
 
 		$q->execute($values);
 		$er = $q->errorInfo();
-		if($er[0] != 0) {
+		
+		if(((int) $er[0]) != 0) {
 			$er = $this->hdl->errorInfo();
-			echo "* MySQL->prepare()#$er[0]: $er[2]\n";
+			echo "* MySQL->execute()#$er[0]: $er[2]\n";
 			echo "*            \_ SQL request: $query\n";
 			die();
 		}
@@ -882,11 +911,11 @@ class core_db_pdo_mysql extends core_db {
 		/* Index creation */
 		if($query_obj->type == WF_INDEX) {
 			foreach($query_obj->indexes as $name => $s) {
-// 				$this->manage_index(
-// 					$query_obj->zone,
-// 					$name,
-// 					$s
-// 				);
+ 				$this->manage_index(
+ 					$query_obj->zone,
+ 					$name,
+ 					$s
+ 				);
 			}
 		}
 	}
@@ -1249,6 +1278,7 @@ class core_db_pdo_mysql extends core_db {
 			"zone_id" => WF_INT,
 			"indexname" => WF_VARCHAR,
 			"colname" => WF_VARCHAR,
+			"unique" => WF_VARCHAR,
 		);
 		$this->schema["zone_index"] = $zone_index;
 		
@@ -1256,11 +1286,42 @@ class core_db_pdo_mysql extends core_db {
 			$this->create_table("zone", $zone);
 			$this->create_table("zone_col", $zone_col);
 		}
-
-		/* for compat */
-		if(!$this->table_exists("zone_index"))
-			$this->create_table("zone_index", $zone_index);
 		
+		$this->register_zone("zone_index", "Zone indexes", $zone_index);
+	}
+	
+	private function get_table_struct($name) {
+		$query = $this->sql_query("DESC $name");
+		$res = $this->fetch_result($query);
+		$ret = array();
+		
+		foreach($res as $column) {
+			$ret[$column["Field"]] = $this->get_struct_type_reversed(
+				$column["Type"],
+				$column["Key"],
+				$column["Extra"]
+			);
+		}
+		
+		return $ret;
+	}
+	
+	private function get_struct_type_reversed($type, $key = "", $extra = "") {
+		$expl = explode("(", $type);
+		$ret = 0;
+		
+		if(stristr($type, "blob"))
+			$ret |= WF_DATA;
+		elseif(count($expl) > 0)
+			$ret |= constant("WF_".strtoupper($expl[0]));
+		
+		if($key == "PRI")
+			$ret |= WF_PRIMARY;
+		
+		if($extra == "auto_increment")
+			$ret |= WF_AUTOINC;
+		
+		return $ret;
 	}
 	
 	/* gestion des transactions */
