@@ -51,18 +51,26 @@ define("WF_JOIN_INNER",    	0x040);
 define("WF_JOIN_CROSS",    	0x080);
 define("WF_JOIN_STRAIGHT", 	0x100);
 
+/* query elements */
+define("WF_QUERY_WHERE",		0x01);
+define("WF_QUERY_GROUP",		0x02);
+define("WF_QUERY_LIMIT",		0x04);
+define("WF_QUERY_ORDER",		0x08);
+define("WF_QUERY_ADV_WHERE",	0x10);
+define("WF_QUERY_AS",			0x20);
+
 /* type of query */
-define("WF_SELECT",            			1);
-define("WF_ADV_SELECT",        			2);
-define("WF_INSERT",            			3);
-define("WF_INSERT_ID",         			4);
-define("WF_UPDATE",            			5);
-define("WF_DELETE",            			6);
-define("WF_ADV_DELETE",        			7);
-define("WF_SELECT_DISTINCT",   			8);
-define("WF_ADV_UPDATE",        			9);
-define("WF_MULTIPLE_INSERT_OR_UPDATE", 10);
-define("WF_INDEX",                     11);
+define("WF_SELECT",						0x100 | WF_QUERY_WHERE | WF_QUERY_ORDER | WF_QUERY_GROUP | WF_QUERY_LIMIT);
+define("WF_ADV_SELECT",					0x200 | WF_QUERY_AS | WF_QUERY_ADV_WHERE | WF_QUERY_ORDER | WF_QUERY_GROUP | WF_QUERY_LIMIT);
+define("WF_SELECT_DISTINCT",			0x300 | WF_QUERY_ORDER | WF_QUERY_GROUP | WF_QUERY_LIMIT);
+define("WF_INSERT",						0x400);
+define("WF_INSERT_ID",					0x500);
+define("WF_UPDATE",						0x600 | WF_QUERY_WHERE);
+define("WF_ADV_UPDATE",					0x700 | WF_QUERY_ADV_WHERE);
+define("WF_DELETE",						0x800 | WF_QUERY_WHERE);
+define("WF_ADV_DELETE",					0x900 | WF_QUERY_ADV_WHERE);
+define("WF_MULTIPLE_INSERT_OR_UPDATE",	0xA00);
+define("WF_INDEX",						0xB00);
 
 /* order define */
 define("WF_ASC",              10);
@@ -74,6 +82,26 @@ define("WF_RANDOM",           12);
 /* Request function */
 define("WF_REQ_FCT_COUNT",		0x1);
 define("WF_REQ_FCT_DISTINCT",	0x2);
+
+function core_gettype($value) {
+	$type = WF_T_INTEGER;
+	
+	for($a = 0; $a < strlen($value); $a++) {
+		if(	ord($value[$a]) >= 0x30 &&
+			ord($value[$a]) <= 0x39)
+			;
+		elseif(
+			$value[$a] == '.' &&
+			$type == WF_T_INTEGER
+			) {
+				$type = WF_T_DOUBLE;
+		}
+		else
+			return WF_T_STRING;
+	}
+	
+	return $type;
+}
 
 abstract class core_db {
 	public $wf = NULL;
@@ -158,7 +186,37 @@ class core_db_update extends core_db_query {
 	public function insert($insert) {
 		$this->arr = $insert;
 	}
+}
+
+class core_db_adv_update extends core_db_query {
+	var $zone = NULL;
+	var $arr = NULL;
+
+	public function __construct($zone) {
+		$this->type = WF_ADV_UPDATE;
+		$this->zone = $zone;
+	}
+	public function insert($insert) {
+		$this->arr = $insert;
+	}
 	
+	var $cond_matrix = array();
+
+	public function do_open() {
+		array_push($this->cond_matrix, array(1));
+	}
+	public function do_close() {
+		array_push($this->cond_matrix, array(2));
+	}
+	public function do_or() {
+		array_push($this->cond_matrix, array(3));
+	}
+	public function do_and() {
+		array_push($this->cond_matrix, array(4));
+	}
+	public function do_comp($var, $sign, $val=NULL) {
+		array_push($this->cond_matrix, array(5, $var, $sign, $val));
+	}
 }
 
 class core_db_adv_select extends core_db_query {

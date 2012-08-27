@@ -22,27 +22,6 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-function core_gettype($value) {
-	$type = WF_T_INTEGER;
-	
-	for($a=0; $a<strlen($value); $a++) {
-		if(
-			ord($value[$a]) >= 0x30 &&
-			ord($value[$a]) <= 0x39) {
-		}
-		else if(
-			$value[$a] == '.' &&
-			$type == WF_T_INTEGER) {
-			$type = WF_T_DOUBLE;
-		}
-		else {
-			return(WF_T_STRING);
-		}
-	}
-	
-	return($type);
-}
-
 class core_db_pdo_sqlite extends core_db {
 	var $hdl = NULL;
 	var $request_c = 0;
