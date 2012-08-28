@@ -432,6 +432,7 @@ class core_db_pdo_mysql extends core_db {
 			for($a = 0; $a < count($query_obj->as); $a++) {
 				$cond = "";
 				if(!empty($zone)) {
+					/* joins */
 					if(isset($query_obj->as[$a]["J"]) && !is_null($query_obj->as[$a]["J"])) {
 							$zone .= " ".$query_obj->as[$a]["J"]->build()." ";
 							
@@ -630,12 +631,15 @@ class core_db_pdo_mysql extends core_db {
 			}
 		}
 		elseif($query_obj->type == WF_ADV_SELECT) {
+			
 			if($query_obj->req_fct & WF_REQ_FCT_COUNT) {
 				if($query_obj->fields != NULL)
 					$fields .= ", COUNT(*) as count_etoile";
 				else
 					$fields = "COUNT(*)";
 			}
+			elseif($query_obj->req_fct & WF_REQ_FCT_SUM)
+				$fields = "SUM(*)";
 			
 			$select = $query_obj->req_fct & WF_REQ_FCT_DISTINCT ?
 				"SELECT DISTINCT" : "SELECT";

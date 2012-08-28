@@ -294,11 +294,8 @@ class wfr_core_dao extends wf_route_request {
 				
 				if($min == $max)
 					$max++;
-				elseif($min > $max) {
-					$charly = $max;
-					$max = $min;
-					$min = $charly;
-				}
+				elseif($min > $max)
+					list($max, $min) = array($min, $max);
 				if($value > $max)
 					$value = $max;
 				elseif($value < $min)
