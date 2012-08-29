@@ -734,20 +734,20 @@ class core_db_pdo_mysql extends core_db {
 				array_push($prepare_values, $val);
 				break;
 			case '>':
-				if($val_type != WF_T_STRING) {
+				if($val_type != WF_T_STRING || !$table_alias_exist) {
 					$cond = "$var > ?";
 					array_push($prepare_values, $val);
 				}
 				else
-					$cond = "$var > $sval";
+					$cond = "$var > $val";
 				break;
 			case '<':
-				if($val_type != WF_T_STRING) {
+				if($val_type != WF_T_STRING || !$table_alias_exist) {
 					$cond = "$var < ?";
 					array_push($prepare_values, $val);
 				}
 				else
-					$cond = "$var > $sval";
+					$cond = "$var > $val";
 				break;
 			case '>=':
 				$cond = "$var >= ?";
@@ -758,7 +758,12 @@ class core_db_pdo_mysql extends core_db {
 				array_push($prepare_values, $val);
 				break;
 			case '!=':
-				$cond = "$var != $val";
+				if(!$table_alias_exist) {
+					$cond = "$var <> ?";
+					array_push($prepare_values, $val);
+				}
+				else
+					$cond = "$var != $val";
 				break;
 			case '!==':
 				$cond = "$var <> ?";

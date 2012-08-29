@@ -296,7 +296,7 @@ class core_db_adv_select extends core_db_query {
 	public function do_comp($var, $sign, $val=null) {
 		$exist = false;
 		
-		if($sign == "==") {
+		if($val != null) {
 			$expl_val = explode(".", $val);
 			$alias = $expl_val[0];
 			foreach($this->as as $als)
