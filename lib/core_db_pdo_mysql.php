@@ -569,7 +569,6 @@ class core_db_pdo_mysql extends core_db {
 				$offset = "OFFSET ".intval($query_obj->offset);
 		}
 		
-		
 		/* Query */
 		if($query_obj->type == WF_SELECT) {
 			$res = $this->sql_query(
@@ -904,7 +903,7 @@ class core_db_pdo_mysql extends core_db {
 		$this->a_core_cacher->delete($cvar);
 	}
 	
-	private function create_zone($name, $struct, $description = NULL) {
+	private function create_zone($name, $struct, $description) {
 		$insert = array(
 			"name" => $name,
 			"description" => $description

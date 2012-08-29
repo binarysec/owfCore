@@ -93,7 +93,7 @@ class core_db_pdo_pgsql extends core_db {
 		
 		if(!isset($res[0])) {
 			$this->create_table($name, $struct);
-			$this->create_zone($name, $struct);
+			$this->create_zone($name, $struct, $description);
 		}
 		else {
 			if(!$this->table_exists($name)) 
@@ -145,7 +145,7 @@ class core_db_pdo_pgsql extends core_db {
 
 		if($change == TRUE) {
 			$this->drop_zone($name);
-			$this->create_zone($name, $struct);
+			$this->create_zone($name, $struct, $description);
 		}
 	}
 	
@@ -660,8 +660,11 @@ class core_db_pdo_pgsql extends core_db {
 		$this->a_core_cacher->delete($cvar);
 	}
 	
-	private function create_zone($name, $struct) {
-		$insert = array("name" => $name);
+	private function create_zone($name, $struct, $description) {
+		$insert = array(
+			"name" => $name,
+			"description" => $description
+		);
 		$q = new core_db_insert_id("zone", "id", $insert);
 		$this->query($q);
 		

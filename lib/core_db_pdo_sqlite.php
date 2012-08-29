@@ -29,12 +29,15 @@ class core_db_pdo_sqlite extends core_db {
 	var $schema = array();
 	
 	public function load($dbconf) {
+		
+		$file = isset($dbconf["file"]) ? $dbconf["file"] : "";
+		
 		/* open sqlite database */
-		if($dbconf["file"][0] != '/')
-			$dbconf["file"] = dirname(__FILE__)."/".$dbconf["file"];
+		if($file[0] != '/')
+			$file = dirname(__FILE__)."/$file";
 	
 		try {
-			$this->hdl = new PDO('sqlite:'.$dbconf["file"]);
+			$this->hdl = new PDO("sqlite:$file");
 		} 
 		catch (PDOException $e) {
 			throw new wf_exception(
@@ -75,9 +78,9 @@ class core_db_pdo_sqlite extends core_db {
 	*/
 	public function register_zone($name, $description, $struct) {
 		$res = $this->get_zone($name);
-		if(!$res[0]) {
+		if(!isset($res[0])) {
 			$this->create_table($name, $struct);
-			$this->create_zone($name, $struct);
+			$this->create_zone($name, $struct, $description);
 		}
 		else {
 			if(!$this->table_exists($name)) 
@@ -138,7 +141,7 @@ class core_db_pdo_sqlite extends core_db {
 			$this->drop_table($name);
 			$this->rename_table($tmp_name, $name);
 			$this->drop_zone($name);
-			$this->create_zone($name, $struct);
+			$this->create_zone($name, $struct, $description);
 			$this->sql_query("COMMIT;");
 			$this->info("$el elements updated.\n");
 		}
@@ -151,7 +154,6 @@ class core_db_pdo_sqlite extends core_db {
 	
 	/* backyard functions :] */
 	private function sql_query($query, $values=NULL) {
-
 		$q = $this->hdl->prepare($query);
 		if(!$q) {
 			$er = $this->hdl->errorInfo();
@@ -166,7 +168,7 @@ class core_db_pdo_sqlite extends core_db {
 				)
 			);
 		}
-
+		
 		$q->execute($values);
 		$er = $q->errorInfo();
 		if($er[0] != 0) {
@@ -181,7 +183,7 @@ class core_db_pdo_sqlite extends core_db {
 				)
 			);
 		}
-
+		
 		/* log */
 		//echo('SQLite ORDER #'.($this->request_c + 1).': '.$query.'<br />');
 
@@ -197,167 +199,125 @@ class core_db_pdo_sqlite extends core_db {
 	}
 	
 	public function query($query_obj) {
-		/* Select query */
-		if($query_obj->type == WF_SELECT) {
-			/* check for fields */
-			$fields = NULL;
-			if($query_obj->fields != NULL) {
-				for($a=0; $a<count($query_obj->fields); $a++) {
-					if($fields != NULL) 
-						$fields .= ",";
-					$fields .= '`'.$query_obj->fields[$a].'`';
-				}
+		
+		/* general vars */
+		$prepare_value = array();
+		$zone = "";
+		$fields = "";
+		$key = "";
+		$val = "";
+		$where = "";
+		$order = "";
+		$group = "";
+		$limit = "";
+		$offset = "";
+		
+		/* fields */
+		if($query_obj->type == WF_INSERT || $query_obj->type == WF_INSERT_ID) {
+			foreach($query_obj->arr as $k => $v) {
+				$key .= empty($key) ? "`$k`" : ", `$k`";
+				$val .= empty($val) ? "?" : ", ?";
+				array_push($prepare_value, $this->safe_input($v));
 			}
-			else
-				$fields = "*";
-			
-			$prepare_value = array();
-			
-			/* check for where/and condition */
-			$where = NULL;
-			if($query_obj->where != NULL) {
-				foreach($query_obj->where as $k => $sv) {
-					$v = $this->safe_input($sv);
-					if(!$where)
-						$where .= "WHERE `$k` = ?";
-					else 
-						$where .= " AND `$k` = ?";
-					
-					array_push($prepare_value, $v);
-				}
-			}
-			
-			/* check for order */
-			$order = "";
-			if($query_obj->order != NULL) {
-				$first = TRUE;
-				foreach($query_obj->order as $k => $v) {
-					$order .= $first ? "ORDER BY " : ", ";
-					if($v == WF_RAND)
-						$order .= "RANDOM()";
-					else {
-						$order .= "`$k`";
-						if($v == WF_ASC)
-							$order .= " ASC";
-						else//if($v == WF_DESC)
-							$order .= " DESC";
-					}
-					$first = FALSE;
-				}
-			}
-
-			/* check for group */
-			$group = NULL;
-			if($query_obj->group != NULL) {
-				foreach($query_obj->group as $k) {
-					if(!$group) {
-						$group = "GROUP BY `$k`";
-					}
-					else {
-						$group .= ", `$k`";
-					}
-				}
-			}
-			
-			/* check for limit and offset */
-			$limit = NULL;
-			$offset = NULL;
-			if($query_obj->limit > -1) {
-				$limit = "LIMIT ".intval($query_obj->limit);
-				if($query_obj->offset > -1)
-					$offset = "OFFSET ".intval($query_obj->offset);
-			}
-			
-			$query = 
-				"SELECT $fields FROM ".
-				$query_obj->zone.
-				" $where $group $order $limit $offset";
-			$res = $this->sql_query($query, $prepare_value);
-			$query_obj->result = $this->fetch_result($res);
 		}
-		/* Select query */
-		if($query_obj->type == WF_ADV_SELECT) {
-			/* construit les fields */
-			$fields = NULL;
-			if($query_obj->fields != NULL) {
-				for($a=0; $a<count($query_obj->fields); $a++) {
-					if($fields != NULL) 
-						$fields .= ",";
-					$fields .= $query_obj->fields[$a].
-						' AS "'.
-						$query_obj->fields[$a].
-						'"'
-					;
-				}
+		elseif($query_obj->type == WF_UPDATE || $query_obj->type == WF_ADV_UPDATE) {
+			foreach($query_obj->arr as $k => $v) {
+				$fields .= empty($fields) ?
+					"`$k` = ?" :
+					", `$k` = ?";
+				
+				array_push(
+					$prepare_value,
+					$this->safe_input($v)
+				);
 			}
-			else {
-				/*
-				 * Si il y a plus d'un alias alors il faut aligner les structures
-				 */
-				if(count($query_obj->as) > 1) {
-					for($a=0; $a<count($query_obj->as); $a++) {
+		}
+		elseif(
+			$query_obj->type == WF_SELECT ||
+			$query_obj->type == WF_SELECT_DISTINCT ||
+			$query_obj->type == WF_ADV_SELECT
+			) {
+				if($query_obj->fields != NULL) {
+					for($a = 0; $a < count($query_obj->fields); $a++) {
+						if(!empty($fields))
+							$fields .= ", ";
+						$fields .= $query_obj->fields[$a];
+						if($query_obj->type == WF_ADV_SELECT)
+							$fields .= ' AS "'.$query_obj->fields[$a].'"';
+					}
+				}
+				/* Si il y a plus d'un alias alors il faut aligner les structures */
+				elseif($query_obj->type == WF_ADV_SELECT && count($query_obj->as) > 1) {
+					for($a = 0; $a < count($query_obj->as); $a++) {
 						$alias = $query_obj->as[$a]["A"];
 						$tab = $query_obj->as[$a]["T"];
 						$sch = $this->schema[$tab];
-// 						echo $tab."\n";
 						foreach($sch as $k => $v) {
-							if($fields != NULL) 
+							if(!empty($fields))
 								$fields .= ",";
 							$var = "$alias.$k";
 							$fields .= $var.' AS "'.$var.'"';
 						}
 					}
 				}
-				/* check request function */
-				else {
+				else
 					$fields = "*";
-				}
+		}
+		
+		/* zones */
+		if($query_obj->type & WF_QUERY_AS && count($query_obj->as) > 0) {
+			for($a = 0; $a < count($query_obj->as); $a++) {
+				$cond = "";
+				if(!empty($zone))
+					$zone .= ",";
+				$zone .= $query_obj->as[$a]["T"]." AS ";
+				$zone .= $query_obj->as[$a]["A"];
 			}
-			/* ensuite les AS si y'en a */
-			
-			$as = NULL;
-			if(count($query_obj->as) > 0) {
-				for($a=0; $a<count($query_obj->as); $a++) {
-					if($as != NULL) 
-						$as .= ",";
-					$as .= $query_obj->as[$a]["T"];
-					$as .= " AS ";
-					$as .= $query_obj->as[$a]["A"];
-				}
+		}
+		else
+			$zone = $query_obj->zone;
+		
+		/* where */
+		if($query_obj->type & WF_QUERY_WHERE && $query_obj->where != NULL) {
+			foreach($query_obj->where as $k => $v) {
+				$where .= empty($where) ?
+					"WHERE `$k` = ?" :
+					" AND `$k` = ?";
+				
+				array_push(
+					$prepare_value,
+					$this->safe_input($v)
+				);
 			}
-			else {
-				$as = $query_obj->zone;
-			}
-			
-			$prepare_value = array();
-			
-			/* condition matrix */
-			$cond = NULL;
+		}
+		
+		/* advanced where */
+		elseif($query_obj->type & WF_QUERY_ADV_WHERE) {
 			$atom = 0;
 			if(count($query_obj->cond_matrix) > 0)
-				$cond .= " WHERE";
+				$where .= " WHERE";
 				
 			foreach($query_obj->cond_matrix as $k) {
 				switch($k[0]) {
 					case 1:
 						switch($atom) {
-							case 1: $cond .= ' OR '; break;
-							case 2: case 3: $cond .= ' AND '; break;
+							case 1: $where .= ' OR '; break;
+							case 2: case 3: $where .= ' AND '; break;
 						}
 						$atom = 0;
-						$cond .= '(';
+						$where .= '(';
 						break;
-					case 2: $cond .= ')'; break;
+					case 2: $where .= ')'; break;
 					case 3: $atom = 1; break;
 					case 4: $atom = 2; break;
 					case 5:
 						switch($atom) {
-							case 0: $cond .= ' '; $atom = 3; break;
-							case 1: $cond .= ' OR '; $atom = 3; break;
-							case 2: $cond .= ' AND '; $atom = 3; break;
-							case 3: $cond .= ' AND '; break;
+							case 0: $where .= ' '; $atom = 3; break;
+							case 1: $where .= ' OR '; $atom = 3; break;
+							case 2: $where .= ' AND '; $atom = 3; break;
+							case 3: $where .= ' AND '; break;
 						}
-						$cond .= $this->get_query_var(
+						$where .= $this->get_query_var(
 							$k[1], 
 							$k[2], 
 							$k[3], 
@@ -366,113 +326,80 @@ class core_db_pdo_sqlite extends core_db {
 						break;
 				}
 			}
-			
-			/* check for order */
-			$order = "";
-			if($query_obj->order != NULL) {
-				$first = TRUE;
-				foreach($query_obj->order as $k => $v) {
-					$order .= $first ? "ORDER BY " : ", ";
-					if($v == WF_RAND)
-						$order .= "RANDOM()";
-					else {
-						$order .= "`$k`";
-						if($v == WF_ASC)
-							$order .= " ASC";
-						else//if($v == WF_DESC)
-							$order .= " DESC";
-					}
-					$first = FALSE;
+		}
+		
+		/* order */
+		if($query_obj->type & WF_QUERY_ORDER && $query_obj->order != NULL) {
+			$first = TRUE;
+			foreach($query_obj->order as $k => $v) {
+				$order .= $first ? "ORDER BY " : ", ";
+				if($v == WF_RAND)
+					$order .= "RANDOM()";
+				else {
+					$order .= "`$k`";
+					if($v == WF_ASC)
+						$order .= " ASC";
+					else//if($v == WF_DESC)
+						$order .= " DESC";
 				}
+				$first = FALSE;
 			}
-
-			/* check for group */
-			$group = NULL;
-			if($query_obj->group != NULL) {
-				foreach($query_obj->group as $k) {
-					if(!$group) {
-						$group = "GROUP BY `$k`";
-					}
-					else {
-						$group .= ", `$k`";
-					}
-				}
-			}
-			
-			/* check for limit and offset */
-			$limit = NULL;
-			$offset = NULL;
-			if($query_obj->limit > -1) {
-				$limit = "LIMIT ".intval($query_obj->limit);
-				if($query_obj->offset > -1)
-					$offset = "OFFSET ".intval($query_obj->offset);
-			}
-			
-			if($query_obj->req_fct & WF_REQ_FCT_COUNT)
-				$fields = "COUNT(*)";
-			elseif($query_obj->req_fct & WF_REQ_FCT_SUM)
-				$fields = "SUM(*)";
-			
-			if($query_obj->req_fct & WF_REQ_FCT_DISTINCT)
-				$select = "SELECT DISTINCT";
-			else
-				$select = "SELECT";
-				
-			$query = "$select $fields FROM $as $cond $group $order $limit $offset";
-			
-			$res = $this->sql_query($query, $prepare_value);
+		}
+		
+		/* group by */
+		if($query_obj->type & WF_QUERY_GROUP && $query_obj->group != NULL) {
+			foreach($query_obj->group as $k)
+				$group = empty($group) ?
+					"GROUP BY `$k`" :
+					", `$k`";
+		}
+		
+		/* limit and offset */
+		if($query_obj->type & WF_QUERY_LIMIT && $query_obj->limit > -1) {
+			$limit = "LIMIT ".intval($query_obj->limit);
+			if($query_obj->offset > -1)
+				$offset = "OFFSET ".intval($query_obj->offset);
+		}
+		
+		
+		/* Query */
+		if($query_obj->type == WF_SELECT) {
+			$res = $this->sql_query(
+				"SELECT $fields FROM $zone $where $group $order $limit $offset",
+				$prepare_value
+			);
 			$query_obj->result = $this->fetch_result($res);
 		}
-		/* Insert query */
-		else if($query_obj->type == WF_INSERT) {
-			$prepare_value = array();
-			
-			/* fill fields */
-			$key = NULL;
-			$val = NULL;
-			foreach($query_obj->arr as $k => $sv) {
-				$v = $this->safe_input($sv);
-				if(!$key) {
-					$key = "`$k`";
-					$val .= '?';
-				}
-				else {
-					$key .= ","."`$k`";
-					$val .= ', ?';
-				}
-				array_push($prepare_value, $v);
-			}
-			$query = "INSERT INTO ".$query_obj->zone." ($key) VALUES ($val);";
-			$this->sql_query($query, $prepare_value);
+		elseif($query_obj->type == WF_SELECT_DISTINCT) {
+			$res = $this->sql_query(
+				"SELECT DISTINCT $fields FROM $zone $group $order $limit $offset"
+			);
+			$query_obj->result = $this->fetch_result($res);
 		}
-		/* Insert query with ID */
-		else if($query_obj->type == WF_INSERT_ID) {
-			$prepare_value = array();
-			
-			/* fill fields */
-			$key = NULL;
-			$val = NULL;
-			foreach($query_obj->arr as $k => $sv) {
-				$v = $this->safe_input($sv);
-				if(!$key) {
-					$key = "`$k`";
-					$val .= '?';
-				}
-				else {
-					$key .= ","."`$k`";
-					$val .= ', ?';
-				}
-				array_push($prepare_value, $v);
-			}
-
-			/* insertion */
-			$query =
-				"INSERT INTO ".
-				$query_obj->zone." ($key) VALUES ($val);";
-			$this->sql_query($query, $prepare_value);
-			
+		elseif($query_obj->type == WF_UPDATE || $query_obj->type == WF_ADV_UPDATE) {
+			$this->sql_query(
+				"UPDATE $zone SET $fields $where",
+				$prepare_value
+			);
+		}
+		elseif($query_obj->type == WF_DELETE || $query_obj->type == WF_ADV_DELETE) {
+			$this->sql_query(
+				"DELETE FROM $zone $where",
+				$prepare_value
+			);
+		}
+		elseif($query_obj->type == WF_INSERT) {
+			$this->sql_query(
+				"INSERT INTO ".$query_obj->zone." ($key) VALUES ($val);",
+				$prepare_value
+			);
+		}
+		elseif($query_obj->type == WF_INSERT_ID) {
+			$this->sql_query(
+				"INSERT INTO $zone ($key) VALUES ($val);",
+				$prepare_value
+			);
 			$id = $this->hdl->lastInsertId();
-			
 			
 			/* chope touted les infos */
 			$q = new core_db_select($query_obj->zone);
@@ -483,163 +410,23 @@ class core_db_pdo_sqlite extends core_db {
 
 			$query_obj->result = $q->get_result();
 			$query_obj->result = $query_obj->result[0];
-			
 		}
-		/* update query */
-		else if($query_obj->type == WF_UPDATE) {
-			$prepare_value = array();
+		elseif($query_obj->type == WF_ADV_SELECT) {
+			if($query_obj->req_fct & WF_REQ_FCT_COUNT)
+				$fields = "COUNT(*)";
+			elseif($query_obj->req_fct & WF_REQ_FCT_SUM)
+				$fields = "SUM(*)";
 			
-			/* fill fields */
-			$set = NULL;
-			foreach($query_obj->arr as $k => $sv) {
-				$v = $this->safe_input($sv);
-				if(!$set)
-					$set .= "`$k`".' = ?';
-				else
-					$set .= ','."`$k`".' = ?';
-				array_push($prepare_value, $v);
-			}
-		
-			/* fill where condition */
-			$where = NULL;
-			if($query_obj->where != NULL) {
-				foreach($query_obj->where as $k => $sv) {
-					$v = $this->safe_input($sv);
-					if(!$where) 
-						$where .= "WHERE `$k` = ?";
-					else 
-						$where .= " AND `$k` = ?";
-					array_push($prepare_value, $v);
-				}
-			}
+			$select = $query_obj->req_fct & WF_REQ_FCT_DISTINCT ?
+				"SELECT DISTINCT" : "SELECT";
 			
-			/* prepare and exec the query */
-			$query = "UPDATE ".$query_obj->zone." SET $set $where";
-			$this->sql_query($query, $prepare_value);
-		}
-		/* delete query */
-		else if($query_obj->type == WF_DELETE) {
-			$prepare_value = array();
-			/* check for where/and condition */
-			$where = NULL;
-			if($query_obj->where != NULL) {
-				foreach($query_obj->where as $k => $sv) {
-					$v = $this->safe_input($sv);
-					if(!$where) 
-						$where .= "WHERE `$k` = ?";
-					else
-						$where .= " AND `$k` = ?";
-					array_push($prepare_value, $v);
-				}
-			}
-			
-			/* prepare and exec the query */
-			$query = "DELETE FROM ".$query_obj->zone." $where";
-			$this->sql_query($query, $prepare_value);
-		}
-		/* advanced delete query */
-		else if($query_obj->type == WF_ADV_DELETE) {
-			$prepare_value = array();
-
-			/* condition matrix */
-			$cond = NULL;
-			$atom = 0;
-			if(count($query_obj->cond_matrix) > 0)
-				$cond .= " WHERE";
-				
-			foreach($query_obj->cond_matrix as $k) {
-				switch($k[0]) {
-					case 1: $cond .= '('; break;
-					case 2: $cond .= ')'; break;
-					case 3: $atom = 1; break;
-					case 4: $atom = 2; break;
-					case 5:
-						switch($atom) {
-							case 0: $cond .= ' '; $atom = 3; break;
-							case 1: $cond .= ' OR '; $atom = 3; break;
-							case 2: $cond .= ' AND '; $atom = 3; break;
-							case 3: $cond .= ' AND '; break;
-						}
-						$cond .= $this->get_query_var(
-							$k[1], 
-							$k[2], 
-							$k[3], 
-							$prepare_value
-						);
-						break;
-				}
-			}
-			
-			/* prepare and exec the query */
-			$query = "DELETE FROM ".$query_obj->zone." $cond";
-			$this->sql_query($query, $prepare_value);
-		}
-		
-		/* Select distinct query */
-		if($query_obj->type == WF_SELECT_DISTINCT) {
-			/* check for fields */
-			$fields = NULL;
-			if($query_obj->fields != NULL) {
-				for($a=0; $a<count($query_obj->fields); $a++) {
-					if($fields != NULL) 
-						$fields .= ",";
-					$fields .= $query_obj->fields[$a];
-				}
-			}
-			else
-				$fields = "*";
-			
-			/* check for order */
-			$order = "";
-			if($query_obj->order != NULL) {
-				$first = TRUE;
-				foreach($query_obj->order as $k => $v) {
-					$order .= $first ? "ORDER BY " : ", ";
-					if($v == WF_RAND)
-						$order .= "RANDOM()";
-					else {
-						$order .= "`$k`";
-						if($v == WF_ASC)
-							$order .= " ASC";
-						else//if($v == WF_DESC)
-							$order .= " DESC";
-					}
-					$first = FALSE;
-				}
-			}
-
-			/* check for group */
-			$group = NULL;
-			if($query_obj->group != NULL) {
-				foreach($query_obj->group as $k) {
-					if(!$group) {
-						$group = "GROUP BY `$k`";
-					}
-					else {
-						$group .= ", `$k`";
-					}
-				}
-			}
-			
-			/* check for limit and offset */
-			$limit = NULL;
-			$offset = NULL;
-			if($query_obj->limit > -1) {
-				$limit = "LIMIT ".intval($query_obj->limit);
-				if($query_obj->offset > -1)
-					$offset = "OFFSET ".intval($query_obj->offset);
-			}
-			
-			$query = 
-				"SELECT DISTINCT $fields FROM ".
-				$query_obj->zone.
-				" $group $order $limit $offset";
-			
-			$res = $this->sql_query($query);
+			$res = $this->sql_query(
+				"$select $fields FROM $zone $where $group $order $limit $offset",
+				$prepare_value
+			);
 			$query_obj->result = $this->fetch_result($res);
 		}
-		/* Index creation */
-		if($query_obj->type == WF_INDEX) {
+		elseif($query_obj->type == WF_INDEX) {
 			// ...
 		}
 	}
@@ -743,10 +530,12 @@ class core_db_pdo_sqlite extends core_db {
 	}
 	
 	private function create_table($name, $struct) {
-		$query = 'CREATE TABLE "'.$name.'" (';
+		$query = "CREATE TABLE \"$name\" (";
 		$vir = FALSE;
 		foreach($struct as $k => $v) {
-			if($vir == TRUE) $query .= ",";
+			if($vir)
+				$query .= ",";
+			
 			$query .= "`$k` ".$this->get_struct_type($v);
 			$vir = TRUE;
 		}
@@ -792,14 +581,9 @@ class core_db_pdo_sqlite extends core_db {
 		$res = $q->get_result();
 		
 		/* push table information */
-		$this->a_core_cacher->store(
-			$cvar,
-			!$res[0] ? FALSE : TRUE
-		);
+		$this->a_core_cacher->store($cvar, isset($res[0]));
 		
-		if(!$res[0])
-			return(FALSE);
-		return(TRUE);
+		return isset($res[0]);
 	}
 	
 	private function drop_zone($name) {
@@ -826,7 +610,7 @@ class core_db_pdo_sqlite extends core_db {
 		$this->a_core_cacher->delete($cvar);
 	}
 	
-	private function create_zone($name, $struct) {
+	private function create_zone($name, $struct, $description) {
 		$insert = array(
 			"name" => $name,
 			"description" => $description
@@ -853,7 +637,7 @@ class core_db_pdo_sqlite extends core_db {
 		$this->a_core_cacher->delete($cvar);
 	}
 	
-	private function get_zone($name) {
+	public function get_zone($name) {
 		/* try to retrieve zone from the cache */
 		$cvar = "core_db_pdo_sqlite_zone_$name";
 		if(($res = $this->a_core_cacher->get($cvar)) != NULL)
@@ -898,7 +682,6 @@ class core_db_pdo_sqlite extends core_db {
 			$this->create_table("zone", $zone);
 			$this->create_table("zone_col", $zone_col);
 		}
-
 	}
 	
 	
