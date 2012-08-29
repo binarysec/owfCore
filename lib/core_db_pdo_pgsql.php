@@ -306,7 +306,8 @@ class core_db_pdo_pgsql extends core_db {
 							$k[1], 
 							$k[2], 
 							$k[3], 
-							$prepare_value
+							$prepare_value,
+							$k[4]
 						);
 						break;
 				}
@@ -496,7 +497,7 @@ class core_db_pdo_pgsql extends core_db {
 		return(TRUE);
 	}
 	
-	private function get_query_var($var, $sign, $sval, &$prepare_values) {
+	private function get_query_var($var, $sign, $sval, &$prepare_values, $table_alias_exist = true) {
 		$cond = NULL;
 		$val = $this->safe_input($sval);
 		switch($sign) {
@@ -505,7 +506,12 @@ class core_db_pdo_pgsql extends core_db {
 				array_push($prepare_values, $val);
 				break;
 			case '==':
-				$cond = "$var = $val";
+				if(!$table_alias_exist) {
+					$cond = "$var = ?";
+					array_push($prepare_values, $val);
+				}
+				else
+					$cond = "$var = $val";
 				break;
 			case '~=':
 				$cond = "$var LIKE ?";
