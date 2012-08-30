@@ -307,7 +307,7 @@ class core_db_pdo_pgsql extends core_db {
 							$k[2], 
 							$k[3], 
 							$prepare_value,
-							$k[4]
+							isset($k[4]) ? $k[4] : true
 						);
 						break;
 				}
