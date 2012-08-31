@@ -338,27 +338,8 @@ class wfr_core_dao extends wf_route_request {
 		$sup_text = $this->lang->ts("Delete");
 		
 		if($this->uid > 0 && $can_delete) {
-			$del_confirm =
-				"<script type='text/javascript'>".
-					"function dao_delete_confirm(href) {".
-						"$('<div>').simpledialog2({".
-							"mode: 'blank',".
-							"headerText: 'Delete confirmation',".
-							"headerClose: false,".
-							"dialogAllow: true,".
-							"dialogForce: true,".
-							"blankContent :".
-								"'<p><center><form action=\"' + href + '\">".
-									"Are you sure about deleting this ? <br/>".
-									"<input type=\"submit\" data-role=\"button\" value=\"Delete\" />".
-									"<a rel=\"close\" data-role=\"button\" href=\"#\">Close</a>".
-								"</form></center></p>'".
-						"});".
-						"return false;".
-					"}".
-				"</script>";
 			$del_link = $this->selector()->del_link($this->uid, TRUE);
-			$forms .= "$del_confirm<a href='' data-theme='f' data-role='button' class='dao-delete-confirm' onclick='return dao_delete_confirm(\"$del_link\");' >$sup_text</a>";
+			$forms .= '<a href="" onclick="dao_delete_confirm(\''.$del_link.'\');" data-theme="f" data-role="button" class="dao-delete-confirm" >'.$sup_text.'</a>';
 		}
 			
 		$forms .= "</form>";

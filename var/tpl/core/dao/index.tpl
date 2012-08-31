@@ -1,3 +1,22 @@
+<script type='text/javascript'>
+	function dao_delete_confirm(href) {
+		$('<div>').simpledialog2({
+			mode: 'blank',
+			headerText: '%{@ 'Delete confirmation'}%',
+			headerClose: false,
+			dialogAllow: true,
+			dialogForce: true,
+			blankContent :
+				'<p><center><form action="' + href + '">'+
+					'%{@ 'Are you sure about deleting this item ?'}% <br/>'+
+					'<input type="submit" data-role="button" value="%{@ 'Delete'}%" />'+
+					'<a rel="close" data-role="button" href="#">%{@ 'Close'}%</a>'+
+				'</form></center></p>'
+		});
+		return false;
+	}
+</script>
+
 %{if array_key_exists("msgs", $error) && count($error["msgs"]) > 0}%
 <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="f">
 	<li data-role="list-divider">%{@ 'There are some problems into your form'}%</li>
