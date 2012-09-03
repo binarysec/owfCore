@@ -171,9 +171,7 @@ class core_lang extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public $contexts = array();
 	public function get_context($name, $lang=NULL, $create=TRUE) {
-		if($lang)
-			$lang = $lang;
-		else
+		if($lang == NULL)
 			$lang = $this->current["code"];
 			
 		/* get the full context path */

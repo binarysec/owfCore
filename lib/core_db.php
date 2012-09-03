@@ -294,17 +294,35 @@ class core_db_adv_select extends core_db_query {
 	/* keo on 11/12/2008 : param $val no longer required
 	   cause condition IS [NOT] NULL doens't require value */
 	public function do_comp($var, $sign, $val=null) {
-		$exist = false;
+		$var_exist = false;
+		$val_exist = false;
 		
+		/* chech $var if alias is given */
+		$var_alias = current(explode(".", $var));
+		foreach($this->as as $als)
+			if(isset($als["A"]) && $als["A"] == $var_alias)
+				$var_exist = true;
+		
+		/* chech $val if alias is given */
 		if($val != null) {
-			$expl_val = explode(".", $val);
-			$alias = $expl_val[0];
+			$val_alias = current(explode(".", $val));
 			foreach($this->as as $als)
-				if(isset($als["A"]) && $als["A"] == $alias)
-					$exist = true;
+				if(isset($als["A"]) && $als["A"] == $val_alias)
+					$val_exist = true;
 		}
 		
-		array_push($this->cond_matrix, array(5, $var, $sign, $val, $exist));
+		if($sign == "==") {
+			if(!$var_exist)
+				throw new wf_exception(null, WF_EXC_PRIVATE,
+					"Calling do_comp($var, \"$sign\" [,..]) but the alias $var_alias was not registered"
+				);
+			if(!$val_exist)
+				throw new wf_exception(null, WF_EXC_PRIVATE,
+					"Calling do_comp($var, \"$sign\", $val) but the alias $val_alias was not registered"
+				);
+		}
+		
+		array_push($this->cond_matrix, array(5, $var, $sign, $val, $var_exist && $val_exist));
 	}
 }
 

@@ -25,7 +25,7 @@
 abstract class core_datasource {
 
 	protected $wf   = null;
-	private   $name = null;
+	protected $name = null;
 	public  $preconds = array();
 	
 	public function __construct($wf, $name) {
