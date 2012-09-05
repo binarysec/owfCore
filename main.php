@@ -22,7 +22,6 @@
  *  product.                                             *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
 define("WF_VERSION",   "1.3.0");
 
 define("WF_T_INTEGER", 1);
@@ -549,33 +548,38 @@ class web_framework {
 	 *
 	 * Use to link
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function linker($route, $filter=NULL, $lang_code=NULL, $forwarder=FALSE) {
-	
-		$cl = $this->core_lang()->resolv($lang_code);
-		if(!$cl)
-			$lang_code = $this->core_lang()->get_code();
-		else
-			$lang_code = $cl["code"];
-
+	public function linker($route, $absolute = false, $lang_code = null, $forwarder = false) {
+		
+		/* check if route is already complete */
+		// if(preg_match('%(^javascript:|://)%', $route))
 		if(strncmp('http://', $route, 7) == 0)
-			return($route);
-			
-		/* encode le lang into the link */
-		$n_route = "/$lang_code$route";
+			return $route;
 		
-		$base = "";
-		if(isset($this->ini_arr["common"]["base"]))
-			$base = $this->ini_arr["common"]["base"];
+		/* resolv lang */
+		$cl = $this->core_lang()->resolv($lang_code);
+		$lang_code = $cl ? $cl["code"] : $this->core_lang()->get_code();
 		
-		$query = NULL;
+		/* protocol if absolute linking */
+		$protocol = "";
+		$sitename = "";
+		if($absolute && isset($this->ini_arr["common"]["site_name"])) {
+			$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ?
+				"https://" : "http://";
+			$sitename = $this->ini_arr["common"]["site_name"];
+		}
+		
+		/* base */
+		$base = isset($this->ini_arr["common"]["base"]) ?
+			$this->ini_arr["common"]["base"] : "";
+			//$this->ini_arr["common"]["base"] : $base = "/index.php";
+		
+		/* query parameters */
+		$query = "";
 		if($forwarder && !empty($_SERVER["QUERY_STRING"]))
 			$query = "?".$_SERVER["QUERY_STRING"];
 		
-		return(
-			$base."/index.php".
-			$n_route.
-			$query
-		);
+		return "$protocol$sitename$base/index.php/$lang_code$route$query";
+		//return "$protocol$sitename$base/$lang_code$route$query";
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

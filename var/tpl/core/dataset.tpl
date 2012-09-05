@@ -93,7 +93,7 @@
 	
 	%{set nb_pages, ceil($total_num_rows / $rows_per_page)}%
 	
-	%{if($total_num_rows_filterless > $rows_per_page)}%
+	%{if($total_num_rows_filterless > $min_rows_per_page)}%
 	
 	<div data-role="footer" data-theme="a" class="ui-bar ui-corner-all">
 		<table>
