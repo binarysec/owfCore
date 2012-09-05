@@ -40,8 +40,8 @@ class core_lock extends wf_agg {
 					echo "*\n".
 						"* THE RESOURCE $serial[resource] UNDER GROUP $serial[group]\n".
 						"* IS ACTUALY LOCKED BY A DEAD PROCESS n°$serial[pid]\n".
-						"* YOU MUST REMOVE MANUALY THE LOCKS\n".
-						"* File to remove: $lf\n";
+						"* Removing file $lf\n";
+					@unlink($lf);
 				}
 
 				flock($fp, LOCK_UN);
