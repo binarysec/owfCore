@@ -28,7 +28,9 @@ class core_dataview {
 	private $dset = null;
 	private $args = array();
 	private $form_responder = null;
-	private $total_filterless = false;
+	
+	var $total_ignore_conds = true;
+	var $total_ignore_preconds = false;
 	
 	public function __construct($wf, $dset) {
 		$this->wf   = $wf;
@@ -44,7 +46,8 @@ class core_dataview {
 	}
 	
 	public function set_total_filterless($val = true) {
-		$this->total_filterless = $val;
+		$this->total_ignore_conds = $val;
+		$this->total_ignore_preconds = $val;
 	}
 	
 	public function render($tpl_path=NULL, $tplset=array()) {
@@ -82,10 +85,7 @@ class core_dataview {
 		$tpl->set('rows_per_page',  $this->dset->get_rows_per_page());
 		$tpl->set('range_rows_per_page',    $this->dset->get_range_rows_per_page());
 		$tpl->set('total_num_rows', $this->dset->get_total_num_rows());
-		if($this->total_filterless)
-			$tpl->set('total_num_rows_filterless', $this->dset->get_total_num_rows_filterless());
-		else
-			$tpl->set('total_num_rows_filterless', $tpl->get('total_num_rows'));
+		$tpl->set('total_num_rows_filterless', $this->dset->get_total_num_rows($this->total_ignore_conds, $this->total_ignore_preconds));
 		$tpl->set('form_order',     $this->wf->get_var($this->dset->get_name().'_order'));
 		$tpl->set('form_filter',    $this->wf->get_var($this->dset->get_name().'_filter'));
 		$tpl->set('form_page',      $this->wf->get_var($this->dset->get_name().'_page'));

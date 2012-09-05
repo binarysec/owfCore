@@ -52,6 +52,7 @@
 </script>
 
 <form method="get" id="form_%{$name}%" action="">
+	
 	<div class="dataset_filters">
 		
 		%{if $filters}%
@@ -79,56 +80,40 @@
 		<input type="hidden" id="form_%{$name}%_page" name="%{$name}%_page" value="%{$page_nb}%" />
 		<input type="hidden" id="form_%{$name}%_rows_per_page" name="%{$name}%_rows_per_page" value="%{$rows_per_page}%" />
 		%{foreach $cols as $id => $col}%
-		%{if $col['orderable']}%
-		<input type="hidden" id="form_%{$name}%_order_%{$id}%" name="%{$name}%_order[%{$id}%]" value="%{$form_order[$id]}%" />
-		%{/if}%
+			%{if $col['orderable']}%
+			<input type="hidden" id="form_%{$name}%_order_%{$id}%" name="%{$name}%_order[%{$id}%]" value="%{$form_order[$id]}%" />
+			%{/if}%
 		%{/foreach}%
-		
 		
 		%{foreach $args as $k => $v}%
 		<input type="hidden" id="dataset_opt_%{$k}%" name="%{$k}%" value="%{$v}%" />
 		%{/foreach}%
-			
 		
 	</div>
 	
-
-
 	%{set nb_pages, ceil($total_num_rows / $rows_per_page)}%
-
-
-
+	
+	%{if($total_num_rows_filterless > $rows_per_page)}%
+	
 	<div data-role="footer" data-theme="a" class="ui-bar ui-corner-all">
-	<table>
-		<tr>
-
-			%{if $display_dataset_select_bar == 1 && count($rows) > 0}%
-			<td width="30%">
-
-				%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
-				%{@ 'sur'}% %{$total_num_rows}%
-			</td>
-			%{/if}%
-
-			
-			<td width="60%">
-				<div data-role="controlgroup" data-type="horizontal">
-					
-					%{if $page_nb > 1}%
-						<a href="javascript: dataset_set_page('%{$page_nb - 1}%');" data-role="button" data-icon="arrow-l" data-theme="a">&nbsp;</a>
-					%{/if}%
-					
-					%{if $nb_pages<5}%
-						%{for $i = 1; $i <= $nb_pages; $i++}%
-							%{if $page_nb != $i}%
-								<a href="javascript: dataset_set_page('%{$i}%');" data-role="button" data-theme="a">%{$i}%</a>
-							%{else}%
-								<a href="javascript: void(0);" data-role="button" data-theme="b">%{$i}%</a>
-							%{/if}%
-						%{/for}%
-					%{else}%
-						%{if $page_nb<4}%
-							%{for $i = 1; $i <= $page_nb; $i++}%
+		<table>
+			<tr>
+				%{if $display_dataset_select_bar == 1 && count($rows) > 0}%
+				<td width="30%">
+					%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
+					%{@ 'sur'}% %{$total_num_rows}%
+				</td>
+				%{/if}%
+				
+				<td width="60%">
+					<div data-role="controlgroup" data-type="horizontal">
+						
+						%{if $page_nb > 1}%
+							<a href="javascript: dataset_set_page('%{$page_nb - 1}%');" data-role="button" data-icon="arrow-l" data-theme="a">&nbsp;</a>
+						%{/if}%
+						
+						%{if $nb_pages<5}%
+							%{for $i = 1; $i <= $nb_pages; $i++}%
 								%{if $page_nb != $i}%
 									<a href="javascript: dataset_set_page('%{$i}%');" data-role="button" data-theme="a">%{$i}%</a>
 								%{else}%
@@ -136,61 +121,66 @@
 								%{/if}%
 							%{/for}%
 						%{else}%
-							<a href="javascript: dataset_set_page('1');" data-role="button" data-theme="a">1</a>
-							<a href="javascript: dataset_set_page('%{$page_nb - 1}%');" data-role="button" data-theme="a">%{$page_nb - 1}%</a>
-							<a href="javascript: dataset_set_page('%{$page_nb - 1}%');" data-role="button" data-theme="b">%{$page_nb}%</a>
+							%{if $page_nb<4}%
+								%{for $i = 1; $i <= $page_nb; $i++}%
+									%{if $page_nb != $i}%
+										<a href="javascript: dataset_set_page('%{$i}%');" data-role="button" data-theme="a">%{$i}%</a>
+									%{else}%
+										<a href="javascript: void(0);" data-role="button" data-theme="b">%{$i}%</a>
+									%{/if}%
+								%{/for}%
+							%{else}%
+								<a href="javascript: dataset_set_page('1');" data-role="button" data-theme="a">1</a>
+								<a href="javascript: dataset_set_page('%{$page_nb - 1}%');" data-role="button" data-theme="a">%{$page_nb - 1}%</a>
+								<a href="javascript: dataset_set_page('%{$page_nb - 1}%');" data-role="button" data-theme="b">%{$page_nb}%</a>
+							%{/if}%
+							
+							%{if $page_nb>$nb_pages-3}%
+								%{for $i =$page_nb+1; $i <= $nb_pages; $i++}%
+										<a href="javascript: dataset_set_page('%{$i}%');" data-role="button" data-theme="a">%{$i}%</a>
+								%{/for}%
+							%{else}%
+								<a href="javascript: dataset_set_page('%{$page_nb + 1}%');" data-role="button" data-theme="a">%{$page_nb + 1}%</a>
+								<a href="javascript: dataset_set_page('%{$nb_pages}%');" data-role="button" data-theme="a">%{$nb_pages}%</a> 
+							%{/if}%
 						%{/if}%
 						
-						%{if $page_nb>$nb_pages-3}%
-							%{for $i =$page_nb+1; $i <= $nb_pages; $i++}%
-									<a href="javascript: dataset_set_page('%{$i}%');" data-role="button" data-theme="a">%{$i}%</a>
-							%{/for}%
-						%{else}%
-							<a href="javascript: dataset_set_page('%{$page_nb + 1}%');" data-role="button" data-theme="a">%{$page_nb + 1}%</a>
-							<a href="javascript: dataset_set_page('%{$nb_pages}%');" data-role="button" data-theme="a">%{$nb_pages}%</a> 
+						%{if $page_nb < $nb_pages}%
+							<a href="javascript: dataset_set_page('%{$page_nb + 1}%');" data-iconpos="right" data-theme="a" data-role="button" data-icon="arrow-r" data-transition="fade">&nbsp;</a>
 						%{/if}%
-
-					%{/if}%
-					
-
-					%{if $page_nb < $nb_pages}%
-						<a href="javascript: dataset_set_page('%{$page_nb + 1}%');" data-iconpos="right" data-theme="a" data-role="button" data-icon="arrow-r" data-transition="fade">&nbsp;</a>
-					%{/if}%
-					
-				</div>
-
-			</td>
-			%{if $display_dataset_select_bar == 1}%
-			<td width="10%">
-				<select onchange="javascript: dataset_set_rows_per_page(this.value);" data-native-menu="false">
-					%{foreach $range_rows_per_page as $v}%
-						<option value="%{$v}%"%{if $rows_per_page == $v}% selected="selected"%{/if}%  data-mini="true">%{$v}% %{@ 'r&eacute;sultats'}%</option>
-					%{/foreach}%
-				</select>
-			</td>
-			%{/if}%
-		</tr>
-	</table>
-
-
+					</div>
+				</td>
+				
+				%{if $display_dataset_select_bar == 1}%
+				<td width="10%">
+					<select onchange="javascript: dataset_set_rows_per_page(this.value);" data-native-menu="false">
+						%{foreach $range_rows_per_page as $v}%
+							<option value="%{$v}%"%{if $rows_per_page == $v}% selected="selected"%{/if}%  data-mini="true">%{$v}% %{@ 'r&eacute;sultats'}%</option>
+						%{/foreach}%
+					</select>
+				</td>
+				%{/if}%
+			</tr>
+		</table>
 	</div><!-- /footer -->
+	%{/if}%
 
-<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="d" data-mini="true">
-%{if $searchi > 0}%
-	<li>
-		<input type="search" name="%{$name}%_search" id="form_%{$name}%_search" value="%{$search}%" data-mini="true" placeholder="Type here to search" onchange="javascript: dataset_set_search(this.value);"/>
-	</li>
-%{/if}%
-	</form>
-%{if $rows}%
-%{foreach $rows as $row}%
-        %{$row}%
-%{/foreach}%
-%{else}%
-<li data-theme="c">
-%{@ 'La recherche n\'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.'}%
-</li>
-%{/if}%
-</ul>
+	<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="d" data-mini="true">
+	%{if $searchi > 0}%
+		<li>
+			<input type="search" name="%{$name}%_search" id="form_%{$name}%_search" value="%{$search}%" data-mini="true" placeholder="Type here to search" onchange="javascript: dataset_set_search(this.value);"/>
+		</li>
+	%{/if}%
 
+	%{if $rows}%
+		%{foreach $rows as $row}%
+			%{$row}%
+		%{/foreach}%
+	%{else}%
+		<li data-theme="c">
+		%{@ 'La recherche n\'a retourn&eacute; aucun r&eacute;sultat pour ces crit&egrave;res.'}%
+		</li>
+	%{/if}%
+	</ul>
 
+</form>

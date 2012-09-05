@@ -268,7 +268,7 @@ class web_framework {
 			$this->open_db();
 			
 		$this->execute_hook("owf_post_init");
-	
+		
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

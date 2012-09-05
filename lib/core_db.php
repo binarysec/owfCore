@@ -37,7 +37,6 @@ define("WF_TIME",		0x50);
 define("WF_DATA",		0x60);
 define("WF_BIGINT",		0x70);
 
-/* Deprecated, backyard compatibility only */
 define("WF_PRI",		WF_INT | WF_AUTOINC | WF_PRIMARY);
 define("WF_VARCHAR_PRI",WF_VARCHAR | WF_PRIMARY);
 define("WF_DATA_PRI",	WF_DATA | WF_PRIMARY);
@@ -118,68 +117,24 @@ abstract class core_db {
 	abstract public function get_last_insert_id($seq=null);
 }
 
-class core_db_query {
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *		Queries scheme
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+abstract class core_db_query {
 	var $type = 0;
+	
+	public function __construct($type) { $this->type = $type; }
 }
 
-class core_db_insert extends core_db_query {
-	var $zone = NULL;
-	var $arr = NULL;
-	var $where = NULL;
-	public function __construct($zone, $arr, $where=NULL) {
-		$this->type = WF_INSERT;
+abstract class core_db_query_simple extends core_db_query {
+	public function __construct($type, $zone, $arr = null, $where = null) {
+		parent::__construct($type);
 		$this->zone = $zone;
-		$this->arr = $arr;
-		$this->where = $where;
-	}
-	public function where($where) {
-		$this->where = $where;
-	}
-	public function insert($insert) {
-		$this->arr = $insert;
-	}
-}
-class core_db_multiple_insert_or_update extends core_db_query {
-	var $zone = NULL;
-	var $arr = NULL;
-	var $up = NULL;
-	public function __construct($zone, $arr,$up=NULL) {
-		$this->type = WF_MULTIPLE_INSERT_OR_UPDATE;
-		$this->zone = $zone;
-		$this->arr = $arr;
-		if($up)
-			$this->up = $up;
-	}
-	public function up($up) {
-		$this->up = $up;
-	}
-}
-
-class core_db_insert_id extends core_db_query {
-	var $zone = NULL;
-	var $arr = NULL;
-	var $id = NULL;
-	var $result = NULL;
-	public function __construct($zone, $id, $arr) {
-		$this->type = WF_INSERT_ID;
-		$this->zone = $zone;
-		$this->id = $id;
-		$this->arr = $arr;
-	}
-	public function get_result() {
-		return($this->result);
-	}
-}
-
-class core_db_update extends core_db_query {
-	var $zone = NULL;
-	var $arr = NULL;
-	var $where = NULL;
-	public function __construct($zone, $arr=NULL, $where=NULL) {
-		$this->type = WF_UPDATE;
-		$this->zone = $zone;
-		$this->arr = $arr;
-		$this->where = $where;
+		$this->insert($arr);
+		$this->where($where);
 	}
 	public function where($where) {
 		$this->where = $where;
@@ -189,16 +144,10 @@ class core_db_update extends core_db_query {
 	}
 }
 
-class core_db_adv_update extends core_db_query {
-	var $zone = NULL;
-	var $arr = NULL;
-
-	public function __construct($zone) {
-		$this->type = WF_ADV_UPDATE;
+abstract class core_db_query_adv extends core_db_query {
+	public function __construct($type, $zone) {
+		parent::__construct($type);
 		$this->zone = $zone;
-	}
-	public function insert($insert) {
-		$this->arr = $insert;
 	}
 	
 	var $cond_matrix = array();
@@ -215,13 +164,153 @@ class core_db_adv_update extends core_db_query {
 	public function do_and() {
 		array_push($this->cond_matrix, array(4));
 	}
-	public function do_comp($var, $sign, $val=NULL) {
-		array_push($this->cond_matrix, array(5, $var, $sign, $val));
+	/* keo on 11/12/2008 : param $val no longer required
+	   cause condition IS [NOT] NULL doens't require value */
+	public function do_comp($var, $sign, $val = null) {
+		$exist = false;
+		
+		/* if query contains aliases, check if comparison use existing alias */
+		if($this->type & WF_QUERY_AS) {
+			$var_exist = false;
+			$val_exist = false;
+			
+			/* chech $var if alias is given */
+			$var_alias = current(explode(".", $var));
+			foreach($this->as as $als)
+				if(isset($als["A"]) && $als["A"] == $var_alias)
+					$var_exist = true;
+			
+			/* chech $val if alias is given */
+			if($val != null) {
+				$val_alias = current(explode(".", $val));
+				foreach($this->as as $als)
+					if(isset($als["A"]) && $als["A"] == $val_alias)
+						$val_exist = true;
+			}
+			
+			if($sign == "==") {
+				if(!$var_exist)
+					throw new wf_exception(null, WF_EXC_PRIVATE,
+						"Calling do_comp($var, \"$sign\" [,..]) but the alias $var_alias was not registered"
+					);
+				if(!$val_exist)
+					throw new wf_exception(null, WF_EXC_PRIVATE,
+						"Calling do_comp($var, \"$sign\", $val) but the alias $val_alias was not registered"
+					);
+			}
+			
+			$exist = $var_exist && $val_exist;
+		}
+		
+		array_push($this->cond_matrix, array(5, $var, $sign, $val, $exist));
 	}
 }
 
-class core_db_adv_select extends core_db_query {
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *		Queries declaration
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+class core_db_insert extends core_db_query_simple {
+	public function __construct($zone, $arr) {
+		parent::__construct(WF_INSERT, $zone, $arr);
+	}
+}
+
+class core_db_insert_id extends core_db_query_simple {
+	var $result = null;
+	public function __construct($zone, $id, $arr) {
+		parent::__construct(WF_INSERT_ID, $zone, $arr);
+		$this->id = $id;
+	}
+	public function get_result() {
+		return $this->result;
+	}
+}
+
+class core_db_update extends core_db_query_simple {
+	public function __construct($zone, $arr = null, $where = null) {
+		parent::__construct(WF_UPDATE, $zone, $arr, $where);
+	}
+}
+
+class core_db_delete extends core_db_query_simple {
+	public function __construct($zone, $where) {
+		parent::__construct(WF_DELETE, $zone, null, $where);
+	}
+}
+
+class core_db_select extends core_db_query_simple {
+	var $fields = null;
+	var $order = null;
+	var $group = null;
+	var $result = null;
+	var $limit = -1;
+	var $offset = -1;
+	
+	public function __construct($zone, $fields = null, $where = null) {
+		parent::__construct(WF_SELECT, $zone, null, $where);
+		$this->fields($fields);
+	}
+	
+	public function fields($fields) {
+		$this->fields = $fields;
+	}
+	
+	public function order($order) {
+		$this->order = $order;
+	}
+
+	public function group($group) {
+		$this->group = $group;
+	}
+	
+	public function limit($limit, $offset=-1) {
+		$this->limit = intval($limit);
+		if($offset > -1)
+			$this->offset = intval($offset);
+	}
+	
+	public function get_result() {
+		return($this->result);
+	}
+}
+
+class core_db_multiple_insert_or_update extends core_db_query {
 	var $zone = NULL;
+	var $arr = NULL;
+	var $up = NULL;
+	public function __construct($zone, $arr,$up=NULL) {
+		$this->type = WF_MULTIPLE_INSERT_OR_UPDATE;
+		$this->zone = $zone;
+		$this->arr = $arr;
+		if($up)
+			$this->up = $up;
+	}
+	public function up($up) {
+		$this->up = $up;
+	}
+}
+
+class core_db_adv_update extends core_db_query_adv {
+	var $arr = null;
+
+	public function __construct($zone) {
+		parent::__construct(WF_ADV_UPDATE, $zone);
+	}
+	public function insert($insert) {
+		$this->arr = $insert;
+	}
+}
+
+class core_db_adv_delete extends core_db_query_adv {
+	public function __construct($zone) {
+		parent::__construct(WF_ADV_DELETE, $zone);
+	}
+}
+
+class core_db_adv_select extends core_db_query_adv {
 	var $fields = array();
 	var $as = array();
 	var $where = array();
@@ -234,9 +323,8 @@ class core_db_adv_select extends core_db_query {
 	
 	var $req_fct = NULL;
 	
-	public function __construct($zone=NULL) {
-		$this->type = WF_ADV_SELECT;
-		$this->zone = $zone;
+	public function __construct($zone = null) {
+		parent::__construct(WF_ADV_SELECT, $zone);
 	}
 	
 	public function fields($fields) {
@@ -274,143 +362,7 @@ class core_db_adv_select extends core_db_query {
 	public function request_function($type) {
 		$this->req_fct = $type;
 	}
-	
-	
-	var $cond_matrix = array();
-	
-
-	public function do_open() {
-		array_push($this->cond_matrix, array(1));
-	}
-	public function do_close() {
-		array_push($this->cond_matrix, array(2));
-	}
-	public function do_or() {
-		array_push($this->cond_matrix, array(3));
-	}
-	public function do_and() {
-		array_push($this->cond_matrix, array(4));
-	}
-	/* keo on 11/12/2008 : param $val no longer required
-	   cause condition IS [NOT] NULL doens't require value */
-	public function do_comp($var, $sign, $val=null) {
-		$var_exist = false;
-		$val_exist = false;
-		
-		/* chech $var if alias is given */
-		$var_alias = current(explode(".", $var));
-		foreach($this->as as $als)
-			if(isset($als["A"]) && $als["A"] == $var_alias)
-				$var_exist = true;
-		
-		/* chech $val if alias is given */
-		if($val != null) {
-			$val_alias = current(explode(".", $val));
-			foreach($this->as as $als)
-				if(isset($als["A"]) && $als["A"] == $val_alias)
-					$val_exist = true;
-		}
-		
-		if($sign == "==") {
-			if(!$var_exist)
-				throw new wf_exception(null, WF_EXC_PRIVATE,
-					"Calling do_comp($var, \"$sign\" [,..]) but the alias $var_alias was not registered"
-				);
-			if(!$val_exist)
-				throw new wf_exception(null, WF_EXC_PRIVATE,
-					"Calling do_comp($var, \"$sign\", $val) but the alias $val_alias was not registered"
-				);
-		}
-		
-		array_push($this->cond_matrix, array(5, $var, $sign, $val, $var_exist && $val_exist));
-	}
 }
-
-
-class core_db_select extends core_db_query {
-	var $zone = NULL;
-	var $fields = NULL;
-	var $where = NULL;
-	var $order = NULL;
-	var $group = NULL;
-	var $result = NULL;
-	
-	var $limit = -1;
-	var $offset = -1;
-	
-	public function __construct($zone, $fields=NULL, $where=NULL) {
-		$this->type = WF_SELECT;
-		$this->zone = $zone;
-		$this->fields = $fields;
-		$this->where = $where;
-	}
-	
-	public function where($where) {
-		$this->where = $where;
-	}
-	
-	public function fields($fields) {
-		$this->fields = $fields;
-	}
-	
-	public function order($order) {
-		$this->order = $order;
-	}
-
-	public function group($group) {
-		$this->group = $group;
-	}
-	
-	public function limit($limit, $offset=-1) {
-		$this->limit = intval($limit);
-		if($offset > -1)
-			$this->offset = intval($offset);
-	}
-	
-	public function get_result() {
-		return($this->result);
-	}
-}
-
-class core_db_delete extends core_db_query {
-	var $zone = NULL;
-	var $where = NULL;
-	public function __construct($zone, $where) {
-		$this->type = WF_DELETE;
-		$this->zone = $zone;
-		$this->where = $where;
-	}
-}
-
-class core_db_adv_delete extends core_db_query {
-	var $zone = NULL;
-
-	public function __construct($zone) {
-		$this->type = WF_ADV_DELETE;
-		$this->zone = $zone;
-	}
-
-	var $cond_matrix = array();
-
-	public function do_open() {
-		array_push($this->cond_matrix, array(1));
-	}
-	public function do_close() {
-		array_push($this->cond_matrix, array(2));
-	}
-	public function do_or() {
-		array_push($this->cond_matrix, array(3));
-	}
-	public function do_and() {
-		array_push($this->cond_matrix, array(4));
-	}
-	public function do_comp($var, $sign, $val) {
-		array_push($this->cond_matrix, array(5, $var, $sign, $val));
-	}
-	
-
-}
-
 
 class core_db_select_distinct extends core_db_query {
 	var $zone = NULL;
@@ -428,7 +380,6 @@ class core_db_select_distinct extends core_db_query {
 		$this->fields = $fields;
 	}
 	
-	
 	public function fields($fields) {
 		$this->fields = $fields;
 	}
@@ -451,7 +402,6 @@ class core_db_select_distinct extends core_db_query {
 		return($this->result);
 	}
 }
-
 
 class core_db_index extends core_db_query {
 	public $zone;
@@ -477,31 +427,6 @@ class core_db_index extends core_db_query {
 	private function checkup(&$idx, $colname, $unique) {
 		$idx[$colname] = $unique;
 	}
-	
-}
-
-class core_db_device {
-	var $driver_arr = array();
-	
-	public function __construct() {
-		$dir = dirname(__FILE__);
-		$sd = scandir($dir);
-		foreach($sd as $k => $v) {
-			if(strncmp($v, "core_db_", 7) == 0) {
-				$patterns = array('/core_db_/', '/.php/');
-				$replacements = array('', '');
-				$driver = preg_replace($patterns, $replacements, $v);
-				$this->load_driver($driver);
-			}
-		}
-	}
-	
-	private function load_driver($name) {
-		$driver = "core_db_".$name;
-		$o = new ${driver};
-		$this->driver_arr[$name] = $o;
-	}
-	
 	
 }
 
@@ -551,5 +476,29 @@ class core_db_join {
 	}
 	public function do_comp($var, $sign, $val) {
 		array_push($this->cond_matrix, array(5, $var, $sign, $val));
+	}
+}
+
+
+class core_db_device {
+	var $driver_arr = array();
+	
+	public function __construct() {
+		$dir = dirname(__FILE__);
+		$sd = scandir($dir);
+		foreach($sd as $k => $v) {
+			if(strncmp($v, "core_db_", 7) == 0) {
+				$patterns = array('/core_db_/', '/.php/');
+				$replacements = array('', '');
+				$driver = preg_replace($patterns, $replacements, $v);
+				$this->load_driver($driver);
+			}
+		}
+	}
+	
+	private function load_driver($name) {
+		$driver = "core_db_".$name;
+		$o = new ${driver};
+		$this->driver_arr[$name] = $o;
 	}
 }

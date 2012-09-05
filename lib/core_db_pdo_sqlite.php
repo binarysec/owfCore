@@ -222,14 +222,8 @@ class core_db_pdo_sqlite extends core_db {
 		}
 		elseif($query_obj->type == WF_UPDATE || $query_obj->type == WF_ADV_UPDATE) {
 			foreach($query_obj->arr as $k => $v) {
-				$fields .= empty($fields) ?
-					"`$k` = ?" :
-					", `$k` = ?";
-				
-				array_push(
-					$prepare_value,
-					$this->safe_input($v)
-				);
+				$fields .= empty($fields) ? "`$k` = ?" : ", `$k` = ?";
+				array_push($prepare_value, $this->safe_input($v));
 			}
 		}
 		elseif(
