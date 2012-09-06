@@ -666,11 +666,7 @@ class web_framework {
 		
 		$message = "Sorry your request could not be delivered<br/><strong>$message</strong>";
 		
-		$tpl = new core_tpl($this);
-		$tpl->set("header", "Error $code");
-		$tpl->set("message", $message);
-		$tpl->set("title", "Error $code");
-		echo $tpl->fetch("core/html/message");
+		$this->display_msg("Error $code", $message, "Error $code");
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -682,6 +678,7 @@ class web_framework {
 		$tpl->set("header", $header);
 		$tpl->set("message", $message);
 		$tpl->set("title", empty($title) ? "OpenWF Message" : $title);
+		$tpl->set("online", $this->session()->is_online());
 		echo $tpl->fetch("core/html/message");
 	}
 	
@@ -796,7 +793,7 @@ class web_framework {
 				gethostbyaddr($_SERVER["REMOTE_ADDR"])
 			);
 		}
-		
+		$tpl->set("online", $this->session()->is_online());
 		header("X-Owf-Session: NeedAuth");
 		echo $tpl->fetch("core/html/login");
 		exit(0);

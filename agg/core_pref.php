@@ -371,7 +371,7 @@ class core_pref extends wf_agg {
 			
 		}
 
-		$this->store_context($this->contexts[$name], &$name);
+		$this->store_context($this->contexts[$name], $name);
 		
 		return($this->contexts[$name]);
 	}

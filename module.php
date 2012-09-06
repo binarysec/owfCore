@@ -84,23 +84,7 @@ class wfm_core extends wf_module {
 	}
 	
 	public function owf_post_init() {
-		$core_pref = $this->wf->core_pref()->register_group("core", "core");
-		
-		$core_pref->register(
-			"site_name",
-			"Nom du site",
-			CORE_PREF_VARCHAR,
-			isset($this->wf->ini_arr["common"]["site_name"]) ? 
-				$this->wf->ini_arr["common"]["site_name"] :
-				"http://www.mywebsite.com"
-		);
-		
-		$core_pref->register(
-			"base",
-			"Racine du site",
-			CORE_PREF_VARCHAR,
-			isset($this->wf->ini_arr["common"]["base"]) ? 
-				$this->wf->ini_arr["common"]["base"] : ""
-		);
+		if(strlen(ini_get("date.timezone")) < 1)
+			date_default_timezone_set("UTC");
 	}
 }

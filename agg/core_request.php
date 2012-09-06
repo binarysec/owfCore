@@ -70,6 +70,8 @@ class core_request extends wf_agg {
 			exit(0);
 		}
 		
+		/* process la session */
+		$session_check = $this->_session->check_session();
 		
 		/* vérification du canal */
 		if(!isset($this->channel[0])) {
@@ -90,8 +92,7 @@ class core_request extends wf_agg {
 		$this->check_for_login();
 		
 		/* vérification de la session */
-		$ret = $this->_session->check_session();
-		if($ret == SESSION_TIMEOUT) {
+		if($session_check == SESSION_TIMEOUT) {
 			$this->wf->display_login(
 				"Session destroyed",
 				null, true

@@ -384,12 +384,12 @@ class wfr_core_dao extends wf_route_request {
 				else {
 					/* execute filter */
 					if(isset($val["filter_cb"])) {
-						$ret = call_user_func($val["filter_cb"], $item, &$var);
+						$ret = call_user_func($val["filter_cb"], $item, $var);
 						if(is_string($ret))
 							$error["msgs"][$key] = $ret;
 						else if($ret && $var) {
 							if(isset($val["return_cb"])) {
-								$ret2 = call_user_func($val["return_cb"], $item, &$var);
+								$ret2 = call_user_func($val["return_cb"], $item, $var);
 								if($ret2)
 									$insert[$key] = $ret2;
 								else

@@ -36,7 +36,14 @@
 		</div>
 		
 		<div data-role="footer" class="owf-footer">
-			<h3><a href="%{link '/'}%">%{@ 'Site root'}%</a> / <a href="%{link '/session/login'}%">%{@ 'Login'}%</a> / <a href="http://www.binarysec.com/">BinarySEC</a> / <a href="http://www.owf.re/">OpenWF</a></h3>
+			<h3><a href="%{link '/'}%">%{@ 'Site root'}%</a> /
+			%{if $online}%
+			<a href="%{link '/session/logout'}%">%{@ 'Logout'}%</a> /
+			%{else}%
+			<a href="%{link '/session/login'}%">%{@ 'Login'}%</a> /
+			%{/if}%
+			<a href="http://www.binarysec.com/">BinarySEC</a> /
+			<a href="http://www.owf.re/">OpenWF</a></h3>
 		</div>
 	</div>
 </body>
