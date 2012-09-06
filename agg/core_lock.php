@@ -34,6 +34,7 @@ class core_lock extends wf_agg {
 			
 			/* site is locked */ 
 			if($serial["lock"] == true) {
+				$ret = false;
 				/* control the pid if it is dead */
 				$pf = "/proc/$serial[pid]";
 				if(!file_exists($pf)) {
@@ -42,11 +43,12 @@ class core_lock extends wf_agg {
 						"* IS ACTUALY LOCKED BY A DEAD PROCESS n°$serial[pid]\n".
 						"* Removing file $lf\n";
 					@unlink($lf);
+					$ret = true;
 				}
-
+				
 				flock($fp, LOCK_UN);
 				fclose($fp);
-				return(false);
+				return($ret);
 			}
 			
 			/* lock the file */
