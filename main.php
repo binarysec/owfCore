@@ -257,7 +257,7 @@ class web_framework {
 		if(!$this->_core_log)
 			$this->_core_log = $this->core_log();
 			
-		$this->_core_log->log(&$log);
+		$this->_core_log->log($log);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -294,7 +294,7 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function load_by_file($file) {
 		if(function_exists("apc_fetch") && ($i = apc_fetch("owf_ini".$file)))
-			$this->ini_arr = unserialize(&$i);
+			$this->ini_arr = unserialize($i);
 		else {
 			$this->ini_arr = @parse_ini_file($file, TRUE);
 			if($this->ini_arr == NULL) {
@@ -466,7 +466,7 @@ class web_framework {
 		$this->aggregator_cached[$funcname] = &$obj;
 		
 		/* execute le chargeur */
-		$obj->loader(&$this);
+		$obj->loader($this);
 		
 		return($obj);
 	}

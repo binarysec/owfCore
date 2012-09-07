@@ -87,7 +87,7 @@ class core_route extends wf_agg {
 	 * Execute a route without permission checking
 	 * accepting channel returned by get_channel
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function execute_route($channel) {
+	public function execute_route(&$channel) {
 		if($channel[0][2] == WF_ROUTE_ACTION) {
 			$finfo = $this->wf->locate_file("route/".$channel[0][3].".php", true);
 			$filename = $finfo[0];

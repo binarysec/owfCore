@@ -67,7 +67,7 @@ class core_request extends wf_agg {
 		if($ranon == WF_USER_RANON) {
 			$this->_session->check_session();
 			$this->wf->execute_hook("core_request_init");
-			$this->a_core_route->execute_route(&$this->channel);
+			$this->a_core_route->execute_route($this->channel);
 			exit(0);
 		}
 		
@@ -139,7 +139,7 @@ class core_request extends wf_agg {
 		
 		/* terminate */
 		$this->wf->execute_hook("core_request_init");
-		$this->a_core_route->execute_route(&$this->channel);
+		$this->a_core_route->execute_route($this->channel);
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -153,7 +153,7 @@ class core_request extends wf_agg {
 			$this->channel[2][1] == "login"
 			) {
 			$this->a_core_route->execute_route(
-				&$this->channel
+				$this->channel
 			);
 		}
 	}

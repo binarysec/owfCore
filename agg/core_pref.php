@@ -149,8 +149,8 @@ class core_pref_context {
 				$this->variables[$var] = array();
 				
 			$this->variables[$var] = array_merge(
-				&$data,
-				&$insert
+				$data,
+				$insert
 			);
 
 			/* need cacher update */
@@ -373,7 +373,7 @@ class core_pref extends wf_agg {
 			
 		}
 
-		$this->store_context($this->contexts[$name], &$name);
+		$this->store_context($this->contexts[$name], $name);
 		
 		return($this->contexts[$name]);
 	}
