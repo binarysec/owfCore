@@ -3,11 +3,13 @@
 		$('<div>').simpledialog2({
 			mode: 'blank',
 			headerText: '%{@ 'Delete confirmation'}%',
-			headerClose: false,
+			headerClose: true,
 			dialogAllow: true,
-			dialogForce: true,
+			dialogForce: false,
+			width: "400px",
+			height: "300px",
 			blankContent :
-				'<p><center><form action="' + href + '">'+
+				'<p><center style="padding: 10px;"><form action="' + href + '">'+
 					'%{@ 'Are you sure about deleting this item ?'}% <br/>'+
 					'<input type="submit" data-role="button" value="%{@ 'Delete'}%" />'+
 					'<a rel="close" data-role="button" href="#">%{@ 'Close'}%</a>'+
