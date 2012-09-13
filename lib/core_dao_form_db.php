@@ -41,7 +41,12 @@ class core_dao_form_db {
 		$this->description = $description;
 		$this->data = &$this->struct["data"];
 		foreach($this->struct["data"] as $key => $val)
-			$this->db[$key] = $val["type"];
+			if(isset($val["kind"]) && $val["kind"] == OWF_DAO_MAP) {
+				$this->db[$key."_latitude"] = WF_FLOAT;
+				$this->db[$key."_longitude"] = WF_FLOAT;
+			}
+			else
+				$this->db[$key] = $val["type"];
 		
 		/* register zone */
 		$this->wf->db->register_zone(

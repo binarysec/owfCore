@@ -327,21 +327,33 @@ class wfr_core_dao extends wf_route_request {
 						"</select>".
 					"</div>\n";
 			}
+			
+			/* GEOLOC */
+			elseif($v["kind"] == OWF_DAO_MAP) {
+				$longitude = isset($v["value_longitude"]) ? floatval($v["value_longitude"]) : 0;
+				$latitude = isset($v["value_latitude"]) ? floatval($v["value_latitude"]) : 0;
+				
+				$forms .=
+					"<div data-role='fieldcontain'>".
+						"<label for='$k' class='ui-select'>$v[text] :</label>".
+						"<a id='$k' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#map-geoloc'>$longitude / $latitude</a>".
+					"</div>\n";
+			}
 		}
 		
 		$can_add = !is_null($item) && ($item->capable & OWF_DAO_ADD) == OWF_DAO_ADD;
-		$can_delete = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE;
+		$can_del = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE && $this->uid > 0;
+		$add_txt = "<button type='submit' data-theme='b'>Submit</button>";
+		$del_txt = "<a href='' onclick=\"dao_delete_confirm('".$this->selector()->del_link($this->uid, TRUE)."');\"".
+						"data-theme='f' data-role='button' class='dao-delete-confirm'>".$this->lang->ts("Delete")."</a>";
 		
-		if($can_add)
-			$forms .= '<button type="submit" data-theme="b">Submit</button>';
+		if($can_add && $can_del)
+			$forms .= "<fieldset class='ui-grid-a'><div class='ui-block-a'>$add_txt</div><div class='ui-block-b'>$del_txt</div></fieldset>";
+		elseif($can_add)
+			$forms .= $add_txt;
+		elseif($can_del)
+			$forms .= $del_txt;
 		
-		$sup_text = $this->lang->ts("Delete");
-		
-		if($this->uid > 0 && $can_delete) {
-			$del_link = $this->selector()->del_link($this->uid, TRUE);
-			$forms .= '<a href="" onclick="dao_delete_confirm(\''.$del_link.'\');" data-theme="f" data-role="button" class="dao-delete-confirm" >'.$sup_text.'</a>';
-		}
-			
 		$forms .= "</form>";
 		
 		return($forms);
@@ -451,5 +463,33 @@ class wfr_core_dao extends wf_route_request {
 		echo json_encode($res);		
 		exit(0);
 	}
-
+	
+	public function gmap() {
+/*
+		$in = array();
+*/
+		
+/*
+		$multi = $this->wf->get_var('multi');
+		if($multi != 'true' && $multi != 'false')
+			return;
+		
+		if($multi == 'true') {
+			if($this->back == null)
+				return;
+			$in['multi'] = true;
+			$in['back']  = $this->core_cipher->encode($this->back);;
+		}
+		else {
+			$in['multi'] = false;
+		}
+*/
+		
+		$tpl = new core_tpl($this->wf);
+/*
+		$tpl->set_vars($in);
+*/
+		
+		echo $tpl->fetch('core/dao/gmap');
+	}
 }

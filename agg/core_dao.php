@@ -13,13 +13,14 @@ define("OWF_DAO_CHECKBOX",			10);
 define("OWF_DAO_CHECKBOX_READON",	11);
 define("OWF_DAO_SLIDER",			12);
 define("OWF_DAO_FLIP",				13);
+define("OWF_DAO_MAP",				16);
 
 // Not ported yet
-//define("OWF_DAO_INPUT_REQ",		2);
-//define("OWF_DAO_DATA_DIR",		4);
+//define("OWF_DAO_INPUT_REQ",		2); ??
+//define("OWF_DAO_DATA_DIR",		4); ??
 //define("OWF_DAO_DATE",           14);
 //define("OWF_DAO_DATE_READON",    15);
-//define("OWF_DAO_STARS",          16);
+//define("OWF_DAO_STARS",          17);
 
 define("OWF_DAO_ADD",		0x01);
 define("OWF_DAO_REMOVE",	0x02);
@@ -93,6 +94,10 @@ class core_dao extends wf_agg {
 					
 					if(isset($val["step"]))
 						$result[$key]["step"] = (int) $val["step"];
+				}
+				elseif($val["kind"] == OWF_DAO_MAP) {
+					$result[$key]["value_latitude"] = htmlspecialchars($data[$key."_latitude"]);
+					$result[$key]["value_longitude"] = htmlspecialchars($data[$key."_longitude"]);
 				}
 				
 				if(isset($val["reader_cb"], $data[$key]))

@@ -20,14 +20,8 @@ class wfm_core extends wf_module {
 	
 	public function get_actions() {
 		return(array(
-
-			"/admin/system/data" => array(
-				WF_ROUTE_REDIRECT,
-				"/data",
-				$this->ts("Listing des données"),
-				WF_ROUTE_SHOW,
-				array("session:god")
-			),
+			
+			/* SMTP */
 			"/admin/system/smtp" => array(
 				WF_ROUTE_ACTION,
 				"admin/system/smtp",
@@ -35,6 +29,15 @@ class wfm_core extends wf_module {
 				$this->ts("SMTP Service configuration"),
 				WF_ROUTE_SHOW,
 				array("core:smtp")
+			),
+			
+			/* data listing */
+			"/admin/system/data" => array(
+				WF_ROUTE_REDIRECT,
+				"/data",
+				$this->ts("Listing des données"),
+				WF_ROUTE_SHOW,
+				array("session:god")
 			),
 			"/data" => array(
 				WF_ROUTE_ACTION,
@@ -45,6 +48,7 @@ class wfm_core extends wf_module {
 				array("session:ranon")
 			),
 			
+			/* dao */
 			"/dao" => array(
 				WF_ROUTE_ACTION,
 				"dao",
@@ -53,7 +57,16 @@ class wfm_core extends wf_module {
 				WF_ROUTE_HIDE,
 				array("session:ranon")
 			),
+			"/dao/gmap" => array(
+				WF_ROUTE_ACTION,
+				"dao",
+				"gmap",
+				"",
+				WF_ROUTE_HIDE,
+				array("session:ranon")
+			),
 			
+			/* others */
 			"/dialog" => array(
 				WF_ROUTE_ACTION,
 				"dialog",
