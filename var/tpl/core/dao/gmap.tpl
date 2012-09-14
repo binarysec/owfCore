@@ -12,10 +12,15 @@
 		var map_loaded = false;
 		
 		function on_load() {
-			var gmap_data = parent.document.getElementById('gmap-data');
+			if(typeof window.google == 'undefined') {
+				setTimeout(on_load, 2000);
+				console.debug(window.google);
+			}
+			else {
+				var gmap_data = parent.document.getElementById('owf-dao-map-data');
 				
-			if(typeof gmap_data != "undefined") {
-				geomap_init(eval(gmap_data.innerHTML));
+				if(typeof gmap_data != "undefined")
+					geomap_init(eval(gmap_data.innerHTML));
 			}
 		}
 		
@@ -43,9 +48,6 @@
 							});
 							j++;
 						}
-					}
-					else {
-						continue;
 					}
 				}
 				

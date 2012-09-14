@@ -22,29 +22,25 @@
 	
 	// GMap
 	function resize_popup() {
-		var w = $(window).width();
-		var h = $(window).height();
+		var	w = $(window).width(),
+			h = $(window).height();
 		
-		if(w <= 480 || h <= 320) {
-			$('#map-geoloc-iframe').width(w - 10);
-			$('#map-geoloc-iframe').height(h - 10);
-		}
+		if(w <= 480 || h <= 320)
+			$('#owf-dao-map-iframe').width(w - 10).height(h - 10);
 	};
 	$(document).bind('pageinit', resize_popup);
 	$(document).bind('orientationchange', resize_popup);
 </script>
 
-<div id="map-geoloc" data-role="popup" data-overlay-theme="a" data-theme="a" data-corners="false">
+<div id="owf-dao-map-popup" data-role="popup" data-overlay-theme="a" data-theme="a" data-corners="false" data-tolerance="15,15">
 	<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">%{@ "Close"}%</a>
+	<iframe id="owf-dao-map-iframe" src="%{link '/dao/gmap'}%?multi=false&back=%{$back}%" height="320px" width="480px"></iframe>
 	
-	<iframe id="map-geoloc-iframe" src="%{link "/dao/gmap"}%?multi=false&back=%{$back}%" height="320px" width="480px"></iframe>
+	<div id="owf-dao-map-data" style="display: none;">[{"latitude":0,"longitude":1}]</div>
 	
-	<div id="gmap-data" style="display: none;"></div>
-
-
 	<!-- TODO: faire un if pour le GMAP-->
 	<!-- TODO: voir pr plusieurs map-->
-	<div class="ui-grid-a" style="margin-left: 3%; margin-top: 3%;">
+	<!--<div class="ui-grid-a" style="margin-left: 3%; margin-top: 3%;">
 		<div class="ui-block-a"><label for="longitude">Longitude :</label></div>
 		<div class="ui-block-b"><label for="latitude">Latitude :</label></div>
 	</div>
@@ -54,7 +50,7 @@
 	</div>
 	<div class="ui-grid-solo">
 		<div class="ui-block-a"><button type="v" data-theme="b">Select !</button></div>
-	</div>
+	</div>-->
 </div>
 
 %{if array_key_exists("msgs", $error) && count($error["msgs"]) > 0}%

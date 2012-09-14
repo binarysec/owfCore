@@ -336,7 +336,7 @@ class wfr_core_dao extends wf_route_request {
 				$forms .=
 					"<div data-role='fieldcontain'>".
 						"<label for='$k' class='ui-select'>$v[text] :</label>".
-						"<a id='$k' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#map-geoloc'>$longitude / $latitude</a>".
+						"<a id='$k' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#owf-dao-map-popup'>$longitude / $latitude</a>".
 					"</div>\n";
 			}
 		}
