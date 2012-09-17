@@ -165,6 +165,8 @@ class wf_console extends web_framework {
 			else
 				$this->msg("There are no scripts for module $module.");
 		}
+		elseif($this->get_last_filename("/bin/$module.php"))
+			$this->msg("foo new feature !!!");
 		else
 			$this->msg("Module $module not found");
 	}
@@ -220,7 +222,20 @@ class wf_console extends web_framework {
 	
 	/* read the line */
 	private function read() {
-		$line = readline("~# ");
+		if(function_exists("readline")) {
+			$line = readline("~# ");
+			if(!empty($line))
+				readline_add_history($line);
+		}
+		else {
+			throw new wf_exception(
+				$this,
+				WF_EXC_PRIVATE,
+				"You don't have function readline with your PHP installation and compatability is not done yet"
+			);
+			//$line = fopen(); ....
+		}
+		
 		$this->parse_line($line);
 		return $line;
 	}

@@ -23,7 +23,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class core_datasource_db extends core_datasource {
-	private $cache = null;
+	protected $cache = null;
 	
 	public function get_struct() {
 		$dbfields = $this->wf->db->get_zone($this->get_name());
@@ -34,7 +34,7 @@ class core_datasource_db extends core_datasource {
 		return($struct);
 	}
 
-	private $search_opts = array(
+	protected $search_opts = array(
 		"cols" => array(),
 		"input" => null
 	);
@@ -44,7 +44,7 @@ class core_datasource_db extends core_datasource {
 		$this->search_opts["input"] = $input;
 	}
 	
-	private function process_search($q) {
+	protected function process_search($q) {
 		if(count($this->search_opts["cols"]) == 0 || !$this->search_opts["input"])
 			return(false);
 		$q->do_open();
