@@ -20,12 +20,11 @@ if(!file_exists($ini))
 if(!file_exists($core_link))
 	owf_fatal("You have to create a link to your core module main.php file at $core_link");
 
-
 /* load file */
 require($core_link);
 
-
 /* let's prepare the battle field */
+define("OWFCONSOLE", "okay");
 
 class wf_cli_command {
 	public function __construct($wf, $args, $opts) {
@@ -58,15 +57,9 @@ class wf_console extends web_framework {
 		/* sanatize */
 		$this->parse_line();
 		
-		if($this->argc > 1) {
-			$module = $this->args[0];
-			$script = $this->args[1];
-			return $this->script($module, $script);
-		}
-		else {
-			$this->msg("Usage <module> <script>");
-			return -1;
-		}
+		$module = $this->args[0];
+		$script = isset($this->args[1]) ? $this->args[1] : $this->args[0];
+		return $this->script($module, $script);
 	}
 	
 	/* interactive mode */
@@ -100,13 +93,9 @@ class wf_console extends web_framework {
 				
 				/* modules commands */
 				default :
-					if($this->argc > 1) {
-						$module = $this->args[0];
-						$script = $this->args[1];
-						$this->script($module, $script);
-					}
-					else
-						$this->msg("Usage : <module> <script> (or <module> help)");
+					$module = $this->args[0];
+					$script = isset($this->args[1]) ? $this->args[1] : $this->args[0];
+					$this->script($module, $script);
 					continue 2;
 			}
 			
@@ -120,63 +109,96 @@ class wf_console extends web_framework {
 	/* execute a script */
 	private function script($module = "", $script = "") {
 		
-		$fscript = $script;
-		if(substr($fscript, strlen($fscript) - 4) != ".php")
-			$fscript = "$script.php";
+		$fscript = substr($script, strlen($script) - 4) != ".php" ?
+			"$script.php" : $script;
+		
+		$lscript = $this->locate_file(
+			substr($module, strlen($module) - 4) != ".php" ?
+			"/bin/$module.php" : "/bin/$module",
+			true
+		);
 		
 		if(isset($this->modules[$module])) {
-			$path = $this->modules[$module][0]."/bin/";
-			
-			if(file_exists($path)) {
+			if($this->argc > 1) {
+				$path = $this->modules[$module][0]."/bin/";
 				
-				if($this->args[1] == "show" || $this->args[1] == "help")
-					$this->cmd_scripts($path, $module);
-				elseif(file_exists("$path$fscript")) {
+				if(file_exists($path)) {
 					
-					unset($this->args[0], $this->args[1]);
-					
-					if(!isset($this->scripts["$module$fscript"])) {
-						require("$path$fscript");
-						$name = $module."_".$script;
-						$this->scripts["$module$fscript"] = $obj = new ${"name"}($this, $this->args, $this->opts);
+					if($this->args[1] == "show" || $this->args[1] == "help")
+						$this->cmd_scripts($path, $module);
+					elseif(file_exists("$path$fscript")) {
+						unset($this->args[0], $this->args[1]);
 						
-						if(get_parent_class($obj) != "wf_cli_command") {
-							throw new wf_exception(
-								$this,
-								WF_EXC_PRIVATE,
-								"Object <strong>$obj</strong> must extends wf_cli_command"
-							);
-						}
-						
-						if(!method_exists($obj, "process")) {
-							throw new wf_exception(
-								$this,
-								WF_EXC_PRIVATE,
-								"Class ".get_class($obj)." must define a process() method."
-							);
-						}
+						$obj = $this->getscript($module, $script, "$path$fscript");
+						$obj->args = array_values($this->args);
+						$obj->opts = array_values($this->opts);
+						$obj->process();
 					}
-					
-					return $this->scripts["$module$fscript"]->process();
+					else
+						$this->msg("Script $script not found. Use \"$module show\" to display available ones.");
 				}
 				else
-					$this->msg("Script $script not found. Use \"$module show\" to display available ones.");
+					$this->msg("There are no scripts for module $module.");
 			}
 			else
-				$this->msg("There are no scripts for module $module.");
+				$this->msg("Usage : <module> <script> (or <module> help)");
 		}
-		elseif($this->get_last_filename("/bin/$module.php"))
-			$this->msg("foo new feature !!!");
+		elseif($lscript) {
+			unset($this->args[0]);
+			$obj = $this->getscript(end($lscript), $module, reset($lscript));
+			$obj->args = array_values($this->args);
+			$obj->opts = array_values($this->opts);
+			$obj->process();
+		}
 		else
-			$this->msg("Module $module not found");
+			$this->msg("Module or script $module not found");
+		
+	}
+	
+	private function getscript($module, $script, $path) {
+		$var_name = $obj_name = $module."_".$script;
+		
+		if(substr($script, strlen($script) - 4) != ".php")
+			$var_name .= ".php";
+		else
+			$obj_name = substr($obj_name, 0, strlen($obj_name) - 4);
+		
+		if(!isset($this->scripts[$var_name])) {
+			require($path);
+			var_dump($obj_name);
+			if(!class_exists($obj_name)) 
+				throw new wf_exception(
+					$this,
+					WF_EXC_PRIVATE,
+					"Object <strong>$name</strong> is not declared in file $path"
+				);
+			
+			$this->scripts[$var_name] = $obj = new ${"obj_name"}($this, $this->args, $this->opts);
+			
+			if(get_parent_class($obj) != "wf_cli_command")
+				throw new wf_exception(
+					$this,
+					WF_EXC_PRIVATE,
+					"Object <strong>$obj</strong> must extends wf_cli_command"
+				);
+			
+			if(!method_exists($obj, "process"))
+				throw new wf_exception(
+					$this,
+					WF_EXC_PRIVATE,
+					"Class ".get_class($obj)." must define a process() method."
+				);
+		}
+		
+		return $this->scripts[$var_name];
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * public console methods
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function msg($msg) {
-		echo "* $msg\n";
+	public function msg($msg, $raw = false) {
+		echo ($raw ? "" : "* ")."$msg\n";
 	}
 	
 	public function clear() {
@@ -228,12 +250,10 @@ class wf_console extends web_framework {
 				readline_add_history($line);
 		}
 		else {
-			throw new wf_exception(
-				$this,
-				WF_EXC_PRIVATE,
-				"You don't have function readline with your PHP installation and compatability is not done yet"
-			);
-			//$line = fopen(); ....
+			echo "~# ";
+			$stdin = fopen("php://stdin", 'r');
+			$line = trim(fgets($stdin));
+			fclose($stdin);
 		}
 		
 		$this->parse_line($line);
