@@ -132,7 +132,7 @@ class wf_console extends web_framework {
 						
 						$obj = $this->getscript($module, $script, "$path");
 						$obj->args = array_values($this->args);
-						$obj->opts = array_values($this->opts);
+						$obj->opts = $this->opts;
 						$obj->process();
 					}
 					else
@@ -148,7 +148,7 @@ class wf_console extends web_framework {
 			unset($this->args[0]);
 			$obj = $this->getscript(end($lscript), $module, reset($lscript));
 			$obj->args = array_values($this->args);
-			$obj->opts = array_values($this->opts);
+			$obj->opts = $this->opts;
 			$obj->process();
 		}
 		else
@@ -282,8 +282,11 @@ class wf_console extends web_framework {
 				if(strlen($arg) > 2 && substr($arg, 0, 2) == "--")
 					$opt = substr($arg, 2);
 				elseif(strlen($arg) > 1 && $arg[0] == "-") {
+					if(!empty($opt)) {
+						$opts[$opt] = null;
+						$opt = "";
+					}
 					$opts[] = substr($arg, 1);
-					$opt = "";
 				}
 				elseif(!empty($opt)) {
 					$opts[$opt] = $arg;
@@ -296,10 +299,14 @@ class wf_console extends web_framework {
 			}
 		}
 		
+		if(!empty($opt)) {
+			$opts[$opt] = null;
+			$opt = "";
+		}
+		
 		$this->command = $line;
 		$this->args = $args;
 		$this->argc = count($args);
-		$this->opts = $opts;
 		$this->opts = $opts;
 	}
 	

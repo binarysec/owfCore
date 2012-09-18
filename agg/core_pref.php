@@ -415,5 +415,3 @@ class core_pref extends wf_agg {
 	}
 
 }
-
-?>
