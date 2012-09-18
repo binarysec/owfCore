@@ -109,9 +109,6 @@ class wf_console extends web_framework {
 	/* execute a script */
 	private function script($module = "", $script = "") {
 		
-		$fscript = substr($script, strlen($script) - 4) != ".php" ?
-			"$script.php" : $script;
-		
 		$lscript = $this->locate_file(
 			substr($module, strlen($module) - 4) != ".php" ?
 			"/bin/$module.php" : "/bin/$module",
@@ -124,12 +121,16 @@ class wf_console extends web_framework {
 				
 				if(file_exists($path)) {
 					
+					/* append script to path */
+					$path .= substr($script, strlen($script) - 4) != ".php" ?
+						"$script.php" : $script;
+					
 					if($this->args[1] == "show" || $this->args[1] == "help")
 						$this->cmd_scripts($path, $module);
-					elseif(file_exists("$path$fscript")) {
+					elseif(file_exists("$path")) {
 						unset($this->args[0], $this->args[1]);
 						
-						$obj = $this->getscript($module, $script, "$path$fscript");
+						$obj = $this->getscript($module, $script, "$path");
 						$obj->args = array_values($this->args);
 						$obj->opts = array_values($this->opts);
 						$obj->process();
@@ -165,7 +166,7 @@ class wf_console extends web_framework {
 		
 		if(!isset($this->scripts[$var_name])) {
 			require($path);
-			var_dump($obj_name);
+			
 			if(!class_exists($obj_name)) 
 				throw new wf_exception(
 					$this,
