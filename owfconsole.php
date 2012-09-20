@@ -37,6 +37,7 @@ class wf_cli_command {
 
 class wf_console extends web_framework {
 	public $interactive;
+	public $verbose;
 	private $scripts = array();
 	private $args;
 	private $argc;

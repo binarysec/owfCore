@@ -66,7 +66,7 @@ abstract class wf_agg {
 	
 	public function __clone() {
 		throw new wf_exception(
-			$this,
+			$this->wf,
 			WF_EXC_PRIVATE,
 			"Can not clone aggregator for ".__CLASS__
 		);
@@ -652,7 +652,7 @@ class web_framework {
 	 *
 	 * Display the error page
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function display_error($code, $message = "") {
+	public function display_error($code, $message = "", $exit = false) {
 		
 		/* add display login hooker */
 		$this->execute_hook("owf_display_error", array($code, $message));
@@ -667,6 +667,9 @@ class web_framework {
 		$message = "Sorry your request could not be delivered<br/><strong>$message</strong>";
 		
 		$this->display_msg("Error $code", $message, "Error $code");
+		
+		if($exit)
+			exit(0);
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
