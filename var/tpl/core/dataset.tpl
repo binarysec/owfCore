@@ -166,7 +166,7 @@
 	%{/if}%
 
 	<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="d" data-mini="true">
-	%{if $searchi > 0}%
+	%{if $searchi > 0 && count($rows) > 1}%
 		<li>
 			<input type="search" name="%{$name}%_search" id="form_%{$name}%_search" value="%{$search}%" data-mini="true" placeholder="Type here to search" onchange="javascript: dataset_set_search(this.value);"/>
 		</li>
