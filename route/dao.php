@@ -344,7 +344,7 @@ class wfr_core_dao extends wf_route_request {
 		$can_add = !is_null($item) && ($item->capable & OWF_DAO_ADD) == OWF_DAO_ADD;
 		$can_del = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE && $this->uid > 0;
 		$add_txt = "<button type='submit' data-theme='b'>Submit</button>";
-		$del_txt = "<a href='' onclick=\"dao_delete_confirm('".$this->selector()->del_link($this->uid, TRUE)."');\"".
+		$del_txt = "<a href='' onclick=\"owf_admin_confirm_deletion('".$this->selector()->del_link($this->uid, TRUE)."');\"".
 						"data-theme='f' data-role='button' class='dao-delete-confirm'>".$this->lang->ts("Delete")."</a>";
 		
 		if($can_add && $can_del)

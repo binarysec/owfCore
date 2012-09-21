@@ -10,7 +10,9 @@ class wfm_core extends wf_module {
 	public function get_banner()  { return("OWF Native Core/1.3.0"); }
 	public function get_version() { return("1.3.0"); }
 	public function get_authors() { return("Michael VERGOZ"); }
-	public function get_depends() { return(NULL); }
+	public function get_depends() { return(array(
+		
+	)); }
 	
 	public function session_permissions() {
 		return(array(

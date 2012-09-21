@@ -1,25 +1,4 @@
 <script type='text/javascript'>
-	function dao_delete_confirm(href) {
-		$('<div>').simpledialog2({
-			mode: 'blank',
-			headerText: '%{@ 'Delete confirmation'}%',
-			headerClose: true,
-			dialogAllow: true,
-			dialogForce: false,
-			width: "400px",
-			height: "300px",
-			blankContent :
-				'<p><center style="padding: 10px;"><form action="' + href + '">' +
-					'%{@ 'Are you sure about deleting this item ?'}% <br/>' +
-					'<fieldset class="ui-grid-a">' +
-						'<div class="ui-block-a"><input type="submit" data-role="button" value="%{@ 'Delete'}%" /></div>' +
-						'<div class="ui-block-b"><a rel="close" data-role="button" href="#">%{@ 'Close'}%</a></div>' +
-					'</fieldset>' +
-				'</form></center></p>'
-		});
-		return false;
-	}
-	
 	// GMap
 	function resize_popup() {
 		var	w = $(window).width(),
