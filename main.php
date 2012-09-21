@@ -562,10 +562,10 @@ class web_framework {
 		/* protocol if absolute linking */
 		$protocol = "";
 		$sitename = "";
-		if($absolute && isset($this->ini_arr["common"]["site_name"])) {
+		if($absolute && isset($_SERVER["SERVER_NAME"])) {
 			$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ?
 				"https://" : "http://";
-			$sitename = $this->ini_arr["common"]["site_name"];
+			$sitename = $_SERVER["SERVER_NAME"];
 		}
 		
 		/* base */
