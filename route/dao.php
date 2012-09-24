@@ -201,7 +201,8 @@ class wfr_core_dao extends wf_route_request {
 			}
 			
 			/* SELECT */
-			elseif($v["kind"] == OWF_DAO_SELECT) {
+			elseif(	$v["kind"] == OWF_DAO_SELECT ||
+					$v["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
 				if(!isset($v["value"]))
 					$v["value"] = '';
 
@@ -217,7 +218,9 @@ class wfr_core_dao extends wf_route_request {
 				$forms .=
 					"<div data-role='fieldcontain'>".
 						"<label for='$k'>$v[text] : </label>".
-						$select.
+							(($v["kind"] != OWF_DAO_LINK_MANY_TO_ONE || count($v["list"])) ?
+								$select :
+								"<input type='text' name='$k' id='$k' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />").
 					"</div>\n";
 			}
 			
@@ -339,6 +342,7 @@ class wfr_core_dao extends wf_route_request {
 						"<a id='$k' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#owf-dao-map-popup'>$longitude / $latitude</a>".
 					"</div>\n";
 			}
+			
 		}
 		
 		$can_add = !is_null($item) && ($item->capable & OWF_DAO_ADD) == OWF_DAO_ADD;

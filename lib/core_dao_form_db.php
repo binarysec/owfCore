@@ -41,7 +41,10 @@ class core_dao_form_db {
 		$this->description = $description;
 		$this->data = &$this->struct["data"];
 		foreach($this->struct["data"] as $key => $val)
-			if(isset($val["kind"]) && $val["kind"] == OWF_DAO_MAP) {
+			if(isset($val["kind"], $val["dao"], $val["field-id"]) && $val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
+				$this->db[$key] = $val["dao"]->struct["data"][$val["field-id"]]["type"] & ~WF_PRIMARY & ~WF_AUTOINC;
+			}
+			elseif(isset($val["kind"]) && $val["kind"] == OWF_DAO_MAP) {
 				$this->db[$key."_latitude"] = WF_FLOAT;
 				$this->db[$key."_longitude"] = WF_FLOAT;
 			}

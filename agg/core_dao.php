@@ -15,6 +15,9 @@ define("OWF_DAO_SLIDER",			12);
 define("OWF_DAO_FLIP",				13);
 define("OWF_DAO_MAP",				16);
 
+define("OWF_DAO_LINK_MANY_TO_ONE",		20);
+//define("OWF_DAO_LINK_MANY_TO_MANY",		21);
+
 // Not ported yet
 //define("OWF_DAO_INPUT_REQ",		2); ??
 //define("OWF_DAO_DATA_DIR",		4); ??
@@ -34,6 +37,7 @@ class core_dao extends wf_agg {
 	}
 	
 	public function register($item) {
+		$this->sanatize($item);
 		$this->registered[$this->position] = $item;
 		$item->id = $this->position;
 		$this->position++;
@@ -99,6 +103,12 @@ class core_dao extends wf_agg {
 					$result[$key]["value_latitude"] = htmlspecialchars($data[$key."_latitude"]);
 					$result[$key]["value_longitude"] = htmlspecialchars($data[$key."_longitude"]);
 				}
+				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
+					$result[$key]["list"] = array();
+					foreach($val["dao"]->get() as $subdaoitem) {
+						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
+					}
+				}
 				
 				if(isset($val["reader_cb"], $data[$key]))
 					$result[$key]["value"] = call_user_func($val["reader_cb"], $item, $data[$key]);
@@ -112,5 +122,27 @@ class core_dao extends wf_agg {
 		else
 			return($result);
 		
+	}
+	
+	private function sanatize($item) {
+		$error = "";
+		
+		foreach($item->struct["data"] as $key => $val) {
+			if(isset($val["kind"])) {
+				if($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
+					if(!isset($val["dao"], $val["field-id"], $val["field-name"]))
+						$error = "-";
+				}
+				else {
+					if(!isset($val["type"]))
+						$error = "-";
+				}
+			}
+		}
+		
+		if(!empty($error)) {
+			$error = "Malformed dao ".$item->name;
+			throw new wf_exception($this->wf, WF_EXC_PRIVATE, $error);
+		}
 	}
 }
