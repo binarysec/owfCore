@@ -1,5 +1,4 @@
 <html>
-	
 <head>
 	<style>
 		html { height: 100%; }
@@ -8,73 +7,57 @@
 	</style>
 	
 	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript" src="%{link '/data/js/jquery-1.7.js'}%"></script>
 	<script>
+		var marker;
 		var map_loaded = false;
+		var timeout = 4;
+		
+		function update_map_marker() {
+			var latlng = new google.maps.LatLng(
+				$("#owf-dao-map-cur-data-latitude-%{$name}%", window.parent.document).val(),
+				$("#owf-dao-map-cur-data-longitude-%{$name}%", window.parent.document).val()
+			);
+			marker.setPosition(latlng);
+		}
 		
 		function on_load() {
 			if(typeof window.google == 'undefined') {
-				setTimeout(on_load, 2000);
-				console.debug(window.google);
+				timeout -= 1;
+				if(timeout > 0)
+					setTimeout(on_load, 1000);
+				else
+					document.getElementById('map-canvas').innerHTML = "An error occured while loading google map.<br/>Please check the javascript is not blocked.";
 			}
-			else {
-				var gmap_data = parent.document.getElementById('owf-dao-map-data');
-				
-				if(typeof gmap_data != "undefined")
-					geomap_init(eval(gmap_data.innerHTML));
-			}
-		}
-		
-		function geomap_init(data) {
-			if(!map_loaded) {
+			else if(!map_loaded) {
 				map_loaded = true;
 				
-				var j = 0;
-				var marker  = Array();
-				var mlatlng = Array();
-				var att_pos = data;
-				for(var i = 0 ; i < att_pos.length ; i++) {
-					if(att_pos[i]) {
-						if(att_pos[i]["latitude"] && att_pos[i]["longitude"]) {
-							mlatlng[j] = new google.maps.LatLng(att_pos[i]["latitude"], att_pos[i]["longitude"]);
-							marker[j]  = new google.maps.Marker({
-								position: mlatlng[j],
-								title:    att_pos[i]["ip"],
-								id:       att_pos[i]["id"]
-							});
-							
-							google.maps.event.addListener(marker[j] , 'click', function() {
-								map.setCenter(this.position);
-								map.setZoom(12);
-							});
-							j++;
-						}
-					}
-				}
+				var latlng = new google.maps.LatLng(%{$lat}%, %{$long}%);
+				marker = new google.maps.Marker({
+					position: latlng,
+					title: "%{$text}%",
+					draggable: true,
+				});
 				
-				if(j == 0) {
-					mlatlng[0] = new google.maps.LatLng(30, 10);
-				}
+				google.maps.event.addListener(marker , 'click', function() {
+					map.setCenter(this.position);
+					map.setZoom(map.getZoom() + 2);
+				});
+				
+				google.maps.event.addListener(marker, 'dragend', function(event) {
+					$("#owf-dao-map-cur-data-latitude-%{$name}%", window.parent.document).val(event.latLng.lat().toFixed(4));
+					$("#owf-dao-map-cur-data-longitude-%{$name}%", window.parent.document).val(event.latLng.lng().toFixed(4));
+					parent.owf_dao_update_map("%{$name}%");
+				});
+				
 				var myOptions  = {
-					zoom:      1,
-					center:    mlatlng[0],
+					zoom: 1,
+					center: latlng,
 					mapTypeId: google.maps.MapTypeId.HYBRID
 				};
 				
 				var map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-				for(var k = 0 ; k < marker.length ; k++) {
-					marker[k].setMap(map);
-				}
-				if(j == 1) {
-					map.setZoom(5);
-				}
-				if(j > 1) {
-					var latlngbounds = new google.maps.LatLngBounds();
-					for(var i = 0 ; i < mlatlng.length ; i++)
-					{
-					  latlngbounds.extend(mlatlng[i]);
-					}
-					map.fitBounds(latlngbounds);
-				}
+				marker.setMap(map);
 			}
 		}
 		
@@ -82,6 +65,6 @@
 	</script>
 </head>
 <body>
-	<div id="map-canvas"></div>
+	<div id="map-canvas" style="color: white; text-align: center;"></div>
 </body>
 </html>

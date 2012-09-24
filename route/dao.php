@@ -125,21 +125,27 @@ class wfr_core_dao extends wf_route_request {
 				$body = $item->struct["form"]["add_body"];
 		}
 		
-		$forms = $this->form_rendering($elements, $item);
-		
-		$tpl = new core_tpl($this->wf);
+		/* tpl conf */
+		$this->tpl = new core_tpl($this->wf);
 		$in = array(
 			"title" => $title,
 			"body" => $body,
 			"error" => $this->error,
-			"forms" => $forms,
 			"back" => $this->back,
-			"rand" => rand()
+			"rand" => rand(),
 		);
-		$tpl->set_vars($in);
+		$this->tpl->set_vars($in);
+		
+		/* render form */
+		$this->maps = array();
+		$forms = $this->form_rendering($elements, $item);
+		$this->tpl->set("maps", $this->maps);
+		$this->tpl->set("forms", $forms);
+		
+		/* render page */
 		$this->admin_html->set_backlink($this->back);
 		$this->admin_html->set_title($title);
-		$this->admin_html->rendering($tpl->fetch('core/dao/index'));
+		$this->admin_html->rendering($this->tpl->fetch('core/dao/index'));
 		exit(0);
 	}
 	
@@ -336,10 +342,20 @@ class wfr_core_dao extends wf_route_request {
 				$longitude = isset($v["value_longitude"]) ? floatval($v["value_longitude"]) : 0;
 				$latitude = isset($v["value_latitude"]) ? floatval($v["value_latitude"]) : 0;
 				
+				$this->maps[$k] = array(
+					"latitude" => $latitude,
+					"longitude" => $longitude,
+					"text" => $v["text"],
+				);
+				
 				$forms .=
 					"<div data-role='fieldcontain'>".
 						"<label for='$k' class='ui-select'>$v[text] :</label>".
-						"<a id='$k' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#owf-dao-map-popup'>$longitude / $latitude</a>".
+						"<a id='$k' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#owf-dao-map-popup-$k'>".
+							"Changer les coordonnées".
+						"</a>".
+						"<input type='hidden' id='owf-dao-map-form-data-$k-latitude' name='".$k."_latitude' value='$latitude' />".
+						"<input type='hidden' id='owf-dao-map-form-data-$k-longitude' name='".$k."_longitude' value='$longitude' />".
 					"</div>\n";
 			}
 			
@@ -396,6 +412,10 @@ class wfr_core_dao extends wf_route_request {
 				}
 				elseif($val["kind"] == OWF_DAO_FLIP) {
 					$insert[$key] = (bool) intval($var);
+				}
+				elseif($val["kind"] == OWF_DAO_MAP) {
+					$insert[$key."_latitude"] = floatval($this->wf->get_var($key."_latitude"));
+					$insert[$key."_longitude"] = floatval($this->wf->get_var($key."_longitude"));
 				}
 				else {
 					/* execute filter */
@@ -469,31 +489,13 @@ class wfr_core_dao extends wf_route_request {
 	}
 	
 	public function gmap() {
-/*
-		$in = array();
-*/
-		
-/*
-		$multi = $this->wf->get_var('multi');
-		if($multi != 'true' && $multi != 'false')
-			return;
-		
-		if($multi == 'true') {
-			if($this->back == null)
-				return;
-			$in['multi'] = true;
-			$in['back']  = $this->core_cipher->encode($this->back);;
-		}
-		else {
-			$in['multi'] = false;
-		}
-*/
-		
 		$tpl = new core_tpl($this->wf);
-/*
-		$tpl->set_vars($in);
-*/
-		
+		$tpl->set_vars(array(
+			"name" => htmlentities($this->wf->get_var("name")),
+			"text" => htmlentities($this->wf->get_var("text")),
+			"lat" => floatval($this->wf->get_var("lat")),
+			"long" => floatval($this->wf->get_var("long")),
+		));
 		echo $tpl->fetch('core/dao/gmap');
 	}
 }
