@@ -39,7 +39,7 @@
 					draggable: true,
 				});
 				
-				google.maps.event.addListener(marker , 'click', function() {
+				google.maps.event.addListener(marker, 'click', function() {
 					map.setCenter(this.position);
 					map.setZoom(map.getZoom() + 2);
 				});
@@ -50,7 +50,7 @@
 					parent.owf_dao_update_map("%{$name}%");
 				});
 				
-				var myOptions  = {
+				var myOptions = {
 					zoom: 1,
 					center: latlng,
 					mapTypeId: google.maps.MapTypeId.HYBRID
@@ -58,6 +58,13 @@
 				
 				var map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
 				marker.setMap(map);
+				
+				google.maps.event.addListener(map, 'rightclick', function(event) {
+					$("#owf-dao-map-cur-data-latitude-%{$name}%", window.parent.document).val(event.latLng.lat().toFixed(4));
+					$("#owf-dao-map-cur-data-longitude-%{$name}%", window.parent.document).val(event.latLng.lng().toFixed(4));
+					parent.owf_dao_update_map("%{$name}%");
+					update_map_marker();
+				});
 			}
 		}
 		

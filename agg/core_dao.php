@@ -133,6 +133,8 @@ class core_dao extends wf_agg {
 					if(!isset($val["dao"], $val["field-id"], $val["field-name"]))
 						$error = "-";
 				}
+				elseif($val["kind"] == OWF_DAO_MAP) {
+				}
 				else {
 					if(!isset($val["type"]))
 						$error = "-";
