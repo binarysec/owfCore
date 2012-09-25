@@ -1,0 +1,7 @@
+#!/bin/bash
+ln -s /usr/share/owf/core/1.2/owfloader.php /usr/bin/owfloader-1.2
+ln -s /usr/share/owf/core/1.2/owfloader.php /usr/bin/owfloader
+
+ln -s /usr/share/owf/core/1.2/owfinit.php /usr/bin/owfinit-1.2
+ln -s /usr/share/owf/core/1.2/owfinit.php /usr/bin/owfinit
+exit $?
