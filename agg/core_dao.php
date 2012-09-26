@@ -100,8 +100,11 @@ class core_dao extends wf_agg {
 						$result[$key]["step"] = (int) $val["step"];
 				}
 				elseif($val["kind"] == OWF_DAO_MAP) {
-					$result[$key]["value_latitude"] = htmlspecialchars($data[$key."_latitude"]);
-					$result[$key]["value_longitude"] = htmlspecialchars($data[$key."_longitude"]);
+					if(isset($data[$key."_latitude"]))
+						$result[$key]["value_latitude"] = htmlspecialchars($data[$key."_latitude"]);
+					
+					if(isset($data[$key."_longitude"]))
+						$result[$key]["value_longitude"] = htmlspecialchars($data[$key."_longitude"]);
 				}
 				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
 					$result[$key]["list"] = array();
