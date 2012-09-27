@@ -108,9 +108,10 @@ class core_dao extends wf_agg {
 				}
 				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
 					$result[$key]["list"] = array();
-					foreach($val["dao"]->get() as $subdaoitem) {
+					$data = is_array($val["dao"]) ? 
+						call_user_func($val["dao"]) : $val["dao"]->get();
+					foreach($data as $subdaoitem)
 						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
-					}
 				}
 				
 				if(isset($val["reader_cb"], $data[$key]))
@@ -134,6 +135,8 @@ class core_dao extends wf_agg {
 			if(isset($val["kind"])) {
 				if($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
 					if(!isset($val["dao"], $val["field-id"], $val["field-name"]))
+						$error = "-";
+					elseif(is_array($val["dao"]) && !isset($val["type"]))
 						$error = "-";
 				}
 				elseif($val["kind"] == OWF_DAO_MAP) {

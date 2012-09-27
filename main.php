@@ -1009,6 +1009,9 @@ class web_framework {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private $no_cache_set = false;
 	public function no_cache() {
+		if(php_sapi_name() == "cli")
+			return true;
+		
 		if($this->no_cache_set == false)
 			$this->no_cache_set = true;
 		else
