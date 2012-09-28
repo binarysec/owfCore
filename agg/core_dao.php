@@ -16,7 +16,7 @@ define("OWF_DAO_FLIP",				13);
 define("OWF_DAO_MAP",				16);
 
 define("OWF_DAO_LINK_MANY_TO_ONE",		20);
-//define("OWF_DAO_LINK_MANY_TO_MANY",		21);
+define("OWF_DAO_LINK_MANY_TO_MANY",		21);
 
 // Not ported yet
 //define("OWF_DAO_INPUT_REQ",		2); ??
@@ -113,6 +113,13 @@ class core_dao extends wf_agg {
 					foreach($data as $subdaoitem)
 						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
 				}
+				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_MANY) {
+					$result[$key]["list"] = array();
+					$data = is_array($val["dao"]) ? 
+						call_user_func($val["dao"]) : $val["dao"]->get();
+					foreach($data as $subdaoitem)
+						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
+				}
 				
 				if(isset($val["reader_cb"], $data[$key]))
 					$result[$key]["value"] = call_user_func($val["reader_cb"], $item, $data[$key]);
@@ -133,11 +140,13 @@ class core_dao extends wf_agg {
 		
 		foreach($item->struct["data"] as $key => $val) {
 			if(isset($val["kind"])) {
-				if($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
-					if(!isset($val["dao"], $val["field-id"], $val["field-name"]))
-						$error = "-";
-					elseif(is_array($val["dao"]) && !isset($val["type"]))
-						$error = "-";
+				if(	$val["kind"] == OWF_DAO_LINK_MANY_TO_ONE ||
+					$val["kind"] == OWF_DAO_LINK_MANY_TO_MANY
+					) {
+						if(!isset($val["dao"], $val["field-id"], $val["field-name"]))
+							$error = "-";
+						elseif(is_array($val["dao"]) && !isset($val["type"]))
+							$error = "-";
 				}
 				elseif($val["kind"] == OWF_DAO_MAP) {
 				}

@@ -70,6 +70,7 @@ define("WF_DELETE",						0x800 | WF_QUERY_WHERE);
 define("WF_ADV_DELETE",					0x900 | WF_QUERY_ADV_WHERE);
 define("WF_MULTIPLE_INSERT_OR_UPDATE",	0xA00);
 define("WF_INDEX",						0xB00);
+define("WF_INSERT_MULTIPLE",			0xC00);
 
 /* order define */
 define("WF_ASC",              10);
@@ -215,6 +216,36 @@ abstract class core_db_query_adv extends core_db_query {
 class core_db_insert extends core_db_query_simple {
 	public function __construct($zone, $arr) {
 		parent::__construct(WF_INSERT, $zone, $arr);
+	}
+}
+
+class core_db_insert_multiple extends core_db_query_simple {
+	public function __construct($zone, array $arr) {
+		parent::__construct(WF_INSERT_MULTIPLE, $zone, $arr);
+	}
+	
+	public function insert(array $insert) {
+		$firsttime = true;
+		$struct = array();
+		foreach($insert as $v) {
+			if(!is_array($v)) {
+				throw new wf_exception(null, WF_EXC_PRIVATE,
+					"core_db_insert_multiple requires array of array for data"
+				);
+			}
+			
+			foreach($v as $k => $field)
+				if($firsttime)
+					$struct[] = $k;
+				elseif(!in_array($k, $struct))
+					throw new wf_exception(null, WF_EXC_PRIVATE,
+						"core_db_insert_multiple: cannot have different keys for multiple fieldsets"
+					);
+			
+			$firsttime = false;
+		}
+		
+		parent::insert($insert);
 	}
 }
 

@@ -339,7 +339,21 @@ class core_db_pdo_mysql extends core_db {
 		$offset = "";
 		
 		/* fields */
-		if($query_obj->type == WF_INSERT || $query_obj->type == WF_INSERT_ID) {
+		if($query_obj->type == WF_INSERT_MULTIPLE) {
+			$firsttime = true;
+			foreach($query_obj->arr as $fieldset) {
+				$val_app = "";
+				foreach($fieldset as $k => $v) {
+					if($firsttime)
+						$key .= empty($key) ? "`$k`" : ", `$k`";
+					$val_app .= empty($val_app) ? "?" : ", ?";
+					array_push($prepare_value, $this->safe_input($v));
+				}
+				$firsttime = false;
+				$val .= empty($val) ? "($val_app)" : ", ($val_app)";
+			}
+		}
+		elseif($query_obj->type == WF_INSERT || $query_obj->type == WF_INSERT_ID) {
 			foreach($query_obj->arr as $k => $v) {
 				$key .= empty($key) ? "`$k`" : ", `$k`";
 				$val .= empty($val) ? "?" : ", ?";
@@ -590,9 +604,15 @@ class core_db_pdo_mysql extends core_db {
 				$prepare_value
 			);
 		}
-		else if($query_obj->type == WF_INSERT) {
+		elseif($query_obj->type == WF_INSERT) {
 			$this->sql_query(
 				"INSERT INTO $zone ($key) VALUES ($val);",
+				$prepare_value
+			);
+		}
+		elseif($query_obj->type == WF_INSERT_MULTIPLE) {
+			$this->sql_query(
+				"INSERT INTO $zone ($key) VALUES $val;",
 				$prepare_value
 			);
 		}

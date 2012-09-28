@@ -265,31 +265,33 @@ class wfr_core_dao extends wf_route_request {
 			}
 			
 			/* CHECKBOXES */
-			elseif($v["kind"] == OWF_DAO_CHECKBOX || $v["kind"] == OWF_DAO_CHECKBOX_READON) {
-				if(isset($v["list"])) {
-					
-					$inputs = '';
-					$v["value"] = isset($v["value"]) ? explode(",", $v["value"]) : array();
-					
-					$disabled = $v["kind"] == OWF_DAO_CHECKBOX_READON ? "disabled='disabled'" : "";
-					
-					foreach($v["list"] as $key => $val) {
-						$checked = in_array($key, $v["value"]) ? "checked='checked'" : "";
-						$inputs .= "<input type='checkbox' name='".$k."[]' id='$k-$key' value='$key' $checked $disabled />";
-						$inputs .= "<label for='$k-$key'>$val</label>";
+			elseif(	$v["kind"] == OWF_DAO_CHECKBOX ||
+					$v["kind"] == OWF_DAO_CHECKBOX_READON ||
+					$v["kind"] == OWF_DAO_LINK_MANY_TO_MANY
+				) {
+					if(isset($v["list"])) {
+						$inputs = '';
+						$v["value"] = isset($v["value"]) ? explode(",", $v["value"]) : array();
+						
+						$disabled = $v["kind"] == OWF_DAO_CHECKBOX_READON ? "disabled='disabled'" : "";
+						
+						foreach($v["list"] as $key => $val) {
+							$checked = in_array($key, $v["value"]) ? "checked='checked'" : "";
+							$inputs .= "<input type='checkbox' name='".$k."[]' id='$k-$key' value='$key' $checked $disabled />";
+							$inputs .= "<label for='$k-$key'>$val</label>";
+						}
+						
+						/* build */
+						$forms .=
+							"<div data-role='fieldcontain'>".
+								"<fieldset data-role='controlgroup' data-type='horizontal'>".
+									"<legend>$v[text] : </legend>".
+									$inputs.
+								"</fieldset>".
+							"</div>\n";
 					}
-					
-					/* build */
-					$forms .=
-						"<div data-role='fieldcontain'>".
-							"<fieldset data-role='controlgroup' data-type='horizontal'>".
-								"<legend>$v[text] : </legend>".
-								$inputs.
-							"</fieldset>".
-						"</div>\n";
-				}
-				else
-					;// throw error
+					else
+						;// throw error
 			}
 			
 			/* SLIDER */
@@ -381,6 +383,7 @@ class wfr_core_dao extends wf_route_request {
 	
 	public function add_post($item, $id=NULL, $json=false) {
 		$insert = array();
+		$delayed_query = array();
 		$error = array(
 			"msgs" => array()
 		);
@@ -417,10 +420,16 @@ class wfr_core_dao extends wf_route_request {
 					$insert[$key."_latitude"] = floatval($this->wf->get_var($key."_latitude"));
 					$insert[$key."_longitude"] = floatval($this->wf->get_var($key."_longitude"));
 				}
+				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_MANY) {
+					$delayed_query[] = array(
+						"link" => $val["link"],
+						"var" => $var
+					);
+				}
 				else {
 					/* execute filter */
 					if(isset($val["filter_cb"])) {
-						$ret = call_user_func($val["filter_cb"], $item, $var);
+						$ret = call_user_func($val["filter_cb"], $item, $var, $id);
 						if(is_string($ret))
 							$error["msgs"][$key] = $ret;
 						else if($ret && $var) {
@@ -451,7 +460,23 @@ class wfr_core_dao extends wf_route_request {
 			if(isset($id))
 				$item->modify(array("id" => $id), $insert);
 			else
-				$this->uid = $item->add($insert);
+				$id = $this->uid = $item->add($insert);
+			
+			foreach($delayed_query as $links) {
+				$q = new core_db_delete($links["link"]["table"], array());
+				$this->wf->db->query($q);
+				$fields = array();
+				foreach($links["var"] as $data) {
+					$fields[] = array(
+						$links["link"]["primary"] => $id,
+						$links["link"]["secondary"] => $data
+					);
+				}
+				
+				$q = new core_db_insert_multiple($links["link"]["table"], $fields);
+				$this->wf->db->query($q);
+			}
+			
 			return(true);
 		}
 		else if(count($error["msgs"]) == 0)
