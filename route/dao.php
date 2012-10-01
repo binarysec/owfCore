@@ -286,7 +286,9 @@ class wfr_core_dao extends wf_route_request {
 							"<div data-role='fieldcontain'>".
 								"<fieldset data-role='controlgroup' data-type='horizontal'>".
 									"<legend>$v[text] : </legend>".
-									$inputs.
+									(($v["kind"] == OWF_DAO_LINK_MANY_TO_MANY && empty($v["list"])) ?
+										"<input type='text' name='$k' id='$k' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />" :
+										$inputs).
 								"</fieldset>".
 							"</div>\n";
 					}
