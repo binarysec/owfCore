@@ -127,7 +127,7 @@ class wf_console extends web_framework {
 						"$script.php" : $script;
 					
 					if($this->args[1] == "show" || $this->args[1] == "help")
-						$this->cmd_scripts($path, $module);
+						$this->cmd_scripts($this->modules[$module][0]."/bin/", $module);
 					elseif(file_exists("$path")) {
 						unset($this->args[0], $this->args[1]);
 						
@@ -311,7 +311,7 @@ class wf_console extends web_framework {
 		$this->opts = $opts;
 	}
 	
-	private function get_opt($name, $long = false) {
+	public function get_opt($name, $long = false) {
 		return $long && isset($this->opts[$name]) ?
 			$this->opts[$name] : in_array($name, $this->opts) || isset($this->opts[$name]);
 	}

@@ -12,17 +12,22 @@ class core_routes extends wf_cli_command {
 		$this->routes = array();
 		$this->action = 0;
 		
-		if(isset($this->args[0])) {
-			switch($this->args[0]) {
-				case "redirect" : $this->action = WF_ROUTE_REDIRECT; break;
-				case "action" : $this->action = WF_ROUTE_ACTION; break;
-			}
-		}
+		$filter = isset($this->args[0]) ? $this->args[0] : "/";
+		
+		if($this->wf->get_opt("r") && !$this->wf->get_opt("a"))
+			$this->action = WF_ROUTE_REDIRECT;
+		elseif($this->wf->get_opt("a") && !$this->wf->get_opt("r"))
+			$this->action = WF_ROUTE_ACTION;
 		
 		$this->inception($routes, "");
 		
 		foreach($this->routes as $route)
-			$this->wf->msg($route, true);
+			//var_dump(substr($route, 0, strlen($filter)));
+			if(substr($route["route"], 0, strlen($filter)) == $filter)
+				$this->wf->msg(
+					"$route[action] $route[route] [$route[perm]]",
+					true
+				);
 		
 		return true;
 	}
@@ -39,7 +44,11 @@ class core_routes extends wf_cli_command {
 				$name .= "/$k";
 		
 		if($wokeup && !empty($name) && (!$this->action || $this->action == $action))
-			$this->routes[] = $this->translate($action)." $name  [$dream[0]] ";
+			$this->routes[] = array(
+				"action" => $this->translate($action),
+				"route" => $name,
+				"perm" => $dream[0],
+			);
 	}
 	
 	private function translate($action) {
@@ -48,6 +57,6 @@ class core_routes extends wf_cli_command {
 		elseif($action == WF_ROUTE_REDIRECT)
 			return "REDIRECT";
 		else
-			return "ALL";
+			return "ALL     ";
 	}
 }
