@@ -7,12 +7,22 @@ class core_routes extends wf_cli_command {
 	private $routes;
 	private $action;
 	
+	public function help() {
+		$this->wf->msg("Usage: core routes [filter] [-a] [-r]");
+		$this->wf->msg("Sample: core routes / -r");
+	}
+	
 	public function process() {
 		$routes = $this->wf->core_route()->routes;
 		$this->routes = array();
 		$this->action = 0;
 		
 		$filter = isset($this->args[0]) ? $this->args[0] : "/";
+		
+		if($filter == "help") {
+			$this->help();
+			return true;
+		}
 		
 		if($this->wf->get_opt("r") && !$this->wf->get_opt("a"))
 			$this->action = WF_ROUTE_REDIRECT;
@@ -22,7 +32,6 @@ class core_routes extends wf_cli_command {
 		$this->inception($routes, "");
 		
 		foreach($this->routes as $route)
-			//var_dump(substr($route, 0, strlen($filter)));
 			if(substr($route["route"], 0, strlen($filter)) == $filter)
 				$this->wf->msg(
 					"$route[action] $route[route] [$route[perm]]",

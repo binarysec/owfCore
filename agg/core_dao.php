@@ -34,13 +34,52 @@ class core_dao extends wf_agg {
 	
 	public function loader($wf) {
 		$this->a_session = $this->wf->session();
+		
+		$this->wf->db->register_zone("core_dao",  "Core dao table", array(
+			"id" => WF_INT | WF_PRIMARY,
+			"name" => WF_VARCHAR,
+		));
+		
+		/* align position to the next available */
+		$q = new core_db_select("core_dao", array(), array());
+		$this->wf->db->query($q);
+		$res = $q->get_result();
+		foreach($res as $dao)
+			$this->position = max($this->position, $dao["id"]);
+		$this->position++;
 	}
 	
 	public function register($item) {
+		
+		/* sanatize dao object */
 		$this->sanatize($item);
-		$this->registered[$this->position] = $item;
-		$item->id = $this->position;
-		$this->position++;
+		
+		/* check if dao exist */
+		$q = new core_db_select("core_dao", array(), array("name" => $item->name));
+		$this->wf->db->query($q);
+		$res = current($q->get_result());
+		
+		/* if dao already registered in the past, then get the id */
+		if($res && isset($res["name"])) {
+			if(isset($this->registered[$res["id"]]))
+				throw new wf_exception($this->wf, WF_EXC_PRIVATE,
+					"You tried to load dao number $res[id] twice"
+				);
+			$this->registered[$res["id"]] = $item;
+			$item->id = $res["id"];
+		}
+		/* otherwise get the next available id and insert */
+		else {
+			$this->registered[$this->position] = $item;
+			$item->id = $this->position;
+			$this->position++;
+			
+			$q = new core_db_insert("core_dao", array(
+				"id" => $item->id,
+				"name" => $item->name,
+			));
+			$this->wf->db->query($q);
+		}
 	}
 	
 	public function get() {

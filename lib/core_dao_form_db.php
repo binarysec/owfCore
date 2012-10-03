@@ -129,12 +129,13 @@ class core_dao_form_db {
 		return($l);
 	}
 	
-	public function mod_link($uid) {
+	public function mod_link($uid, $route_only = false) {
 		/*if(($this->capable & OWF_DAO_ADD) != OWF_DAO_ADD)
 			return "";*/
 		
 		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
-		$l = $this->wf->linker("/dao/".$this->aggregator).
+		$route = "/dao/".$this->aggregator;
+		$l = ($route_only ? $route : $this->wf->linker($route)).
 			"?oid=".$this->id.
 			"&uid=".$uid.
 			"&back=$back_url";
