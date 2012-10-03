@@ -133,14 +133,12 @@ class core_dao_form_db {
 		/*if(($this->capable & OWF_DAO_ADD) != OWF_DAO_ADD)
 			return "";*/
 		
-		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
 		$route = "/dao/".$this->aggregator;
-		$l = ($route_only ? $route : $this->wf->linker($route)).
-			"?oid=".$this->id.
-			"&uid=".$uid.
-			"&back=$back_url";
-			
-		return($l);
+		$back_url = $this->cipher->encode($_SERVER['REQUEST_URI']);
+		
+		return $route_only ? $route :
+			$this->wf->linker($route)."?oid=".$this->id.
+			"&uid=$uid&back=$back_url";
 	}
 	
 	public function del_link($uid, $back_back=FALSE) {
