@@ -236,8 +236,10 @@ class core_db_pdo_sqlite extends core_db {
 						if(!empty($fields))
 							$fields .= ", ";
 						$fields .= $query_obj->fields[$a];
-						if($query_obj->type == WF_ADV_SELECT)
-							$fields .= ' AS "'.$query_obj->fields[$a].'"';
+						if(	$query_obj->type == WF_ADV_SELECT &&
+							!strchr($query_obj->fields[$a], "*")
+							)
+								$fields .= ' AS "'.$query_obj->fields[$a].'"';
 					}
 				}
 				/* Si il y a plus d'un alias alors il faut aligner les structures */
