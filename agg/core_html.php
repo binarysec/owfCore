@@ -154,7 +154,7 @@ class core_html extends wf_agg {
 	 * Permet d'ajouter un managed body avec un template
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $managed_list = array();
-	public function add_managed_tpl($title, $core_tpl) {
+	public function add_managed_tpl($title, &$core_tpl) {
 		$this->managed_list[] = array(
 			$title,
 			&$core_tpl

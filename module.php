@@ -94,5 +94,8 @@ class wfm_core extends wf_module {
 			isset($this->wf->ini_arr["common"]["base"]) ? 
 				$this->wf->ini_arr["common"]["base"] : ""
 		);
+		
+		if(strlen(ini_get("date.timezone")) < 1)
+			date_default_timezone_set("UTC");
 	}
 }
