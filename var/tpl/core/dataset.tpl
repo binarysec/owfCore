@@ -7,15 +7,11 @@
 			f = document.getElementById(data_responder);
 		else
 			f = document.getElementById('form_%{$name}%');
+		
 		f.method = 'GET';
 		f.action = '';	
 		f.submit();
-// 		$.mobile.changePage( "", {
-// 			allowSamePageTransition: true,
-// 			type: "get",
-// 			data: $("form#form_%{$name}%").serialize()
-// 		});
-
+		$.mobile.refresh();
 	}
 	
 	function dataset_set_order(col, order) {
@@ -30,12 +26,11 @@
 	
 	function dataset_set_page(nb) {
 		$('#form_%{$name}%_page').val(nb);
-		console.log($('#form_%{$name}%_page'));
 		form_submit();
 	}
 	
 	function dataset_set_rows_per_page(nb) {
-		document.getElementById('form_%{$name}%_rows_per_page').value = nb;
+		$('#form_%{$name}%_rows_per_page').val(nb);
 		form_submit();
 	}
 	
