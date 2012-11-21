@@ -487,7 +487,8 @@ class web_framework {
 		$this->aggregator_cached[$funcname] = &$obj;
 		
 		/* execute le chargeur */
-		$obj->loader($this);
+		if(method_exists($obj, "loader"))
+			$obj->loader($this);
 		
 		return($obj);
 	}

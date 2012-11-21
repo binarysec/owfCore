@@ -87,67 +87,89 @@ class core_route extends wf_agg {
 	 * accepting channel returned by get_channel
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function execute_route(&$channel) {
-		if($channel[0][2] == WF_ROUTE_ACTION) {
-			$finfo = $this->wf->locate_file("route/".$channel[0][3].".php", true);
-			$filename = $finfo[0];
-			$objectname = 
-				"wfr_".
-				$finfo[2]."_".
-				preg_replace("/\//", "_", $channel[0][3]);
-			
-			/* Old Code
-			$filename = $channel[0][0]."/route/".$channel[0][3].".php";
-			$objectname = "wfr_".$channel[0][1]."_".preg_replace("/\//", "_", $channel[0][3]);*/
-			
-			/* loading concerned object */
-			if(!file_exists($filename)) {
-				throw new wf_exception(
-					$this,
-					WF_EXC_PRIVATE,
-					"file <strong>$filename".
-					"</strong> does not exist"
-				);
-			}
-			require($filename);
-			
-			/* loading objet */
-			$object = new ${'objectname'}($this->wf);
-			$funcname = $channel[0][4];
+		try {
+			if($channel[0][2] == WF_ROUTE_ACTION) {
+				$finfo = $this->wf->locate_file("route/".$channel[0][3].".php", true);
+				$filename = $finfo[0];
+				$objectname = 
+					"wfr_".
+					$finfo[2]."_".
+					preg_replace("/\//", "_", $channel[0][3]);
+				
+				/* Old Code
+				$filename = $channel[0][0]."/route/".$channel[0][3].".php";
+				$objectname = "wfr_".$channel[0][1]."_".preg_replace("/\//", "_", $channel[0][3]);*/
+				
+				/* loading concerned object */
+				if(!file_exists($filename)) {
+					throw new wf_exception(
+						$this,
+						WF_EXC_PRIVATE,
+						"file <strong>$filename".
+						"</strong> does not exist"
+					);
+				}
+				require($filename);
+				
+				/* loading objet */
+				$object = new ${'objectname'}($this->wf);
+				$funcname = $channel[0][4];
 
-			/* vérification si la classe est bien codée */
-			if(get_parent_class($object) != "wf_route_request") {
-				throw new wf_exception(
-					$this,
-					WF_EXC_PRIVATE,
-					"object <strong>$objectname".
-					"</strong> must be derived ".
-					"of wfr_route_request"
-				);
-			}
-			
-			/* vérification si la méthode existe */
-			if(!method_exists($object, $funcname) && !method_exists($object, "__call")) {
-				throw new wf_exception(
-					$this,
-					WF_EXC_PRIVATE,
-					"method <strong>$funcname()".
-					"</strong> does not exist ".
-					"in <strong>".
-					get_class($object).
-					"</strong> object."
-				);
-			}
+				/* vérification si la classe est bien codée */
+				if(get_parent_class($object) != "wf_route_request") {
+					throw new wf_exception(
+						$this,
+						WF_EXC_PRIVATE,
+						"object <strong>$objectname".
+						"</strong> must be derived ".
+						"of wfr_route_request"
+					);
+				}
+				
+				/* vérification si la méthode existe */
+				if(!method_exists($object, $funcname) && !method_exists($object, "__call")) {
+					throw new wf_exception(
+						$this,
+						WF_EXC_PRIVATE,
+						"method <strong>$funcname()".
+						"</strong> does not exist ".
+						"in <strong>".
+						get_class($object).
+						"</strong> object."
+					);
+				}
 
-			/* exécute la fonction */
-			call_user_func(array($object, $funcname));
-			exit(0);
+				/* exécute la fonction */
+				call_user_func(array($object, $funcname));
+				exit(0);
+			}
+			else if($channel[0][2] == WF_ROUTE_REDIRECT) {
+				$link = $this->wf->linker($channel[0][3], NULL, NULL, TRUE);
+				$this->wf->no_cache();
+				header("Location: $link");
+				exit(0);
+			}
 		}
-		else if($channel[0][2] == WF_ROUTE_REDIRECT) {
-			$link = $this->wf->linker($channel[0][3], NULL, NULL, TRUE);
-			$this->wf->no_cache();
-			header("Location: $link");
-			exit(0);
+		catch(wf_exception $e) {
+			$msg =	'<div class="content-secondary"><div id="jqm-homeheader">'.
+					'<h1 id="jqm-logo"><img src="'.$this->wf->linker('/data/admin/images/exception.png').'" alt="Exception" /></h1>'.
+					'<p>Exception soulevée</p></div>'.
+					'<p class="intro">Une erreur de développement ou d\'utilisation est survenue.</p></div>'.
+					'<div class="content-primary" style="font-size: 0.9em;">';
+			
+			if(is_array($e->messages)) {
+				$i = 0;
+				foreach($e->messages as $m) {
+					$msg .= "* ($i) $m\n<br/>";
+					$i++;
+				}
+			}
+			else
+				$msg .= $e->messages;
+			
+			$this->wf->admin_html()->rendering($msg.'</div>');
 		}
+		
 		exit(0);
 	}
 	
