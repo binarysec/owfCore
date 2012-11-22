@@ -203,7 +203,7 @@ class core_tpl_compiler extends wf_agg {
 	private function parse($matches) {
 		list(, $tag, $firstcar) = $matches;
 		
-		if(!preg_match('/^\$|@|[a-zA-Z\/]$/', $firstcar))
+		if(!preg_match('/^\$|@|\*|[a-zA-Z\/]$/', $firstcar))
 			throw new wf_exception(
 				$this,
 				WF_EXC_PRIVATE,
