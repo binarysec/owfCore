@@ -87,7 +87,7 @@ class core_route extends wf_agg {
 	 * accepting channel returned by get_channel
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function execute_route(&$channel) {
-		try {
+		//try {
 			if($channel[0][2] == WF_ROUTE_ACTION) {
 				$finfo = $this->wf->locate_file("route/".$channel[0][3].".php", true);
 				$filename = $finfo[0];
@@ -149,7 +149,7 @@ class core_route extends wf_agg {
 				header("Location: $link");
 				exit(0);
 			}
-		}
+		/*}
 		catch(wf_exception $e) {
 			$msg =	'<div class="content-secondary"><div id="jqm-homeheader">'.
 					'<h1 id="jqm-logo"><img src="'.$this->wf->linker('/data/admin/images/exception.png').'" alt="Exception" /></h1>'.
@@ -168,7 +168,7 @@ class core_route extends wf_agg {
 				$msg .= $e->messages;
 			
 			$this->wf->admin_html()->rendering($msg.'</div>');
-		}
+		}*/
 		
 		exit(0);
 	}
