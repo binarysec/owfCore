@@ -101,7 +101,7 @@ class core_dataset {
 		$this->order = array();
 		$struct = $this->dsrc->get_struct();
 		foreach($order as $col => $way) {
-			if($this->cols[$col]['orderable'] == true) {
+			if(isset($this->cols[$col]['orderable']) && $this->cols[$col]['orderable']) {
 				$this->order[$col] = $way;
 			}
 		
