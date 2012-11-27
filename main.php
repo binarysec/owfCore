@@ -628,14 +628,26 @@ class web_framework {
 		return(rmdir($dir));
 	} 
 	
+	private $vars = array();
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Force get_var() behavior
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function set_var($name, $value) {
+		$this->vars[$name] = $value;
+	}
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * Get a variable
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function get_var($name) {
 		$var = null;
-
-		if(isset($_GET[$name]))
+		
+		if(array_key_exists($name, $this->vars))
+			$var = $this->vars[$name];
+		else if(isset($_GET[$name]))
 			$var = $_GET[$name];
 		else if(isset($_POST[$name]))
 			$var = $_POST[$name];
