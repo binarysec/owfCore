@@ -341,6 +341,19 @@ class core_utils extends wf_agg {
 			$this->lang->ts("Description too short");
 	}
 	
-
+	public function whois_emails($domain) {
+		
+		if(empty($domain))
+			return false;
+		
+		exec("whois $domain", $out);
+		
+		preg_match_all("/[^ ]*@[^ ]*/i", implode(" ", $out), $matches);
+		$ret = current($matches);
+		$ret[] = "postmaster@$domain";
+		
+		return array_unique($ret);
+		
+	}
 	
 }
