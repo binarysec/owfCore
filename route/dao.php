@@ -442,6 +442,8 @@ class wfr_core_dao extends wf_route_request {
 						"var" => $var
 					);
 				}
+				elseif($val["kind"] == OWF_DAO_NUMBER)
+					$insert[$key] = floatval($var);
 				else {
 					/* execute filter */
 					if(isset($val["filter_cb"])) {
