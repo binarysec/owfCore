@@ -168,7 +168,7 @@ class wfr_core_dao extends wf_route_request {
 		
 		if($this->uid > 0) 
 			$forms .= '<input type="hidden" name="uid" value="'.$this->uid.'"/>';
-			
+		
 		foreach($elements as $k => $v) {
 			/* INPUT */ 
 			if(	$v["kind"] == OWF_DAO_INPUT ||

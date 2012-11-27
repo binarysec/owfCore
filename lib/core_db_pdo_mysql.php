@@ -347,7 +347,7 @@ class core_db_pdo_mysql extends core_db {
 					if($firsttime)
 						$key .= empty($key) ? "`$k`" : ", `$k`";
 					$val_app .= empty($val_app) ? "?" : ", ?";
-					array_push($prepare_value, $this->safe_input($v));
+					array_push($prepare_value, $v);
 				}
 				$firsttime = false;
 				$val .= empty($val) ? "($val_app)" : ", ($val_app)";
@@ -357,13 +357,13 @@ class core_db_pdo_mysql extends core_db {
 			foreach($query_obj->arr as $k => $v) {
 				$key .= empty($key) ? "`$k`" : ", `$k`";
 				$val .= empty($val) ? "?" : ", ?";
-				array_push($prepare_value, $this->safe_input($v));
+				array_push($prepare_value, $v);
 			}
 		}
 		elseif($query_obj->type == WF_UPDATE || $query_obj->type == WF_ADV_UPDATE) {
 			foreach($query_obj->arr as $k => $v) {
 				$fields .= empty($fields) ? "`$k` = ?" : ", `$k` = ?";
-				array_push($prepare_value, $this->safe_input($v));
+				array_push($prepare_value, $v);
 			}
 		}
 		elseif(
@@ -416,10 +416,7 @@ class core_db_pdo_mysql extends core_db {
 						else
 							$values_arr[$k] = "$separator ?";
 						
-						array_push(
-							$prepare_value,
-							$this->safe_input($value)
-						);
+						array_push($prepare_value, $value);
 					}
 				}
 			}
@@ -502,10 +499,7 @@ class core_db_pdo_mysql extends core_db {
 					"WHERE `$k` = ?" :
 					" AND `$k` = ?";
 				
-				array_push(
-					$prepare_value,
-					$this->safe_input($v)
-				);
+				array_push($prepare_value, $v);
 			}
 		}
 		
@@ -735,24 +729,24 @@ class core_db_pdo_mysql extends core_db {
 		switch($sign) {
 			case '=':
 				$cond = "$var = ?";
-				array_push($prepare_values, $val);
+				array_push($prepare_values, $sval);
 				break;
 			case '==':
 				if(!$table_alias_exist) {
 					$cond = "$var = ?";
-					array_push($prepare_values, $val);
+					array_push($prepare_values, $sval);
 				}
 				else
 					$cond = "$var = $val";
 				break;
 			case '~=':
 				$cond = "$var LIKE ?";
-				array_push($prepare_values, $val);
+				array_push($prepare_values, $sval);
 				break;
 			case '>':
 				if($val_type != WF_T_STRING || !$table_alias_exist) {
 					$cond = "$var > ?";
-					array_push($prepare_values, $val);
+					array_push($prepare_values, $sval);
 				}
 				else
 					$cond = "$var > $val";
@@ -760,30 +754,30 @@ class core_db_pdo_mysql extends core_db {
 			case '<':
 				if($val_type != WF_T_STRING || !$table_alias_exist) {
 					$cond = "$var < ?";
-					array_push($prepare_values, $val);
+					array_push($prepare_values, $sval);
 				}
 				else
 					$cond = "$var > $val";
 				break;
 			case '>=':
 				$cond = "$var >= ?";
-				array_push($prepare_values, $val);
+				array_push($prepare_values, $sval);
 				break;
 			case '<=':
 				$cond = "$var <= ?";
-				array_push($prepare_values, $val);
+				array_push($prepare_values, $sval);
 				break;
 			case '!=':
 				if(!$table_alias_exist) {
 					$cond = "$var <> ?";
-					array_push($prepare_values, $val);
+					array_push($prepare_values, $sval);
 				}
 				else
 					$cond = "$var != $val";
 				break;
 			case '!==':
 				$cond = "$var <> ?";
-				array_push($prepare_values,$val);
+				array_push($prepare_values, $sval);
 				break;
 			/* added by keo on 11/12/2008 : IS NULL and IS NOT NULL conditions */
 			case '!':
