@@ -1,22 +1,24 @@
 <?php
 
 define("OWF_DAO_INPUT",				1);
-define("OWF_DAO_INPUT_READON",		2);
+define("OWF_DAO_INPUT_READON",		        2);
 define("OWF_DAO_NUMBER",			3);
-define("OWF_DAO_NUMBER_READON",		4);
+define("OWF_DAO_NUMBER_READON",		        4);
 define("OWF_DAO_UPLOAD",			5);
 define("OWF_DAO_SELECT",			6);
 define("OWF_DAO_HIDDEN",			7);
 define("OWF_DAO_RADIO",				8);
-define("OWF_DAO_RADIO_READON",		9);
+define("OWF_DAO_RADIO_READON",	        	9);
 define("OWF_DAO_CHECKBOX",			10);
-define("OWF_DAO_CHECKBOX_READON",	11);
+define("OWF_DAO_CHECKBOX_READON",	        11);
 define("OWF_DAO_SLIDER",			12);
 define("OWF_DAO_FLIP",				13);
 define("OWF_DAO_MAP",				16);
 
 define("OWF_DAO_LINK_MANY_TO_ONE",		20);
 define("OWF_DAO_LINK_MANY_TO_MANY",		21);
+
+define("OWF_DAO_TEXT",				30);
 
 // Not ported yet
 //define("OWF_DAO_INPUT_REQ",		2); ??
