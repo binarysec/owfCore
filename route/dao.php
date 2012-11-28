@@ -366,7 +366,7 @@ class wfr_core_dao extends wf_route_request {
 			/* TEXT */
 			elseif($v["kind"] == OWF_DAO_TEXT) {
 				$value = isset($v["value"]) ? $v["value"] : "";
-				$insert = "<textarea height='100' name='$k' id='$k'/>$value</textarea>";
+				$insert = "<textarea name='$k' id='$k'/>$value</textarea>";
 				/* append to form */
 				$forms .= 
 					"<div data-role='fieldcontain'>".
@@ -461,6 +461,8 @@ class wfr_core_dao extends wf_route_request {
 							else 
 								$insert[$key] = $var;
 						}
+						else
+							$insert[$key] = $var;
 					}
 					else if($var)
 						$insert[$key] = $var;
