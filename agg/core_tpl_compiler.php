@@ -572,10 +572,17 @@ class core_tpl_compiler extends wf_agg {
 	
 	/* display ajax popup */
 	public function func_msg(core_tpl_compiler $tpl_compiler, $argv) {
-		if(isset($argv[2]) && $argv[2])
-			return('echo "owf_admin_display_msg(\".$_lang->ts('.addslashes($argv[0]).')\");\n"');
+		/* pass the message throught god module (NOT WORKING YET) */
+		if(isset($argv[1]) && $argv[1] == true) {
+			$lang_start = '$_lang->ts(';
+			$lang_end = ')';
+		}
 		else
-			return('echo "owf_admin_display_msg('.addslashes($argv[0]).');\n"');
+			$lang_end = $lang_start = '';
+		
+		$time = isset($argv[2]) ? intval($argv[2]) : 2;
+		
+		return 'echo "owf_admin_display_msg('.addslashes($argv[0]).', '.$time.');\n";';
 	}
 
 	private function parse_tpl_var($var) {

@@ -346,14 +346,20 @@ class core_utils extends wf_agg {
 		if(empty($domain))
 			return false;
 		
-		exec("whois $domain", $out);
+		exec("whois $domain 2>/dev/null", $out, $ret);
+		
+		if($ret == 127) {
+			error_log("core_utils error: whois package is not installed on the server");
+			return false;
+		}
 		
 		preg_match_all("/[^ ]*@[^ ]*/i", implode(" ", $out), $matches);
 		$ret = current($matches);
 		$ret[] = "postmaster@$domain";
 		
-		return array_unique($ret);
-		
+		$ret = array_unique($ret);
+		sort($ret);
+		return $ret;
 	}
 	
 }
