@@ -59,13 +59,11 @@ class wfr_core_dao extends wf_route_request {
 		/* check form permission */
 		if(	!isset($item->struct["form"]["perm"]) ||
 			!$this->session->check_permission($item->struct["form"]["perm"])
-			) {
-			$this->wf->display_error(
-				403,
-				"Data access object forbidden"
-			);
-			exit(0);
-		}
+			)
+			$this->wf->display_error(403, "Data access object forbidden", true);
+		
+		if($item->capable == OWF_DAO_FORBIDDEN)
+			$this->wf->display_error(403, "Data access object forbidden", true);
 		
 		$title = '';
 		$body = '';

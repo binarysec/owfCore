@@ -27,6 +27,7 @@ define("OWF_DAO_TEXT",				30);
 //define("OWF_DAO_DATE_READON",    15);
 //define("OWF_DAO_STARS",          17);
 
+define("OWF_DAO_FORBIDDEN",	0x00);
 define("OWF_DAO_ADD",		0x01);
 define("OWF_DAO_REMOVE",	0x02);
 

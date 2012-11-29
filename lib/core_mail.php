@@ -48,10 +48,17 @@ class core_mail {
 		$this->subject = $subject;
 		$this->body = $content;
 		
+		/* default footer */
+		$footer_tpl = new core_tpl($this->wf);
+		$this->footer = $footer_tpl->fetch('core/mail_footer');
 	}
 	
 	public function set_header($header_name, $data) {
 		$this->headers[$header_name] = $data;
+	}
+	
+	public function set_footer($content) {
+		$this->footer = $content;
 	}
 	
 	public function attach($filepath, $name) {
@@ -95,11 +102,14 @@ class core_mail {
 		}
 		
 		//Filter html tags to have a raw text
-		$non_html = $this->html2text($this->body);
+		$non_html_body = $this->html2text($this->body);
+		$non_html_footer = $this->html2text($this->footer);
 		
 		//Render body
-		$this->tpl->set('body_text', $non_html);
+		$this->tpl->set('body_text', $non_html_body);
 		$this->tpl->set('body_html', $this->body);
+		$this->tpl->set('footer_text', $non_html_footer);
+		$this->tpl->set('footer_html', $this->footer);
 		if($attach_count == 0)
 			$this->render .= $this->tpl->fetch($this->template_normal);
 		else
