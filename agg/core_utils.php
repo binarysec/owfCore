@@ -362,4 +362,37 @@ class core_utils extends wf_agg {
 		return $ret;
 	}
 	
+	public function dig($domain, $type = "") {
+		if(empty($domain))
+			return false;
+		
+		exec("dig $domain 2>/dev/null", $out, $ret);
+		
+		if($ret == 127) {
+			error_log("core_utils error: dig package is not installed on the server");
+			return false;
+		}
+		
+		preg_match_all("/\n$domain.*\n/", implode("\n", $out), $matches);
+		$ret = current($matches);
+		
+		$ret = array_unique($ret);
+		sort($ret);
+		
+		if(!empty($type)) {
+			foreach($ret as $k => $line) {
+				$line = str_replace("\t\t", "\t", $line);
+				$line = str_replace("\n", "", $line);
+				$elements = explode("\t", $line);
+				if(count($elements) == 5) {
+					if($elements[3] == $type)
+						return $elements;
+				}
+				else
+					unset($ret[$k]);
+			}
+		}
+		return empty($ret) ? false : $ret;
+	}
+	
 }

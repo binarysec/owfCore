@@ -740,7 +740,7 @@ class web_framework {
 			if(strlen($back) > 0)
 				$back_url = $ci->encode($back);
 			else
-				$back_url = $ci->encode($this->linker("/admin"));
+				$back_url = $ci->encode($this->linker("/"));
 		}
 		$tpl->set("back_url", $back_url);
 		
