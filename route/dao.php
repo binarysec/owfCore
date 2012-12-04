@@ -55,12 +55,15 @@ class wfr_core_dao extends wf_route_request {
 			);
 			exit(0);
 		}
-	
 		/* check form permission */
-		if(	!isset($item->struct["form"]["perm"]) ||
-			!$this->session->check_permission($item->struct["form"]["perm"])
+		if(	(	!isset($item->struct["form"]["perm"]) ||
+				!$this->session->check_permission($item->struct["form"]["perm"])
+			) &&
+			(	!isset($item->struct["form"]["perm_cb"]) ||
+				!call_user_func($item->struct["form"]["perm_cb"], $item)
 			)
-			$this->wf->display_error(403, "Data access object forbidden", true);
+				)
+				$this->wf->display_error(403, "Data access object forbidden", true);
 		
 		if($item->capable == OWF_DAO_FORBIDDEN)
 			$this->wf->display_error(403, "Data access object forbidden", true);
@@ -407,8 +410,12 @@ class wfr_core_dao extends wf_route_request {
 			
 			/* check permission and required parameters */
 			$ret = false;
-			if(isset($val["perm"], $val["kind"]))
+			if(isset($val["perm"], $val["kind"])) {
 				$ret = $this->session->check_permission($val["perm"]);
+			}
+			elseif(isset($val["perm_cb"], $val["kind"])) {
+				$ret = call_user_func($val["perm_cb"], $item);
+			}
 			else {
 				/*$this->wf->display_error(404, "Missing parameters");
 				exit(0);*/
@@ -517,7 +524,13 @@ class wfr_core_dao extends wf_route_request {
 		if(is_array($_where)) {
 			foreach($item->data as $key => $val) {
 				/* check permission */
-				$ret = $this->session->check_permission($val["perm"]);
+				if(isset($val["perm"]))
+					$ret = $this->session->check_permission($val["perm"]);
+				elseif($val["perm_cb"])
+					$ret = call_user_func($val["perm_cb"], $item);
+				else
+					$ret = true;
+				
 				if($ret) {
 					$var = &$_where[$key];
 					if(isset($var))
