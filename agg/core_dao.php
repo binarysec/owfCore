@@ -102,7 +102,7 @@ class core_dao extends wf_agg {
 			if(isset($val["perm"], $val["kind"]))
 				$ret = $this->a_session->check_permission($val["perm"]);
 			elseif(isset($val["perm_cb"], $val["kind"]))
-				$ret = call_user_func($val["perm_cb"], $item);
+				$ret = call_user_func($val["perm_cb"], $item, $val);
 			
 			if($ret) {
 				

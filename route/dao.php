@@ -416,7 +416,7 @@ class wfr_core_dao extends wf_route_request {
 				$ret = $this->session->check_permission($val["perm"]);
 			}
 			elseif(isset($val["perm_cb"], $val["kind"])) {
-				$ret = call_user_func($val["perm_cb"], $item);
+				$ret = call_user_func($val["perm_cb"], $item, $val);
 			}
 			else {
 				/*$this->wf->display_error(404, "Missing parameters");
@@ -526,7 +526,7 @@ class wfr_core_dao extends wf_route_request {
 				if(isset($val["perm"]))
 					$ret = $this->session->check_permission($val["perm"]);
 				elseif($val["perm_cb"])
-					$ret = call_user_func($val["perm_cb"], $item);
+					$ret = call_user_func($val["perm_cb"], $item, $val);
 				else
 					$ret = true;
 				
