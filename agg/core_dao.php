@@ -30,6 +30,8 @@ define("OWF_DAO_TEXT",				30);
 define("OWF_DAO_FORBIDDEN",	0x00);
 define("OWF_DAO_ADD",		0x01);
 define("OWF_DAO_REMOVE",	0x02);
+define("OWF_DAO_EDIT",		0x04);
+define("OWF_DAO_ALL", OWF_DAO_ADD|OWF_DAO_EDIT|OWF_DAO_REMOVE);
 
 class core_dao extends wf_agg {
 	private $position = 0;

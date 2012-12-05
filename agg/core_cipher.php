@@ -27,7 +27,7 @@ class core_cipher extends wf_agg {
 		$this->dao = new core_dao_form_db(
 			$this->wf,
 			"core_cipher",
-			OWF_DAO_ADD | OWF_DAO_REMOVE,
+			OWF_DAO_FORBIDDEN,
 			$this->struct,
 			"core_cipher",
 			"Core HTTP security"

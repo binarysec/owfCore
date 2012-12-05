@@ -43,7 +43,7 @@ class core_var extends wf_agg {
 		$this->dao = new core_dao_form_db(
 			$this->wf,
 			"core_var",
-			OWF_DAO_ADD | OWF_DAO_REMOVE,
+			OWF_DAO_FORBIDDEN,
 			$this->struct,
 			"core_var",
 			"Core SMTP DAO"

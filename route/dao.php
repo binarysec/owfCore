@@ -48,13 +48,9 @@ class wfr_core_dao extends wf_route_request {
 		
 		/* select form */
 		$item = $this->selector();
-		if(!is_object($item)) {
-			$this->wf->display_error(
-				404,
-				"Data access object not found"
-			);
-			exit(0);
-		}
+		if(!is_object($item))
+			$this->wf->display_error(404, "Data access object not found", true);
+		
 		/* check form permission */
 		if(	(	!isset($item->struct["form"]["perm"]) ||
 				!$this->session->check_permission($item->struct["form"]["perm"])
@@ -78,23 +74,26 @@ class wfr_core_dao extends wf_route_request {
 				
 			/* process update */
 			if($this->action == 'process') {
+				if(!($item->capable & OWF_DAO_EDIT))
+					$this->wf->display_error(404, "DAO edit action forbidden", true);
+				
 				$r = $this->add_post($item, $this->uid);
-				if(is_array($r))
-					$this->error = $r;
-				else {
+				if(!is_array($r))
 					$this->wf->redirector($this->back);
-					exit(0);
-				}
+				$this->error = $r;
 				$ret = $item->get(array("id" => $this->uid));
 			}
 			else if($this->action == 'del') {
-				$able = ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE;
-				if($able)
-					$ret = $item->remove(array("id" => $this->uid));
+				if(!($item->capable & OWF_DAO_REMOVE))
+					$this->wf->display_error(404, "DAO remove action forbidden", true);
+				
+				$ret = $item->remove(array("id" => $this->uid));
 				$this->wf->redirector($this->back);
-				exit(0);
 			}
-		
+			
+			if(!($item->capable & OWF_DAO_EDIT))
+				$this->wf->display_error(404, "DAO edit action forbidden", true);
+			
 			$elements = $this->a_core_dao->draw_form($item, $ret[0], false);
 			$this->type_mod = true;
 			
@@ -106,15 +105,15 @@ class wfr_core_dao extends wf_route_request {
 				
 		}
 		else {
+			if(!($item->capable & OWF_DAO_ADD))
+				$this->wf->display_error(404, "DAO add action forbidden", true);
+			
 			/* process addition */
 			if($this->action == 'process') {
 				$r = $this->add_post($item);
-				if(is_array($r))
-					$this->error = $r;
-				else {
+				if(!is_array($r))
 					$this->wf->redirector($this->back);
-					exit(0);
-				}
+				$this->error = $r;
 			}
 			
 			$elements = $this->a_core_dao->draw_form($item, $this->fake, false);
@@ -380,7 +379,10 @@ class wfr_core_dao extends wf_route_request {
 			
 		}
 		
-		$can_add = !is_null($item) && ($item->capable & OWF_DAO_ADD) == OWF_DAO_ADD;
+		$can_add = false;
+		if(!is_null($item))
+			$can_add = ($this->uid > 0) ? ($item->capable & OWF_DAO_EDIT) :
+				($item->capable & OWF_DAO_ADD);
 		$can_del = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE && $this->uid > 0;
 		$add_txt = "<button type='submit' data-theme='b'>Submit</button>";
 		$del_txt = "<a href='' onclick=\"owf_admin_confirm_deletion('".$this->selector()->del_link($this->uid, TRUE)."');\"".
@@ -420,9 +422,6 @@ class wfr_core_dao extends wf_route_request {
 				/*$this->wf->display_error(404, "Missing parameters");
 				exit(0);*/
 			}
-			
-			if($ret)
-				$ret = ($item->capable & OWF_DAO_ADD) == OWF_DAO_ADD;
 			
 			if($ret) {
 				/* get var */

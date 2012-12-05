@@ -130,7 +130,7 @@ class core_dao_form_db {
 	}
 	
 	public function mod_link($uid, $route_only = false) {
-		/*if(($this->capable & OWF_DAO_ADD) != OWF_DAO_ADD)
+		/*if(($this->capable & OWF_DAO_EDIT) != OWF_DAO_EDIT)
 			return "";*/
 		
 		$route = "/dao/".$this->aggregator;
