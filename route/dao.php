@@ -159,7 +159,7 @@ class wfr_core_dao extends wf_route_request {
 	
 
 	public function form_rendering($elements, $item = null) {
-		$forms = '<form action="?" method="post" class="ui-body ui-body-a ui-corner-all">';
+		$forms = '<form action="?" method="post" class="ui-body ui-body-a ui-corner-all" style="width: 65%; margin: auto;">';
 		
 		$forms .= '<input type="hidden" name="oid" value="'.$this->oid.'"/>';
 		$forms .= '<input type="hidden" name="back" value="'.$this->cipher->encode($this->back).'"/>';
