@@ -1,5 +1,5 @@
-Package: owf-core-1.2
-Version: 1.2.5
+Package: owf-core-<MODULE_VERSION>
+Version: <MODULE_VERSION>.0
 Section: base
 Priority: optional
 Architecture: all

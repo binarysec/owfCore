@@ -1,0 +1,5 @@
+#!/bin/bash
+rm -rf /usr/share/owf/core/<MODULE_VERSION>
+rm /usr/bin/owfloader-<MODULE_VERSION> /usr/bin/owfloader
+rm /usr/bin/owfinit-<MODULE_VERSION> /usr/bin/owfinit
+exit $?
