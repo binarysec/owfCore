@@ -45,7 +45,7 @@ class core_lock extends wf_agg {
 				else {
 					flock($fp, LOCK_UN);
 					fclose($fp);
-					return($ret);
+					return(false);
 				}
 			}
 			
