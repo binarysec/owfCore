@@ -584,6 +584,17 @@ class core_tpl_compiler extends wf_agg {
 		
 		return 'echo "owf_admin_display_msg('.addslashes($argv[0]).', '.$time.');\n";';
 	}
+	
+	/* use core_utils number_format */
+	public function func_nbft(core_tpl_compiler $tpl_compiler, $argv) {
+		$params = $argv[0];
+		if(isset($argv[1]))
+			$params .= ', '.
+				(isset($argv[2]) ?intval($argv[2]).', ' : '0, ').
+				$argv[1];
+		
+		return('echo $t->wf->core_utils()->number_format('.$params.');');
+	}
 
 	private function parse_tpl_var($var) {
 		return(trim($var, '"\' '));

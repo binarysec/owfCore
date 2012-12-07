@@ -45,6 +45,9 @@ class core_lang_context {
 	 * Translation function
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function ts($text) {
+		if(empty($text))
+			return false;
+		
 		if(is_array($text)) {
 			$rtext = $text[0];
 			unset($text[0]);

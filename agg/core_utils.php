@@ -395,4 +395,24 @@ class core_utils extends wf_agg {
 		return empty($ret) ? false : $ret;
 	}
 	
+	public function number_format($number, $decimals = 0, $lang = "") {
+		$cl = $this->wf->core_lang()->resolv($lang);
+		$lang = !empty($lang) && $cl ?
+			$cl["code"] : $this->wf->core_lang()->get_code();
+		
+		switch($lang) {
+			case "en":
+				$decimal_separator = '.';
+				$thousands_separator = ',';
+				break;
+			default: 
+				$decimal_separator = ',';
+				$thousands_separator = ' ';
+				break;
+		}
+		
+		
+		return number_format($number, $decimals, $decimal_separator, $thousands_separator);
+	}
+	
 }
