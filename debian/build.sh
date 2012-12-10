@@ -9,7 +9,7 @@
 # customize module information
 #
 MODULE=core							#Module name
-VERSION=1.3							#Package version
+VERSION=1.3.1						#Package version
 DEBNAME=owf-$MODULE-$VERSION		#Package name
 MODULEDIR="../"						#Module directory
 
