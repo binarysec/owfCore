@@ -164,7 +164,7 @@ class core_lang extends wf_agg {
 		$this->_core_register->set_user_data(array(
 			"language" => $lang
 		));
-
+		
 		return($this->current);
 	}
 	
