@@ -265,7 +265,11 @@ class web_framework {
 		/* Open database */
 		if($db == true)
 			$this->open_db();
-			
+		
+		/* check language */
+		$l = $this->get_lang_code();
+		$this->core_lang()->check_lang_route($l);
+		
 		$this->execute_hook("owf_post_init");
 		
 	}
@@ -286,9 +290,6 @@ class web_framework {
 	 * Master processing
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function process() {
-		/* check language */
-		$l = $this->get_lang_code();
-		$this->core_lang()->check_lang_route($l);
 		
 		/* chargement des routes */
 		$this->core_route()->scan();
