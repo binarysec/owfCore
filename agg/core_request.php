@@ -33,7 +33,9 @@ class core_request extends wf_agg {
 		$this->_session = $this->wf->session();
 		$this->a_core_route = $this->wf->core_route();
 		$this->a_core_html = $this->wf->core_html();
-
+		$this->core_lang = $this->wf->core_lang();
+		
+		$this->lang = $this->core_lang->get_context('core/request');
 	}
 
 	var $channel;
