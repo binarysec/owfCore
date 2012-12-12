@@ -94,7 +94,7 @@ class core_request extends wf_agg {
 		/* vérification de la session */
 		if($session_check == SESSION_TIMEOUT) {
 			$this->wf->display_login(
-				"Session destroyed",
+				$this->lang->ts("Session destroyed"),
 				null, true
 			);
 		}
@@ -120,7 +120,7 @@ class core_request extends wf_agg {
 		if(!$display_login) {
 			if($uid < 1)
 				$this->wf->display_login(
-					"You must be connected"
+					$this->lang->ts("You must be connected")
 				);
 			else
 				$this->wf->display_error(403, "You don't have enough permissions");
