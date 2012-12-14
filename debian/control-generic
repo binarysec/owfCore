@@ -1,0 +1,9 @@
+Package: owf-core-<MODULE_VERSION>
+Version: <MODULE_VERSION>.0
+Section: base
+Priority: optional
+Architecture: all
+Depends: php5-cli
+Maintainer: Olivier CHEVALIER <oc@binarysec.com>
+Description: Open Web Framework CORE Module - OpenWF : Modular PHP Framework for Websites and Web Applications.
+Homepage: http://www.owf.re
