@@ -156,7 +156,7 @@
 	<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="d" data-mini="true">
 	%{if $searchi > 0 && (count($rows) > 1 || !empty($search))}%
 		<li>
-			<input type="search" name="%{$name}%_search" class="core-dataset-search-%{$name}%" value="%{$search}%" data-mini="true" placeholder="Type here to search" />
+			<input type="search" name="%{$name}%_search" class="core-dataset-search-%{$name}%" value="%{$search}%" data-mini="true" placeholder="%{@ 'Search...'}%" />
 		</li>
 	%{/if}%
 
