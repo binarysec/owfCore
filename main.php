@@ -718,7 +718,7 @@ class web_framework {
 	 *
 	 * Display login
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function display_login($message="", $vars=null, $back=false) {
+	public function display_login($message="", $vars=null, $back=true) {
 		$ci = $this->core_cipher();
 		
 		$this->no_cache();
