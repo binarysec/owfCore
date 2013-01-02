@@ -69,9 +69,9 @@ class core_pref_context {
 	 * Register a new variable 
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function register($var, $description, $type, $dft, $serial=NULL) {
-		if(array_key_exists($var,$this->variables))
+		if(isset($this->variables[$var]))
 			return($this->variables[$var]["value"]);
-			
+		
 		$data = $this->db_find($var);
 		if(!$data) {
 			$insert = array(
@@ -231,24 +231,22 @@ class core_pref_context {
 	 * Low level function to find variable
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	private function db_find($var) {
-		if(array_key_exists($var,$this->variables) && is_array($this->variables[$var]))
-			return($this->variables[$var]);
+		if(!array_key_exists($var, $this->variables) || !is_array($this->variables[$var])) {
+			$q = new core_db_select("core_pref");
+			$where = array();
+			$where["variable"] = $var;
+			$where["group_id"] = (int) $this->id;
+			$q->where($where);
+			$this->wf->db->query($q);
+			$res = $q->get_result();
 			
-		$q = new core_db_select("core_pref");
-		$where = array();
-		$where["variable"] = $var;
-		$where["group_id"] = $this->id;
-		$q->where($where);
-		$this->wf->db->query($q);
-		$res = $q->get_result();
-		
-		/* store short cache */
-		$this->variables[$var] = isset($res[0]) ? $res[0] : NULL;
-		
-		/* need cacher update */
-		$this->need_up = TRUE;
-
-		return(isset($res[0]) ? $res[0] : NULL);
+			/* store short cache */
+			$this->variables[$var] = isset($res[0]) ? $res[0] : NULL;
+			
+			/* need cacher update */
+			$this->need_up = TRUE;
+		}
+		return $this->variables[$var];
 	}
 }
 
