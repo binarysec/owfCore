@@ -14,6 +14,7 @@ define("OWF_DAO_CHECKBOX_READON",	        11);
 define("OWF_DAO_SLIDER",			12);
 define("OWF_DAO_FLIP",				13);
 define("OWF_DAO_MAP",				16);
+define("OWF_DAO_OCTOPUS",			17);
 
 define("OWF_DAO_LINK_MANY_TO_ONE",		20);
 define("OWF_DAO_LINK_MANY_TO_MANY",		21);
@@ -128,6 +129,12 @@ class core_dao extends wf_agg {
 					else
 						$list = $val["list"];
 					$result[$key]["list"] = $list;
+				}
+				elseif($val["kind"] == OWF_DAO_OCTOPUS) {
+					$result[$key]["list"] = array();
+					foreach($item->childs as $child)
+						$result[$key]["list"][$child->get_id()] = $child->get_ts_name();
+					
 				}
 				elseif($val["kind"] == OWF_DAO_FLIP) {
 					if(isset($val["texton"]))

@@ -42,10 +42,12 @@ class core_dao_form_db {
 		$this->data = &$this->struct["data"];
 		foreach($this->struct["data"] as $key => $val) {
 			if(isset($val["kind"], $val["dao"], $val["field-id"]) && $val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
-					if(is_array($val["dao"]) && isset($val["type"]))
-						$this->db[$key] = $val["type"];
-					else
-						$this->db[$key] = $val["dao"]->struct["data"][$val["field-id"]]["type"] & ~WF_PRIMARY & ~WF_AUTOINC;
+				if(is_array($val["dao"]) && isset($val["type"])) {
+					$this->db[$key] = $val["type"];
+				}
+				else {
+					$this->db[$key] = $val["dao"]->struct["data"][$val["field-id"]]["type"] & ~WF_PRIMARY & ~WF_AUTOINC;
+				}
 			}
 			elseif(isset($val["kind"])) {
 				if($val["kind"] == OWF_DAO_MAP) {
@@ -63,11 +65,65 @@ class core_dao_form_db {
 						)
 					);
 				}
-				else
+				else {
 					$this->db[$key] = $val["type"];
+				}
+				
+				/* for octopus kind, add other tables */
+				if($val["kind"] == OWF_DAO_OCTOPUS && isset($val["affix"])) {
+					foreach($this->wf->modules as $module) {
+						$lib_dir = "$module[0]/lib/";
+						$afx_length = strlen($val["affix"]);
+						if(file_exists($lib_dir)) {
+							foreach(scandir($lib_dir) as $file) {
+								if(	$file[0] != "." &&
+									strlen($file) - $afx_length - 4 > 0 &&
+									substr($file, 0, $afx_length) == $val["affix"]
+									) {
+										$obj_name = substr($file, 0, strlen($file) - 4);
+										$obj = new ${"obj_name"}($this->wf);
+										
+										if(!is_subclass_of($obj, "core_dao_octopus", false))
+											throw new wf_exception(
+												$this,
+												WF_EXC_PUBLIC,
+												"Class ".get_class($obj)." does not inherit core_dao_octopus"
+											);
+										
+										$obj->father = $this;
+										
+										if(isset($this->childs[$obj->get_id()]))
+											throw new wf_exception(
+												$this,
+												WF_EXC_PUBLIC,
+												"You used two same ids for an OWF_DAO_OCTOPUS"
+											);
+										
+										$this->childs[$obj->get_id()] = $obj;
+										
+										$fields = array();
+										foreach($obj->get_struct() as $field => $info)
+											$fields[$field] = $info["db"];
+										
+										$struct = array_merge(
+											array("father_id" => WF_INT | WF_PRIMARY),
+											$fields
+										);
+										
+										$this->wf->db->register_zone(
+											$name."_".$obj->get_name(),
+											$obj->get_description(),
+											$struct
+										);
+								}
+							}
+						}
+					}
+				}
 			}
-			else
+			else {
 				$this->db[$key] = $val["type"];
+			}
 		}
 		
 		/* register zone */

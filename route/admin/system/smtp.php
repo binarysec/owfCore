@@ -84,14 +84,6 @@ class wfr_core_admin_system_smtp extends wf_route_request {
 				'<p>Service address: '.$add.'</strong></p>'.
 			'</a></li>';
 		return($r);
-		
-		return("null");
-		return(array(
-			'description' => htmlspecialchars($datum['description']),
-			'server_ip' => htmlspecialchars($datum['server_ip']),
-			'server_port' => htmlspecialchars($datum['server_port']),
-			'actions' => $action
-		));
 	}
 		
 }
