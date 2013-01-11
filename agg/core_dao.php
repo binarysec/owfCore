@@ -161,16 +161,16 @@ class core_dao extends wf_agg {
 				}
 				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
 					$result[$key]["list"] = array();
-					$data = is_array($val["dao"]) ? 
+					$datalist = is_array($val["dao"]) ? 
 						call_user_func($val["dao"]) : $val["dao"]->get();
-					foreach($data as $subdaoitem)
+					foreach($datalist as $subdaoitem)
 						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
 				}
 				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_MANY) {
 					$result[$key]["list"] = array();
-					$data = is_array($val["dao"]) ? 
+					$datalist = is_array($val["dao"]) ? 
 						call_user_func($val["dao"]) : $val["dao"]->get();
-					foreach($data as $subdaoitem)
+					foreach($datalist as $subdaoitem)
 						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
 				}
 				
