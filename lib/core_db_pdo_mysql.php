@@ -157,7 +157,7 @@ class core_db_pdo_mysql extends core_db {
 			return($res);
 		
 		$z = $this->get_zone($zone);
-		if(!is_array($z[0]))
+		if(empty($z) || !is_array($z[0]))
 			return(false);
 			
 		/* get id */
@@ -628,7 +628,8 @@ class core_db_pdo_mysql extends core_db {
 			$this->query($q);
 			
 			$query_obj->result = $q->get_result();
-			$query_obj->result = $query_obj->result[0];
+			if(is_array($query_obj->result) && !empty($query_obj->result))
+				$query_obj->result = current($query_obj->result);
 			
 		}
 		elseif($query_obj->type == WF_INDEX) {

@@ -131,10 +131,7 @@ class core_log extends wf_agg {
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function open_channel($name, $type) {
 		/* sanatize type */
-		if(
-			$type != CORE_LOG_PLAIN &&
-			$type != CORE_LOG_MANAGED
-			)
+		if($type != CORE_LOG_PLAIN && $type != CORE_LOG_MANAGED)
 			return(NULL);
 		
 		/* channel */
@@ -149,7 +146,7 @@ class core_log extends wf_agg {
 			$q = new core_db_insert("core_channel", $insert);
 			$this->wf->db->query($q);
 			$res = $this->get("channel", $name);
-			return($res[0]);
+			return isset($res[0]) ? $res[0] : $res;
 		}
 		
 		/* check update */
