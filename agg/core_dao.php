@@ -134,7 +134,7 @@ class core_dao extends wf_agg {
 					$result[$key]["list"] = array();
 					foreach($item->childs as $child)
 						$result[$key]["list"][$child->get_id()] = $child->get_ts_name();
-					
+					$result[$key]["db-field"] = $val["db-field"];
 				}
 				elseif($val["kind"] == OWF_DAO_FLIP) {
 					if(isset($val["texton"]))

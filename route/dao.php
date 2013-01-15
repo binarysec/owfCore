@@ -93,10 +93,11 @@ class wfr_core_dao extends wf_route_request {
 				foreach($elements as $k => $v) {
 					if(isset($v["kind"]) && $v["kind"] == OWF_DAO_OCTOPUS) {
 						foreach($item->childs as $child) {
+							$key = isset($v["db-field"]) ? $v["db-field"] : "father_id";
 							$this->wf->db->query(
 								new core_db_delete(
 									$item->name."_".$child->get_name(),
-									array("father_id" => $this->uid)
+									array($key => $this->uid)
 								)
 							);
 						}
@@ -268,10 +269,11 @@ class wfr_core_dao extends wf_route_request {
 						
 						$dft_val = "";
 						if($this->uid > 0 && $child->get_id() == intval($v["value"])) {
+							$key = isset($v["db-field"]) ? $v["db-field"] : "father_id";
 							$q = new core_db_select(
 								$item->name."_".$child->get_name(),
 								null,
-								array("father_id" => $this->uid)
+								array($key => $this->uid)
 							);
 							$this->wf->db->query($q);
 							$dft_val = current($q->get_result());
@@ -279,6 +281,8 @@ class wfr_core_dao extends wf_route_request {
 						
 						foreach($child->get_struct() as $field => $info) {
 							$info["value"] = is_array($dft_val) ? $dft_val[$field] : $dft_val;
+							if(isset($info["cb_get"]))
+								$info["value"] = call_user_func(array($child, $info["cb_get"]), $info["value"]);
 							$octopus .= $this->form_render_element($field, $info, $info["kind"], $item, $kind, 
 								array(
 									"name" => $k,
@@ -505,32 +509,49 @@ class wfr_core_dao extends wf_route_request {
 			/* octopus */
 			if($val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
 				
+				$key = isset($val["db-field"]) ? $val["db-field"] : "father_id";
 				$octo_insert = array();
-				foreach($item->childs[$var]->get_struct() as $k => $v)
+				foreach($item->childs[$var]->get_struct() as $k => $v) {
 					$octo_insert[$k] = $this->wf->get_var($k);
-				
-				$zone = $item->name."_".$item->childs[$var]->get_name();
-				$octo_insert["father_id"] = $id;
-				
-				if($add) {
-					$q = new core_db_insert($zone, $octo_insert);
-					$this->wf->db->query($q);
+					if(isset($v["cb_check"])) {
+						$ret = call_user_func(
+							array($item->childs[$var], $v["cb_check"]),
+							$octo_insert[$k]
+						);
+						if($ret)
+							$error["msgs"][] = $ret;
+					}
+					if(isset($v["cb_add"]))
+						$octo_insert[$k] = call_user_func(
+							array($item->childs[$var], $v["cb_add"]),
+							$octo_insert[$k]
+						);
 				}
-				else {
-					if($type_changed) {
-						$this->wf->db->query(
-							new core_db_delete(
-								$item->name."_".$item->childs[$type_old]->get_name(),
-								array("father_id" => $id)
-							)
-						);
-						$this->wf->db->query(
-							new core_db_insert($zone, $octo_insert)
-						);
+				
+				if(count($error["msgs"]) == 0) {
+					$zone = $item->name."_".$item->childs[$var]->get_name();
+					$octo_insert[$key] = $id;
+					
+					if($add) {
+						$q = new core_db_insert($zone, $octo_insert);
+						$this->wf->db->query($q);
 					}
 					else {
-						$q = new core_db_update($zone, $octo_insert, array("father_id" => $id));
-						$this->wf->db->query($q);
+						if($type_changed) {
+							$this->wf->db->query(
+								new core_db_delete(
+									$item->name."_".$item->childs[$type_old]->get_name(),
+									array($key => $id)
+								)
+							);
+							$this->wf->db->query(
+								new core_db_insert($zone, $octo_insert)
+							);
+						}
+						else {
+							$q = new core_db_update($zone, $octo_insert, array($key => $id));
+							$this->wf->db->query($q);
+						}
 					}
 				}
 			}
@@ -551,7 +572,8 @@ class wfr_core_dao extends wf_route_request {
 				$this->wf->db->query($q);
 			}
 			
-			return(true);
+			if(count($error["msgs"]) == 0)
+				return(true);
 		}
 		else if(count($error["msgs"]) == 0)
 			$error["__dao_title"] = "No data to insert";

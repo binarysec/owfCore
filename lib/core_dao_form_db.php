@@ -105,8 +105,11 @@ class core_dao_form_db {
 										foreach($obj->get_struct() as $field => $info)
 											$fields[$field] = $info["db"];
 										
+										$key = isset($val["db-field"]) ?
+											$val["db-field"] : "father_id";
+										
 										$struct = array_merge(
-											array("father_id" => WF_INT | WF_PRIMARY),
+											array($key => WF_INT | WF_PRIMARY),
 											$fields
 										);
 										
