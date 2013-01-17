@@ -507,7 +507,7 @@ class wfr_core_dao extends wf_route_request {
 				$id = $this->uid = $item->add($insert);
 			
 			/* octopus */
-			if($val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
+			if(isset($val["kind"]) && $val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
 				
 				$key = isset($val["db-field"]) ? $val["db-field"] : "father_id";
 				$octo_insert = array();

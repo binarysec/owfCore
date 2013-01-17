@@ -138,6 +138,11 @@ class core_dao_form_db {
 		
 		/* register dao */
 		$this->a_dao->register($this);
+		
+		/* cache */
+		$this->gcache = $this->wf->core_cacher()->create_group(
+			$this->name."_gcache"
+		);
 	}
 	
 	public function set_join($table, $colname) {
@@ -168,12 +173,24 @@ class core_dao_form_db {
 	}
 	
 	public function get($where=NULL, $order=NULL, $limit = -1, $offset = -1) {
+		$cache_line = $this->name."_get";
+		if(is_array($where))
+			foreach($where as $k => $v)
+				$cache_line .= "_$k:$v";
+		
+		if(($cache = $this->gcache->get($cache_line)))
+			return($cache);
+		
 		$q = new core_db_select($this->name, null, $where);
 		$q->limit($limit, $offset);
 		if(!is_null($order))
 			$q->order($order);
 		$this->wf->db->query($q);
-		return $q->get_result();
+		$res = $q->get_result();
+		
+		$this->gcache->store($cache_line, $res);
+		
+		return $res;
 	}
 	
 	public function add_link($uid=null) {
