@@ -83,7 +83,8 @@ class core_dao_form_db {
 										$obj_name = substr($file, 0, strlen($file) - 4);
 										$obj = new ${"obj_name"}($this->wf);
 										
-										if(!is_subclass_of($obj, "core_dao_octopus", false))
+										//if(!is_subclass_of($obj, "core_dao_octopus", false)) PHP 5.3.9 only
+										if(!is_subclass_of($obj, "core_dao_octopus"))
 											throw new wf_exception(
 												$this,
 												WF_EXC_PUBLIC,
