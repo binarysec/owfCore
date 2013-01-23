@@ -30,6 +30,13 @@ class core_datasource_query extends core_datasource {
 		$this->query = $query;
 	}
 	
+	public function set_search($cols, $input) {
+		
+		// this will do 'and' but require 'or'
+		foreach($cols as $col)
+			$this->preconds[] = array($col, "~=", $input);
+	}
+	
 	public function get_struct() {
 		$dbfields = $this->wf->db->get_zone($this->get_name());
 		$struct = array();
