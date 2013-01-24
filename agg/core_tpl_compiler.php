@@ -586,7 +586,7 @@ class core_tpl_compiler extends wf_agg {
 		
 		$time = isset($argv[2]) ? intval($argv[2]) : 2;
 		
-		return 'echo "owf_admin_display_msg('.addslashes($argv[0]).', '.$time.');\n";';
+		return 'echo "owf_admin_display_msg(\''.$this->wf->admin_html()->seed.'\', '.addslashes($argv[0]).', '.$time.');\n";';
 	}
 	
 	/* use core_utils number_format */
