@@ -551,6 +551,7 @@ class web_framework {
 	 * Use to link
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function linker($route, $absolute = false, $lang_code = null, $forwarder = false) {
+		$u = $this->session()->session_me;
 		
 		/* check if route is already complete */
 		// if(preg_match('%(^javascript:|://)%', $route))
@@ -559,7 +560,12 @@ class web_framework {
 		
 		/* resolv lang */
 		$cl = $this->core_lang()->resolv($lang_code);
-		$lang_code = $cl ? $cl["code"] : $this->core_lang()->get_code();
+		if($cl)
+			$lang_code = $cl["code"];
+		else if($u['id'] > -1)
+			$lang_code = $u['lang'];
+		else
+			$lang_code = $this->core_lang()->get_code();
 		
 		/* protocol if absolute linking */
 		$protocol = "";
