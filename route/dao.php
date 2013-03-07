@@ -495,7 +495,7 @@ class wfr_core_dao extends wf_route_request {
 			
 			$add = !isset($id);
 			if(!$add) {
-				if($val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
+				if(isset($val["kind"]) && $val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
 					$current = current($item->get(array("id" => $id)));
 					$type_old = intval($current["type"]);
 					$type_new = intval($insert["type"]);
