@@ -448,14 +448,39 @@ class wfr_core_dao extends wf_route_request {
 					$insert[$key] = (bool) intval($var);
 				}
 				elseif($val["kind"] == OWF_DAO_MAP) {
-					$insert[$key."_latitude"] = floatval($this->wf->get_var($key."_latitude"));
-					$insert[$key."_longitude"] = floatval($this->wf->get_var($key."_longitude"));
+					$lat = floatval($this->wf->get_var($key."_latitude"));
+					$lon = floatval($this->wf->get_var($key."_longitude"));
+					
+					/* sanatize insane values */
+					$latsign = $lat < 0 ? -1 : 1;
+					$lonsign = $lon < 0 ? -1 : 1;
+					
+					$insert[$key."_latitude"] = ($lat%85)*$latsign;
+					$insert[$key."_longitude"] = ($lon%180)*$lonsign;
+					
+					//Latitude: -85 to +85 (actually -85.05115 for some reason)
+					//Longitude: -180 to +180
 				}
 				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_MANY) {
 					$delayed_query[] = array(
 						"link" => $val["link"],
 						"var" => $var
 					);
+				}
+				elseif($val["kind"] == OWF_DAO_SELECT) {
+					
+					/* check if in list */
+					if(!isset($val["list"][$var])) {
+						$error["msgs"][$key] = $this->lang->ts("Value $var is not available for $val[name]");
+					}
+				}
+				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
+					
+					/* check if in list */
+					$ret = call_user_func($val["dao"], $val["field-id"], $var);
+					if(empty($ret)) {
+						$error["msgs"][$key] = $this->lang->ts("Value $var is not available for $val[name]");
+					}
 				}
 				elseif($val["kind"] == OWF_DAO_NUMBER)
 					$insert[$key] = floatval($var);
