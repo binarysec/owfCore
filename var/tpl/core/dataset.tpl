@@ -24,7 +24,7 @@
 	
 	function dataset_set_order(col, order) {
 		%{foreach $cols as $id => $col}%
-		%{if $col['orderable']}%
+		%{if isset($col['orderable']) && $col['orderable']}%
 			document.getElementById('form_%{$name}%_order_%{$id}%').value = '';
 		%{/if}%
 		%{/foreach}%
@@ -45,7 +45,7 @@
 	<input type="hidden" id="form_%{$name}%_page" name="%{$name}%_page" value="%{$page_nb}%" />
 	<input type="hidden" id="form_%{$name}%_rows_per_page" name="%{$name}%_rows_per_page" value="%{$rows_per_page}%" />
 	%{foreach $cols as $id => $col}%
-		%{if $col['orderable']}%
+		%{if isset($col['orderable']) && $col['orderable']}%
 		<input type="hidden" id="form_%{$name}%_order_%{$id}%" name="%{$name}%_order[%{$id}%]" value="%{$form_order[$id]}%" />
 		%{/if}%
 	%{/foreach}%
