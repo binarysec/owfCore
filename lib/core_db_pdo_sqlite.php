@@ -274,7 +274,7 @@ class core_db_pdo_sqlite extends core_db {
 			$zone = $query_obj->zone;
 		
 		/* where */
-		if($query_obj->type & WF_QUERY_WHERE && $query_obj->where != NULL) {
+		if($query_obj->type & WF_QUERY_WHERE && $query_obj->where != NULL && is_array($query_obj->where)) {
 			foreach($query_obj->where as $k => $v) {
 				$where .= empty($where) ?
 					"WHERE `$k` = ?" :
@@ -323,7 +323,7 @@ class core_db_pdo_sqlite extends core_db {
 		}
 		
 		/* order */
-		if($query_obj->type & WF_QUERY_ORDER && $query_obj->order != NULL) {
+		if($query_obj->type & WF_QUERY_ORDER && $query_obj->order != NULL && is_array($query_obj->order)) {
 			$first = TRUE;
 			foreach($query_obj->order as $k => $v) {
 				$order .= $first ? "ORDER BY " : ", ";
