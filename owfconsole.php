@@ -58,6 +58,8 @@ class wf_console extends web_framework {
 		/* sanatize */
 		$this->parse_line();
 		
+		$this->verbose = $this->get_opt("v") || $this->get_opt("verbose", true);
+		
 		$module = $this->args[0];
 		$script = isset($this->args[1]) ? $this->args[1] : $this->args[0];
 		return $this->script($module, $script);
@@ -75,7 +77,7 @@ class wf_console extends web_framework {
 			
 			$command = $this->read();
 			
-			$this->verbose = $this->get_opt("v") || $this->get_opt("verbose");
+			$this->verbose = $this->get_opt("v") || $this->get_opt("verbose", true);
 			
 			if($this->argc < 1)
 				continue;
@@ -280,8 +282,13 @@ class wf_console extends web_framework {
 		$opt = "";
 		foreach($line as $arg) {
 			if(!empty($arg)) {
-				if(strlen($arg) > 2 && substr($arg, 0, 2) == "--")
+				if(strlen($arg) > 2 && substr($arg, 0, 2) == "--") {
+					if(!empty($opt)) {
+						$opts[$opt] = null;
+						$opt = "";
+					}
 					$opt = substr($arg, 2);
+				}
 				elseif(strlen($arg) > 1 && $arg[0] == "-") {
 					if(!empty($opt)) {
 						$opts[$opt] = null;
@@ -313,7 +320,7 @@ class wf_console extends web_framework {
 	
 	public function get_opt($name, $long = false) {
 		return $long && isset($this->opts[$name]) ?
-			$this->opts[$name] : in_array($name, $this->opts) || isset($this->opts[$name]);
+			$this->opts[$name] : in_array($name, $this->opts) || array_key_exists($name, $this->opts);
 	}
 	
 }
