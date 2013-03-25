@@ -195,8 +195,18 @@ class wfr_core_dao extends wf_route_request {
 				($item->capable & OWF_DAO_ADD);
 		$can_del = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE && $this->uid > 0;
 		$add_txt = "<button type='submit' data-theme='b'>Submit</button>";
-		$del_txt = "<a href='' onclick=\"owf_admin_confirm_deletion('".$this->selector()->del_link($this->uid, TRUE)."');\"".
-						"data-theme='f' data-role='button' class='dao-delete-confirm'>".$this->lang->ts("Delete")."</a>";
+		$del_txt =
+			'<a href="#owf-core-dao-delete" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-theme="f" style="width: 100%;">Delete</a>'.
+			'<div data-role="popup" id="owf-core-dao-delete" data-theme="f" class="ui-corner-all">'.
+				'<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>'.
+				'<div data-role="header" data-theme="f" class="ui-corner-top"><h1>Delete this object ?</h1></div>'.
+				'<div data-role="content" data-theme="f" class="ui-corner-bottom ui-content">'.
+					'<h3 class="ui-title">Are you sure you want to delete this object?</h3>'.
+					'<p>This action cannot be undone.</p>'.
+					'<a href="#" data-role="button" data-inline="true" data-rel="back" style="width: 40%;">Cancel</a>'.
+					'<a href="'.$this->selector()->del_link($this->uid, TRUE).'" data-role="button" data-inline="true" data-transition="flow" style="width: 40%;">Delete</a>'.
+				'</div>'.
+			'</div>';
 		
 		if($can_add && $can_del)
 			$forms .= "<fieldset class='ui-grid-a'><div class='ui-block-a'>$add_txt</div><div class='ui-block-b'>$del_txt</div></fieldset>";
