@@ -199,12 +199,12 @@ class wfr_core_dao extends wf_route_request {
 			'<a href="#owf-core-dao-delete" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-theme="f" style="width: 100%;">Delete</a>'.
 			'<div data-role="popup" id="owf-core-dao-delete" data-theme="f" class="ui-corner-all">'.
 				'<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>'.
-				'<div data-role="header" data-theme="f" class="ui-corner-top"><h1>Delete this object ?</h1></div>'.
-				'<div data-role="content" data-theme="f" class="ui-corner-bottom ui-content">'.
+				'<div data-role="header" data-theme="a" class="ui-corner-top"><h1>Delete this object ?</h1></div>'.
+				'<div data-role="content" data-theme="b" class="ui-corner-bottom ui-content">'.
 					'<h3 class="ui-title">Are you sure you want to delete this object?</h3>'.
 					'<p>This action cannot be undone.</p>'.
 					'<a href="#" data-role="button" data-inline="true" data-rel="back" style="width: 40%;">Cancel</a>'.
-					'<a href="'.$this->selector()->del_link($this->uid, TRUE).'" data-role="button" data-inline="true" data-transition="flow" style="width: 40%;">Delete</a>'.
+					'<a href="'.$this->selector()->del_link($this->uid, TRUE).'" data-theme="f" data-role="button" data-inline="true" data-transition="flow" style="width: 40%;">Delete</a>'.
 				'</div>'.
 			'</div>';
 		
@@ -241,14 +241,15 @@ class wfr_core_dao extends wf_route_request {
 					$type = "file";*/
 				
 				$class = "";
+				$octo_css = "";
 				if($parentkind == OWF_DAO_OCTOPUS) {
-					$class = "class='".$parentdata["name"]." ";
-					$class .= $parentdata["name"]."-".$parentdata["id"];
-					$class .= "'";
+					$class = "class='$parentdata[name] $parentdata[name]-$parentdata[id]'";
+					if($parentdata["dft_val"] != $parentdata["id"])
+						$octo_css = "style='display: none;'";
 					//$name = $parentdata["name"]."-".$name;
 				}
 				
-				return	"<div data-role='fieldcontain' $class>".
+				return	"<div data-role='fieldcontain' $class $octo_css>".
 							"<label for='$k'>"."$v[text] : </label>".
 							"<input type='$type' name='$k' id='$k' value='$value' $readonly />".
 						"</div>\n";
@@ -262,19 +263,27 @@ class wfr_core_dao extends wf_route_request {
 			case OWF_DAO_LINK_MANY_TO_ONE:
 				if(!isset($v["value"]))
 					$v["value"] = '';
-
-				$select = "<select data-native-menu='false' name='$k' id='$k'>";
+				
+				$octo_js = "";
+				$dft_key = "";
+				if($v["kind"] == OWF_DAO_OCTOPUS) {
+					$octo_js = <<<EOT
+onchange='\$(".$k").hide();\$(".$k-" + $(this).val()).show();''
+EOT;
+					$dft_key = key($v["list"]);
+				}
+				
+				$select = "<select data-native-menu='false' name='$k' id='$k' $octo_js>";
 				foreach($v["list"] as $lkey => $lval) {
 					$selected = $v["value"] == $lkey ? "selected" : "";
 					$select .= "<option value='$lkey' $selected>$lval</option>";
+					if($v["kind"] == OWF_DAO_OCTOPUS && $selected)
+						$dft_key = $lkey;
 				}
 				$select .= "</select>";
 				
 				if($v["kind"] == OWF_DAO_OCTOPUS) {
-					$octopus = '<script type="text/javascript">$(function() {'.
-							'$("#'.$k.'").change(function() {$(".'.$k.'").hide();$(".'.$k.'-" + $(this).val()).show();});'.
-							'$("#'.$k.'").change();'.
-						'});</script>';
+					$octopus = "";
 					foreach($item->childs as $child) {
 						
 						$dft_val = "";
@@ -292,11 +301,12 @@ class wfr_core_dao extends wf_route_request {
 						foreach($child->get_struct() as $field => $info) {
 							$info["value"] = is_array($dft_val) ? $dft_val[$field] : $dft_val;
 							if(isset($info["cb_get"]))
-								$info["value"] = call_user_func(array($child, $info["cb_get"]), $info["value"]);
+								$info["value"] = call_user_func($info["cb_get"], $child, $info["value"]);
 							$octopus .= $this->form_render_element($field, $info, $info["kind"], $item, $kind, 
 								array(
 									"name" => $k,
-									"id" => $child->get_id()
+									"id" => $child->get_id(),
+									"dft_val" => $dft_key
 								)
 							);
 						}
@@ -490,6 +500,31 @@ class wfr_core_dao extends wf_route_request {
 				}
 				elseif($val["kind"] == OWF_DAO_NUMBER)
 					$insert[$key] = floatval($var);
+				elseif($val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
+					
+					$key = isset($val["db-field"]) ? $val["db-field"] : "father_id";
+					
+					$octo_insert = array();
+					foreach($item->childs[$var]->get_struct() as $k => $v) {
+						$octo_insert[$k] = $this->wf->get_var($k);
+						if(isset($v["cb_check"])) {
+							$ret = call_user_func(
+								$v["cb_check"],
+								$item->childs[$var],
+								$octo_insert[$k]
+							);
+							if(is_string($ret))
+								$error["msgs"][] = $ret;
+						}
+						if(isset($v["cb_add"]))
+							$octo_insert[$k] = call_user_func(
+								$v["cb_add"],
+								$item->childs[$var],
+								$octo_insert[$k]
+							);
+					}
+					
+				}
 				else {
 					/* execute filter */
 					if(isset($val["filter_cb"])) {
@@ -540,49 +575,28 @@ class wfr_core_dao extends wf_route_request {
 			/* octopus */
 			if(isset($val["kind"]) && $val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
 				
-				$key = isset($val["db-field"]) ? $val["db-field"] : "father_id";
-				$octo_insert = array();
-				foreach($item->childs[$var]->get_struct() as $k => $v) {
-					$octo_insert[$k] = $this->wf->get_var($k);
-					if(isset($v["cb_check"])) {
-						$ret = call_user_func(
-							array($item->childs[$var], $v["cb_check"]),
-							$octo_insert[$k]
-						);
-						if($ret)
-							$error["msgs"][] = $ret;
-					}
-					if(isset($v["cb_add"]))
-						$octo_insert[$k] = call_user_func(
-							array($item->childs[$var], $v["cb_add"]),
-							$octo_insert[$k]
-						);
-				}
+				$zone = $item->name."_".$item->childs[$var]->get_name();
+				$octo_insert[$key] = $id;
 				
-				if(count($error["msgs"]) == 0) {
-					$zone = $item->name."_".$item->childs[$var]->get_name();
-					$octo_insert[$key] = $id;
-					
-					if($add) {
-						$q = new core_db_insert($zone, $octo_insert);
-						$this->wf->db->query($q);
+				if($add) {
+					$q = new core_db_insert($zone, $octo_insert);
+					$this->wf->db->query($q);
+				}
+				else {
+					if($type_changed) {
+						$this->wf->db->query(
+							new core_db_delete(
+								$item->name."_".$item->childs[$type_old]->get_name(),
+								array($key => $id)
+							)
+						);
+						$this->wf->db->query(
+							new core_db_insert($zone, $octo_insert)
+						);
 					}
 					else {
-						if($type_changed) {
-							$this->wf->db->query(
-								new core_db_delete(
-									$item->name."_".$item->childs[$type_old]->get_name(),
-									array($key => $id)
-								)
-							);
-							$this->wf->db->query(
-								new core_db_insert($zone, $octo_insert)
-							);
-						}
-						else {
-							$q = new core_db_update($zone, $octo_insert, array($key => $id));
-							$this->wf->db->query($q);
-						}
+						$q = new core_db_update($zone, $octo_insert, array($key => $id));
+						$this->wf->db->query($q);
 					}
 				}
 			}

@@ -341,6 +341,12 @@ class core_utils extends wf_agg {
 			$this->lang->ts("Description too short");
 	}
 	
+	// @todo: this function should do moar !! regex url check
+	public function check_url($item, $var) {
+		return $this->check_length($item, $var) ? true :
+			$this->lang->ts("URL is too short");
+	}
+	
 	public function whois_emails($domain) {
 		
 		if(empty($domain))
