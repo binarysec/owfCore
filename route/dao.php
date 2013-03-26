@@ -221,6 +221,11 @@ class wfr_core_dao extends wf_route_request {
 	}
 	
 	public function form_render_element($k, $v, $kind, $item, $parentkind = null, $parentdata = null) {
+		
+		$name = $k;
+		if($parentkind == OWF_DAO_OCTOPUS)
+			$name = "$parentdata[name]-$name";
+		
 		switch($kind) {
 			case OWF_DAO_INPUT:
 			case OWF_DAO_NUMBER:
@@ -228,7 +233,6 @@ class wfr_core_dao extends wf_route_request {
 			case OWF_DAO_NUMBER_READON:
 			case OWF_DAO_UPLOAD:
 				$value = isset($v["value"]) ? $v["value"] : "";
-				$name = $k;
 				$readonly =
 					$v["kind"] == OWF_DAO_INPUT_READON ||
 					$v["kind"] == OWF_DAO_NUMBER_READON
@@ -246,17 +250,16 @@ class wfr_core_dao extends wf_route_request {
 					$class = "class='$parentdata[name] $parentdata[name]-$parentdata[id]'";
 					if($parentdata["dft_val"] != $parentdata["id"])
 						$octo_css = "style='display: none;'";
-					//$name = $parentdata["name"]."-".$name;
 				}
 				
 				return	"<div data-role='fieldcontain' $class $octo_css>".
-							"<label for='$k'>"."$v[text] : </label>".
-							"<input type='$type' name='$k' id='$k' value='$value' $readonly />".
+							"<label for='$name'>"."$v[text] : </label>".
+							"<input type='$type' name='$name' id='$name' value='$value' $readonly />".
 						"</div>\n";
 			
 			case OWF_DAO_HIDDEN:
 				$value = isset($v["value"]) ? $v["value"] : "";
-				return "<input type='hidden' name='$k' id='$k' value='$value' />\n";
+				return "<input type='hidden' name='$name' id='$name' value='$value' />\n";
 			
 			case OWF_DAO_SELECT:
 			case OWF_DAO_OCTOPUS:
@@ -266,14 +269,15 @@ class wfr_core_dao extends wf_route_request {
 				
 				$octo_js = "";
 				$dft_key = "";
+				
 				if($v["kind"] == OWF_DAO_OCTOPUS) {
 					$octo_js = <<<EOT
-onchange='\$(".$k").hide();\$(".$k-" + $(this).val()).show();''
+onchange='\$(".$name").hide();\$(".$name-" + $(this).val()).show();''
 EOT;
 					$dft_key = key($v["list"]);
 				}
 				
-				$select = "<select data-native-menu='false' name='$k' id='$k' $octo_js>";
+				$select = "<select data-native-menu='false' name='$name' id='$name' $octo_js>";
 				foreach($v["list"] as $lkey => $lval) {
 					$selected = $v["value"] == $lkey ? "selected" : "";
 					$select .= "<option value='$lkey' $selected>$lval</option>";
@@ -304,7 +308,7 @@ EOT;
 								$info["value"] = call_user_func($info["cb_get"], $child, $info["value"]);
 							$octopus .= $this->form_render_element($field, $info, $info["kind"], $item, $kind, 
 								array(
-									"name" => $k,
+									"name" => $name,
 									"id" => $child->get_id(),
 									"dft_val" => $dft_key
 								)
@@ -315,17 +319,17 @@ EOT;
 				}
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$k'>$v[text] : </label>".
+							"<label for='$name'>$v[text] : </label>".
 								(($v["kind"] != OWF_DAO_LINK_MANY_TO_ONE || count($v["list"])) ?
 									$select :
-									"<input type='text' name='$k' id='$k' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />").
+									"<input type='text' name='$name' id='$name' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />").
 						"</div>\n";
 			
 			case OWF_DAO_RADIO:
 			case OWF_DAO_RADIO_READON:
 				if(!isset($v["list"]))
 					;// throw error
-					
+				
 				$inputs = '';
 				if(!isset($v["value"]))
 					$v["value"] = key($v["list"]);
@@ -333,8 +337,8 @@ EOT;
 				
 				foreach($v["list"] as $key => $val) {
 					$checked = $v["value"] == $key ? "checked='checked'" : "";
-					$inputs .= "<input type='radio' name='$k' id='$k-$key' value='$key' $checked $disabled />";
-					$inputs .= "<label for='$k-$key'>$val</label>";
+					$inputs .= "<input type='radio' name='$name' id='$name-$key' value='$key' $checked $disabled />";
+					$inputs .= "<label for='$name-$key'>$val</label>";
 				}
 				
 				return	"<div data-role='fieldcontain'>".
@@ -351,20 +355,19 @@ EOT;
 						;// throw error
 					$inputs = '';
 					$v["value"] = isset($v["value"]) ? explode(",", $v["value"]) : array();
-					
 					$disabled = $v["kind"] == OWF_DAO_CHECKBOX_READON ? "disabled='disabled'" : "";
 					
 					foreach($v["list"] as $key => $val) {
 						$checked = in_array($key, $v["value"]) ? "checked='checked'" : "";
-						$inputs .= "<input type='checkbox' name='".$k."[]' id='$k-$key' value='$key' $checked $disabled />";
-						$inputs .= "<label for='$k-$key'>$val</label>";
+						$inputs .= "<input type='checkbox' name='".$name."[]' id='$name-$key' value='$key' $checked $disabled />";
+						$inputs .= "<label for='$name-$key'>$val</label>";
 					}
 					
 					return	"<div data-role='fieldcontain'>".
 								"<fieldset data-role='controlgroup' data-type='horizontal'>".
 									"<legend>$v[text] : </legend>".
 									(($v["kind"] == OWF_DAO_LINK_MANY_TO_MANY && empty($v["list"])) ?
-										"<input type='text' name='$k' id='$k' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />" :
+										"<input type='text' name='$name' id='$name' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />" :
 										$inputs).
 								"</fieldset>".
 							"</div>\n";
@@ -376,8 +379,8 @@ EOT;
 				$on = $value ? "selected='selected'" : "";
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$k'>$v[text] : </label>".
-							"<select name='$k' id='$k' data-role='slider'>".
+							"<label for='$name'>$v[text] : </label>".
+							"<select name='$name' id='$name' data-role='slider'>".
 								"<option value='0'>$textoff</option>".
 								"<option value='1' $on>$texton</option>".
 							"</select>".
@@ -395,34 +398,34 @@ EOT;
 				$value = max(min($value, $max), $min);
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$k'>$v[text] : </label>".
-							"<input type='range' name='$k' id='$k' value='$value' min='$min' max='$max' step='$step' data-highlight='true' />\n".
+							"<label for='$name'>$v[text] : </label>".
+							"<input type='range' name='$name' id='$name' value='$value' min='$min' max='$max' step='$step' data-highlight='true' />\n".
 						"</div>\n";
 			
 			case OWF_DAO_MAP:
 				$longitude = isset($v["value_longitude"]) ? floatval($v["value_longitude"]) : 0;
 				$latitude = isset($v["value_latitude"]) ? floatval($v["value_latitude"]) : 0;
 				
-				$this->maps[$k] = array(
+				$this->maps[$name] = array(
 					"latitude" => $latitude,
 					"longitude" => $longitude,
 					"text" => $v["text"],
 				);
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$k' class='ui-select'>$v[text] :</label>".
-							"<a id='$k' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#owf-dao-map-popup-$k'>".
+							"<label for='$name' class='ui-select'>$v[text] :</label>".
+							"<a id='$name' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#owf-dao-map-popup-$name'>".
 								"Changer les coordonnées".
 							"</a>".
-							"<input type='hidden' id='owf-dao-map-form-data-$k-latitude' name='".$k."_latitude' value='$latitude' />".
-							"<input type='hidden' id='owf-dao-map-form-data-$k-longitude' name='".$k."_longitude' value='$longitude' />".
+							"<input type='hidden' id='owf-dao-map-form-data-$name-latitude' name='".$name."_latitude' value='$latitude' />".
+							"<input type='hidden' id='owf-dao-map-form-data-$name-longitude' name='".$name."_longitude' value='$longitude' />".
 						"</div>\n";
 				
 			case OWF_DAO_TEXT:
 				$value = isset($v["value"]) ? $v["value"] : "";
-				$insert = "<textarea name='$k' id='$k'/>$value</textarea>";
+				$insert = "<textarea name='$name' id='$name'/>$value</textarea>";
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$k'>"."$v[text] : </label>".
+							"<label for='$name'>"."$v[text] : </label>".
 							$insert.
 						"</div>\n";
 			
@@ -450,8 +453,7 @@ EOT;
 				$ret = call_user_func($val["perm_cb"], $item, $val);
 			}
 			else {
-				/*$this->wf->display_error(404, "Missing parameters");
-				exit(0);*/
+				//$this->wf->display_error(404, "Missing parameters", true);
 			}
 			
 			if($ret) {
@@ -464,6 +466,10 @@ EOT;
 					if(!isset($val["list"][$var]))
 						$error["msgs"][$key] = $this->lang->ts("Value $var is not available for $val[name]");
 				}
+				
+				if($val["kind"] == OWF_DAO_NUMBER)
+					$var = floatval($var);
+				
 				if($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
 					/* check if in list */
 					$ret = call_user_func($val["dao"], $val["field-id"], $var);
@@ -476,7 +482,7 @@ EOT;
 					$insert[$key] = $var;
 				}
 				elseif($val["kind"] == OWF_DAO_CHECKBOX) {
-					$insert[$key] = implode(",", $var);
+					$insert[$key] = is_array($var) ? implode(",", $var) : "";
 				}
 				elseif($val["kind"] == OWF_DAO_FLIP) {
 					$insert[$key] = (bool) intval($var);
@@ -486,11 +492,8 @@ EOT;
 					$lon = floatval($this->wf->get_var($key."_longitude"));
 					
 					/* sanatize insane values */
-					$latsign = $lat < 0 ? -1 : 1;
-					$lonsign = $lon < 0 ? -1 : 1;
-					
-					$insert[$key."_latitude"] = ($lat%85)*$latsign;
-					$insert[$key."_longitude"] = ($lon%180)*$lonsign;
+					$insert[$key."_latitude"] = fmod($lat, 85.);
+					$insert[$key."_longitude"] = fmod($lon, 180.);
 				}
 				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_MANY) {
 					$delayed_query[] = array(
@@ -498,15 +501,14 @@ EOT;
 						"var" => $var
 					);
 				}
-				elseif($val["kind"] == OWF_DAO_NUMBER)
-					$insert[$key] = floatval($var);
 				elseif($val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
 					
+					$insert[$key] = intval($var);
 					$key = isset($val["db-field"]) ? $val["db-field"] : "father_id";
 					
 					$octo_insert = array();
 					foreach($item->childs[$var]->get_struct() as $k => $v) {
-						$octo_insert[$k] = $this->wf->get_var($k);
+						$octo_insert[$k] = $this->wf->get_var(strtolower($val["name"])."-$k");
 						if(isset($v["cb_check"])) {
 							$ret = call_user_func(
 								$v["cb_check"],
@@ -531,27 +533,23 @@ EOT;
 						$ret = call_user_func($val["filter_cb"], $item, $var, $id);
 						if(is_string($ret))
 							$error["msgs"][$key] = $ret;
-						else if($ret) {
-							if(isset($val["return_cb"])) {
-								$ret2 = call_user_func($val["return_cb"], $item, $var);
-								if($ret2)
-									$insert[$key] = $ret2;
-								else
-									$error["msgs"][$key] = $ret2;
-							}
-							else 
-								$insert[$key] = $var;
+					}
+					
+					if(empty($error["msgs"][$key])) {
+						if(isset($val["return_cb"])) {
+							$ret2 = call_user_func($val["return_cb"], $item, $var);
+							if($ret2)
+								$insert[$key] = $ret2;
+							else
+								$error["msgs"][$key] = $ret2;
 						}
-						else
+						else 
 							$insert[$key] = $var;
 					}
-					else if($var)
-						$insert[$key] = $var;
 				}
 			}
 			else {
-				/*$this->wf->display_error(403, "Adding DAO forbidden");
-				exit(0);*/
+				//$this->wf->display_error(403, "Adding DAO forbidden", true);
 			}
 		}
 		
