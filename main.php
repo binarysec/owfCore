@@ -562,7 +562,7 @@ class web_framework {
 		$cl = $this->core_lang()->resolv($lang_code);
 		if($cl)
 			$lang_code = $cl["code"];
-		else if($u['id'] > -1)
+		else if($u['id'] > -1 && $u['lang'])
 			$lang_code = $u['lang'];
 		else
 			$lang_code = $this->core_lang()->get_code();
