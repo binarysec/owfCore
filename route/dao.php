@@ -501,6 +501,11 @@ EOT;
 						"var" => $var
 					);
 				}
+				elseif(	$val["kind"] ==	OWF_DAO_INPUT_READON ||
+						$val["kind"] ==	OWF_DAO_NUMBER_READON ||
+						$val["kind"] ==	OWF_DAO_RADIO_READON ||
+						$val["kind"] ==	OWF_DAO_CHECKBOX_READON) {
+				}
 				elseif($val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
 					
 					$insert[$key] = intval($var);
