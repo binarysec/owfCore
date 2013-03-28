@@ -19,7 +19,7 @@ if(!file_exists($core_link)) {
 /* opening framework */
 require($core_link);
 
-if(!$_SERVER["argv"][1]) {
+if(!isset($_SERVER["argv"][1])) {
 	echo "Please specify an OWF bin file to run\n";
 	exit(0);
 }
