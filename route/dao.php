@@ -278,6 +278,11 @@ EOT;
 				}
 				
 				$select = "<select data-native-menu='false' name='$name' id='$name' $octo_js>";
+				
+				/* if select and no values, add an empty entry */
+				if($kind != OWF_DAO_OCTOPUS && empty($v["value"]))
+					$select .= "<option value=''></option>";
+				
 				foreach($v["list"] as $lkey => $lval) {
 					$selected = $v["value"] == $lkey ? "selected" : "";
 					$select .= "<option value='$lkey' $selected>$lval</option>";
@@ -462,19 +467,32 @@ EOT;
 				
 				/* sanatize */
 				if($val["kind"] == OWF_DAO_SELECT) {
-					/* check if in list */
-					if(!isset($val["list"][$var]))
-						$error["msgs"][$key] = $this->lang->ts("Value $var is not available for $val[name]");
+					if(!empty($var)) {
+						/* check if in list */
+						if(!isset($val["list"][$var])) {
+							$error["msgs"][$key] = $this->lang->ts("Value")." \"".htmlspecialchars($var)."\" ".
+								$this->lang->ts("is not available for $val[name]");
+						}
+					}
+					else
+						$error["msgs"][$key] = $this->lang->ts("You did not fill the field ").$val["name"];
 				}
 				
 				if($val["kind"] == OWF_DAO_NUMBER)
 					$var = floatval($var);
 				
 				if($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
-					/* check if in list */
-					$ret = call_user_func($val["dao"], $val["field-id"], $var);
-					if(empty($ret))
-						$error["msgs"][$key] = $this->lang->ts("Value $var is not available for $val[name]");
+					if(!empty($var)) {
+						/* check if in list */
+						$ret = call_user_func($val["dao"], $val["field-id"], $var);
+						
+						if(empty($ret)) {
+							$error["msgs"][$key] = $this->lang->ts("Value")." \"".htmlspecialchars($var)."\" ".
+								$this->lang->ts("is not available for ").$val["name"];
+						}
+					}
+					else
+						$error["msgs"][$key] = $this->lang->ts("You did not fill the field ").$val["name"];
 				}
 				
 				/* store variable */

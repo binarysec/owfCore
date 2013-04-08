@@ -333,11 +333,11 @@ class core_utils extends wf_agg {
 	
 	/* deprecated, delete when possible */
 	public function check_name($item, $var) {
-		return $this->check_length($item, $var) ? true :
+		return $this->check_length($item, trim($var)) ? true :
 			$this->lang->ts("Name is too short");
 	}
 	public function check_description($item, $var) {
-		return $this->check_length($item, $var) ? true :
+		return $this->check_length($item, trim($var)) ? true :
 			$this->lang->ts("Description too short");
 	}
 	
