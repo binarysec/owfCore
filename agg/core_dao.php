@@ -1,32 +1,30 @@
 <?php
 
 define("OWF_DAO_INPUT",				1);
-define("OWF_DAO_INPUT_READON",		        2);
+define("OWF_DAO_INPUT_READON",		2);
 define("OWF_DAO_NUMBER",			3);
-define("OWF_DAO_NUMBER_READON",		        4);
+define("OWF_DAO_NUMBER_READON",		4);
 define("OWF_DAO_UPLOAD",			5);
 define("OWF_DAO_SELECT",			6);
 define("OWF_DAO_HIDDEN",			7);
 define("OWF_DAO_RADIO",				8);
-define("OWF_DAO_RADIO_READON",	        	9);
+define("OWF_DAO_RADIO_READON",		9);
 define("OWF_DAO_CHECKBOX",			10);
-define("OWF_DAO_CHECKBOX_READON",	        11);
+define("OWF_DAO_CHECKBOX_READON",	11);
 define("OWF_DAO_SLIDER",			12);
 define("OWF_DAO_FLIP",				13);
+define("OWF_DAO_DATE",				14);
+define("OWF_DAO_DATE_READON",		15);
 define("OWF_DAO_MAP",				16);
 define("OWF_DAO_OCTOPUS",			17);
-
 define("OWF_DAO_LINK_MANY_TO_ONE",		20);
 define("OWF_DAO_LINK_MANY_TO_MANY",		21);
-
 define("OWF_DAO_TEXT",				30);
 
 // Not ported yet
-//define("OWF_DAO_INPUT_REQ",		2); ??
-//define("OWF_DAO_DATA_DIR",		4); ??
-//define("OWF_DAO_DATE",           14);
-//define("OWF_DAO_DATE_READON",    15);
-//define("OWF_DAO_STARS",          17);
+//define("OWF_DAO_STARS",          18);
+//define("OWF_DAO_DATA_DIR",		22); ??
+//define("OWF_DAO_INPUT_REQ",		23); ??
 
 define("OWF_DAO_FORBIDDEN",	0x00);
 define("OWF_DAO_ADD",		0x01);
@@ -129,6 +127,13 @@ class core_dao extends wf_agg {
 					else
 						$list = $val["list"];
 					$result[$key]["list"] = $list;
+				}
+				elseif(
+					($val["kind"] == OWF_DAO_DATE ||
+					$val["kind"] == OWF_DAO_DATE_READON) &&
+					$val["type"] == WF_INT
+					) {
+						$result[$key]["value"] = date("d/m/y", intval($result[$key]["value"]));
 				}
 				elseif($val["kind"] == OWF_DAO_OCTOPUS) {
 					$result[$key]["list"] = array();

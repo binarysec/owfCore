@@ -232,10 +232,13 @@ class wfr_core_dao extends wf_route_request {
 			case OWF_DAO_INPUT_READON:
 			case OWF_DAO_NUMBER_READON:
 			case OWF_DAO_UPLOAD:
+			case OWF_DAO_DATE:
+			case OWF_DAO_DATE_READON:
 				$value = isset($v["value"]) ? $v["value"] : "";
 				$readonly =
 					$v["kind"] == OWF_DAO_INPUT_READON ||
-					$v["kind"] == OWF_DAO_NUMBER_READON
+					$v["kind"] == OWF_DAO_NUMBER_READON ||
+					$v["kind"] == OWF_DAO_DATE_READON
 					? "disabled='disabled'" : "";
 				$type = "text";
 				
@@ -506,6 +509,19 @@ EOT;
 				elseif($val["kind"] == OWF_DAO_FLIP) {
 					$insert[$key] = (bool) intval($var);
 				}
+				elseif($val["kind"] == OWF_DAO_DATE && $val["type"] == WF_INT) {
+					$date = explode("/", $var);
+					
+					if(	count($date) == 3 &&
+						strlen($date[0]) == 2 &&
+						strlen($date[1]) == 2 &&
+						strlen($date[2]) == 2
+						) {
+							$insert[$key] = mktime(0, 0, 0, $date[1], $date[0], $date[2]);
+					}
+					else
+						$error["msgs"][$key] = $this->lang->ts("Malformed date ").htmlspecialchars($var).$this->lang->ts(" for field ")."\"$val[name]\"";
+				}
 				elseif($val["kind"] == OWF_DAO_MAP) {
 					$lat = floatval($this->wf->get_var($key."_latitude"));
 					$lon = floatval($this->wf->get_var($key."_longitude"));
@@ -523,7 +539,8 @@ EOT;
 				elseif(	$val["kind"] ==	OWF_DAO_INPUT_READON ||
 						$val["kind"] ==	OWF_DAO_NUMBER_READON ||
 						$val["kind"] ==	OWF_DAO_RADIO_READON ||
-						$val["kind"] ==	OWF_DAO_CHECKBOX_READON) {
+						$val["kind"] ==	OWF_DAO_CHECKBOX_READON ||
+						$val["kind"] ==	OWF_DAO_DATE_READON) {
 				}
 				elseif($val["kind"] == OWF_DAO_OCTOPUS && isset($item->childs[$var])) {
 					

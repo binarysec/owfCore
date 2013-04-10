@@ -173,8 +173,8 @@ class core_html extends wf_agg {
 	 * Gestion des javascript
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $js = array();
-	public function add_js($link, $filter=NULL, $lang_code=NULL) {
-		$reallink = $this->wf->linker($link, $filter, $lang_code);
+	public function add_js($link, $absolute = false, $lang_code = null) {
+		$reallink = $this->wf->linker($link, $absolute, $lang_code);
 		/* test if link already exists */
 		if(array_search($reallink, $this->js) !== false) return;
 		/* FILO */
@@ -186,8 +186,8 @@ class core_html extends wf_agg {
 	 * Gestion des CSS
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $css = array();
-	public function add_css($link, $filter=NULL, $lang_code=NULL) {
-		$reallink = $this->wf->linker($link, $filter, $lang_code);
+	public function add_css($link, $absolute = false, $lang_code = null) {
+		$reallink = $this->wf->linker($link, $absolute, $lang_code);
 		/* test if link already exists */
 		if(array_search($reallink, $this->css) !== false) return;
 		/* FIFO */
