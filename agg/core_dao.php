@@ -129,6 +129,7 @@ class core_dao extends wf_agg {
 					$result[$key]["list"] = $list;
 				}
 				elseif(
+					isset($result[$key]["value"]) &&
 					($val["kind"] == OWF_DAO_DATE ||
 					$val["kind"] == OWF_DAO_DATE_READON) &&
 					$val["type"] == WF_INT

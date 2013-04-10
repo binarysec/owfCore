@@ -227,13 +227,17 @@ class wfr_core_dao extends wf_route_request {
 			$name = "$parentdata[name]-$name";
 		
 		switch($kind) {
-			case OWF_DAO_INPUT:
-			case OWF_DAO_NUMBER:
 			case OWF_DAO_INPUT_READON:
 			case OWF_DAO_NUMBER_READON:
+			case OWF_DAO_DATE_READON:
+				if($this->uid < 1)
+					return "";
+			
+			case OWF_DAO_INPUT:
+			case OWF_DAO_NUMBER:
 			case OWF_DAO_UPLOAD:
 			case OWF_DAO_DATE:
-			case OWF_DAO_DATE_READON:
+			
 				$value = isset($v["value"]) ? $v["value"] : "";
 				$readonly =
 					$v["kind"] == OWF_DAO_INPUT_READON ||
@@ -334,8 +338,11 @@ EOT;
 									"<input type='text' name='$name' id='$name' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />").
 						"</div>\n";
 			
-			case OWF_DAO_RADIO:
 			case OWF_DAO_RADIO_READON:
+				if($this->uid < 1)
+					return "";
+				
+			case OWF_DAO_RADIO:
 				if(!isset($v["list"]))
 					;// throw error
 				
@@ -356,9 +363,12 @@ EOT;
 								$inputs.
 							"</fieldset>".
 						"</div>\n";
-			
-			case OWF_DAO_CHECKBOX:
+				
 			case OWF_DAO_CHECKBOX_READON:
+				if($this->uid < 1)
+					return "";
+				
+			case OWF_DAO_CHECKBOX:
 			case OWF_DAO_LINK_MANY_TO_MANY:
 					if(!isset($v["list"]))
 						;// throw error
