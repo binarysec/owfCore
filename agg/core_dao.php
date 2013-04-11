@@ -165,19 +165,29 @@ class core_dao extends wf_agg {
 					if(isset($data[$key."_longitude"]))
 						$result[$key]["value_longitude"] = htmlspecialchars($data[$key."_longitude"]);
 				}
-				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
-					$result[$key]["list"] = array();
-					$datalist = is_array($val["dao"]) ? 
-						call_user_func($val["dao"]) : $val["dao"]->get();
-					foreach($datalist as $subdaoitem)
-						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
-				}
-				elseif($val["kind"] == OWF_DAO_LINK_MANY_TO_MANY) {
-					$result[$key]["list"] = array();
-					$datalist = is_array($val["dao"]) ? 
-						call_user_func($val["dao"]) : $val["dao"]->get();
-					foreach($datalist as $subdaoitem)
-						$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
+				elseif(
+					$val["kind"] == OWF_DAO_LINK_MANY_TO_ONE ||
+					$val["kind"] == OWF_DAO_LINK_MANY_TO_MANY
+					) {
+						$result[$key]["list"] = array();
+						$datalist = is_array($val["dao"]) ? 
+							call_user_func($val["dao"]) : $val["dao"]->get();
+						foreach($datalist as $subdaoitem) {
+							if(isset($val["field-name"])) {
+								if(is_array($val["field-name"])) {
+									$display = "";
+									foreach($val["field-name"] as $field)
+										$display .= isset($subdaoitem[$field]) ? $subdaoitem[$field] : $field;
+									$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $display;
+								}
+								elseif(isset($subdaoitem[$val["field-name"]]))
+									$result[$key]["list"][$subdaoitem[$val["field-id"]]] = $subdaoitem[$val["field-name"]];
+								else
+									$result[$key]["list"][$subdaoitem[$val["field-id"]]] = "DAO ERROR (".$val["field-name"].")";
+							}
+							else
+								$result[$key]["list"] = call_user_func($val["field-callback"], $item, $data[$key], $datalist);
+						}
 				}
 				
 				if(isset($val["reader_cb"], $data[$key]))
@@ -202,7 +212,9 @@ class core_dao extends wf_agg {
 				if(	$val["kind"] == OWF_DAO_LINK_MANY_TO_ONE ||
 					$val["kind"] == OWF_DAO_LINK_MANY_TO_MANY
 					) {
-						if(!isset($val["dao"], $val["field-id"], $val["field-name"]))
+						if(!isset($val["dao"], $val["field-id"]))
+							$error = "-";
+						elseif(!isset($val["field-name"]) && !isset($val["field-callback"]))
 							$error = "-";
 						elseif(is_array($val["dao"]) && !isset($val["type"]))
 							$error = "-";
