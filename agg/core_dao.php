@@ -185,8 +185,10 @@ class core_dao extends wf_agg {
 								else
 									$result[$key]["list"][$subdaoitem[$val["field-id"]]] = "DAO ERROR (".$val["field-name"].")";
 							}
-							else
-								$result[$key]["list"] = call_user_func($val["field-callback"], $item, $data[$key], $datalist);
+							else {
+								$var = isset($data[$key]) ? $data[$key] : null;
+								$result[$key]["list"] = call_user_func($val["field-callback"], $item, $var, $datalist);
+							}
 						}
 				}
 				
