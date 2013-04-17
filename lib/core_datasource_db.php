@@ -81,10 +81,18 @@ class core_datasource_db extends core_datasource {
 	}
 
 	public function get_options($field) {
-		$q = new core_db_select_distinct($this->get_name(), array($field));
+		$q = new core_db_adv_select($this->get_name());
+		$q->fields("distinct($field)");
 		$q->order(array($field => WF_ASC));
+		foreach($this->preconds as $cond) {
+			$q->do_comp($cond[0], $cond[1], $cond[2]);
+			$q->do_and();
+		}
 		$this->wf->db->query($q);
-		return($q->get_result());
+		$ret = array();
+		foreach($q->get_result() as $res)
+			$ret[] = array($field => $res["distinct($field)"]);
+		return($ret);
 	}
 
 	public function get_num_rows($conds, $ignore_preconds = false) {
