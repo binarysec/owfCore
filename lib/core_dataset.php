@@ -144,12 +144,12 @@ class core_dataset {
 
 	public function auto_page_nb() {
 		/* retrieve page number */
-		$this->set_page_nb($this->wf->get_var($this->dsrc->get_name().'_page'));
+		$this->set_page_nb(intval($this->wf->get_var($this->dsrc->get_name().'_page')));
 	}
 
 	public function auto_rows_per_page() {
 		/* retrieve number of rows per page */
-		$p = $this->wf->get_var($this->dsrc->get_name().'_rows_per_page');
+		$p = intval($this->wf->get_var($this->dsrc->get_name().'_rows_per_page'));
 		
 		if(in_array($p,$this->range_rows_per_page))
 			$this->set_rows_per_page($p);
@@ -184,7 +184,7 @@ class core_dataset {
 	}
 
 	public function get_rows_per_page() {
-		return($this->rows_per_page);
+		return intval($this->rows_per_page);
 	}
 	
 	public function get_range_rows_per_page() {
@@ -192,7 +192,7 @@ class core_dataset {
 	}
 	
 	public function get_page_nb() {
-		return($this->page_nb);
+		return intval($this->page_nb);
 	}
 
 	public function get_filters() {
