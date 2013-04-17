@@ -111,10 +111,12 @@ class core_dataset {
 
 	public function set_conds($conds) {
 		$pconds = array();
-		if(is_array($this->filters)) foreach($this->filters as $col => $conf) {
-			if($conds[$col]) {
-				if($conf['type'] == WF_CORE_DATASET_SELECT) {
-					$pconds[] = array($col, '~=', $conds[$col]);
+		if(is_array($this->filters)) {
+			foreach($this->filters as $col => $conf) {
+				if(isset($conds[$col])) {
+					if($conf['type'] == WF_CORE_DATASET_SELECT && trim($conds[$col])) {
+						$pconds[] = array($col, '~=', $conds[$col]);
+					}
 				}
 			}
 		}
@@ -198,32 +200,39 @@ class core_dataset {
 		$struct  = $this->dsrc->get_struct();
 
 		/* consider filters */
-		if(is_array($this->filters)) foreach($this->filters as $col => $conf) {
-			if($struct[$col]) {
-				$filter = array(
-					'type'  => $conf['type'],
-					'label' => $conf['label'],
-				);
+		if(is_array($this->filters)) {
+			foreach($this->filters as $col => $conf) {
+				if(isset($struct[$col])) {
+					$filter = array(
+						'type'  => $conf['type'],
+						'label' => $conf['label'],
+					);
 
-				/* select filter */
-				if(isset($conf['type']) && $conf['type'] = WF_CORE_DATASET_SELECT) {
-					/* get uniq list values */
-					$filter['options'] = array();
-					$options = $this->dsrc->get_options($col);
-					foreach($options as $option) {
-						$value  = $option[$col];
-						$pvalue = $value;
+					/* select filter */
+					if(isset($conf['type']) && $conf['type'] = WF_CORE_DATASET_SELECT) {
+						/* get uniq list values */
+						$filter['options'] = array();
+						$options = $this->dsrc->get_options($col);
+						
+						/* remove filter is there is only one option available */
+						if(count($options) < 2)
+							break;
+						
+						foreach($options as $option) {
+							$value  = $option[$col];
+							$pvalue = $value;
 
-						/* consider callback */
-						if($conf['callback']) {
-							$pvalue = call_user_func($conf['callback'], $value);
+							/* consider callback */
+							if(isset($conf['callback'])) {
+								$pvalue = call_user_func($conf['callback'], $value);
+							}
+
+							$filter['options'][$value] = $pvalue;
 						}
-
-						$filter['options'][$value] = $pvalue;
 					}
-				}
 
-				$filters[$col] = $filter;
+					$filters[$col] = $filter;
+				}
 			}
 		}
 
@@ -243,10 +252,10 @@ class core_dataset {
 
 		/* number of page should not exceed total num rows */
 		if($this->rows_per_page) {
-			$this->page_nb = min(
+			$this->set_page_nb(min(
 				ceil($this->get_total_num_rows() / $this->rows_per_page),
 				$this->page_nb
-			);
+			));
 		}
 
 		$data = $this->dsrc->get_data(

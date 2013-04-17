@@ -72,6 +72,7 @@ class core_dataview {
 		}
 		
 		/* ajout des variables interne */
+		$tpl->set('here', $this->wf->linker($this->wf->core_request()->get_uri()));
 		$tpl->set('name',    $this->dset->get_name());
 		$tpl->set('cols',    $cols);
 		$tpl->set('rows',    $this->dset->get_rows());
@@ -83,13 +84,14 @@ class core_dataview {
 		$tpl->set('args', $this->args);
 		$tpl->set('form_responder', $this->form_responder);
 		$tpl->set('rows_per_page',  $this->dset->get_rows_per_page());
-		$tpl->set('min_rows_per_page',  current($this->dset->get_range_rows_per_page()));
+		$tpl->set('min_rows_per_page', min($this->dset->get_range_rows_per_page()));
 		$tpl->set('range_rows_per_page',    $this->dset->get_range_rows_per_page());
 		$tpl->set('total_num_rows', $this->dset->get_total_num_rows());
 		$tpl->set('total_num_rows_filterless', $this->dset->get_total_num_rows($this->total_ignore_conds, $this->total_ignore_preconds));
 		$tpl->set('form_order',     $this->wf->get_var($this->dset->get_name().'_order'));
 		$tpl->set('form_filter',    $this->wf->get_var($this->dset->get_name().'_filter'));
 		$tpl->set('form_page',      $this->wf->get_var($this->dset->get_name().'_page'));
+		
 		return($tpl->fetch($tpl_path));
 	}
 
