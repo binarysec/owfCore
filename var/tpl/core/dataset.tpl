@@ -126,7 +126,7 @@
 %{/if}%
 	
 <!-- RESULTS -->
-<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="d" data-mini="true">
+<ul data-role="%{$data_role}%" data-inset="%{$data_inset}%" data-theme="d" data-divider-theme="d" data-mini="%{$data_mini}%">
 %{if $searchi > 0 && (count($rows) > 0 || !empty($search))}%
 	<li>
 		<!-- search form -->
