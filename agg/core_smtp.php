@@ -45,6 +45,12 @@ class core_smtp extends wf_agg {
 					"filter_cb" => array($this->wf->core_utils(), "check_port"),
 					"value" => 25,
 				),
+				"status" => array(
+					"type" => WF_INT,
+					"perm" => array("core:smtp"),
+					"name" => $this->lang->ts("Status"),
+					"kind" => OWF_DAO_FLIP,
+				),
 				"mail_sent" => array(
 					"type" => WF_INT
 				),
