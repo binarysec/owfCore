@@ -90,6 +90,9 @@ class core_route extends wf_agg {
 		//try {
 			if($channel[0][2] == WF_ROUTE_ACTION) {
 				$finfo = $this->wf->locate_file("route/".$channel[0][3].".php", true);
+				if(!$finfo)
+					throw new wf_exception($this, WF_EXC_PRIVATE, "Unable to locate file route/".$channel[0][3].".php");
+				
 				$filename = $finfo[0];
 				$objectname = 
 					"wfr_".
