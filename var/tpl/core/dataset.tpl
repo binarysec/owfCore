@@ -65,7 +65,7 @@
 									
 									%{if $page_nb > $nb_pages-3}%
 										%{for $i = $page_nb + 1; $i <= $nb_pages; $i++}%
-											<a href="" data-role="button" data-theme="a"
+											<a href="" data-role="button"
 												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
 										%{/for}%
 									%{else}%
@@ -224,7 +224,7 @@
 									
 									%{if $page_nb > $nb_pages-3}%
 										%{for $i = $page_nb + 1; $i <= $nb_pages; $i++}%
-											<a href="" data-role="button" data-theme="a"
+											<a href="" data-role="button"
 												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
 										%{/for}%
 									%{else}%

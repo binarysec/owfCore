@@ -25,6 +25,11 @@
 class core_datasource_query extends core_datasource {
 	private $cache = null;
 	
+	protected $search_opts = array(
+		"cols" => array(),
+		"input" => null
+	);
+	
 	public function __construct($wf, $query) {
 		parent::__construct($wf, "");
 		$this->query = $query;
@@ -33,8 +38,22 @@ class core_datasource_query extends core_datasource {
 	public function set_search($cols, $input) {
 		
 		// this will do 'and' but require 'or'
-		foreach($cols as $col)
-			$this->preconds[] = array($col, "~=", $input);
+		$this->search_opts["cols"] = $cols;
+		$this->search_opts["input"] = $input;
+		//foreach($cols as $col)
+			//$this->preconds[] = array($col, "~=", $input);
+	}
+	
+	protected function process_search($q) {
+		if(count($this->search_opts["cols"]) == 0 || !$this->search_opts["input"])
+			return(false);
+		$q->do_open();
+		foreach($this->search_opts["cols"] as $c) {
+			$q->do_comp($c, "~=", "%".$this->search_opts["input"]."%");
+			$q->do_or();
+		}
+		$q->do_close();
+		return(true);
 	}
 	
 	public function get_struct() {
@@ -56,6 +75,7 @@ class core_datasource_query extends core_datasource {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
 			$q->do_and();
 		}
+		$this->process_search($q);
 		if($order) {
 			$q->order($order);
 		}
@@ -67,7 +87,8 @@ class core_datasource_query extends core_datasource {
 	}
 
 	public function get_options($field) {
-		$q = new core_db_select_distinct($this->get_name(), array($field));
+		$q = clone $this->query;
+		$q->fields("distinct($field)");
 		$q->order(array($field => WF_ASC));
 		$this->wf->db->query($q);
 		return($q->get_result());
@@ -93,7 +114,16 @@ class core_datasource_query extends core_datasource {
 			$q->do_comp($cond[0], $cond[1], $cond[2]);
 			$cl .= "_c$cond[0]$cond[1]$cond[2]";
 		}
-
+		
+		/* manage search counter */
+		$r = $this->process_search($q);
+		if($r) {
+			foreach($this->search_opts["cols"] as $c)
+				$cl .= "_s$c";
+			if($this->search_opts["input"])
+				$cl .= "_i$c";
+		}
+		
 		/* get cache */
 		if(($cache = $this->cache->get($cl)))
 			return($cache);
