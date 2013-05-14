@@ -216,7 +216,7 @@ class core_dataset {
 						
 						/* remove filter is there is only one option available */
 						if(count($options) < 2)
-							break;
+							continue;
 						
 						foreach($options as $option) {
 							$value  = $option[$col];
