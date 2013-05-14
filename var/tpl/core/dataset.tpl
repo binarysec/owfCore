@@ -127,7 +127,7 @@
 	
 <!-- RESULTS -->
 <ul data-role="%{$data_role}%" data-inset="%{$data_inset}%" data-theme="d" data-divider-theme="d" data-mini="%{$data_mini}%">
-%{if $searchi > 0 && (count($rows) > 0 || !empty($search))}%
+%{if $searchi > 0 && ($total_num_rows > $rows_per_page || !empty($search))}%
 	<li>
 		<!-- search form -->
 		<form method="get" action="%{$here}%">
