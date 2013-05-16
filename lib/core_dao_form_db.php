@@ -194,6 +194,14 @@ class core_dao_form_db {
 		return $res;
 	}
 	
+	public function count() {
+		$q = new core_db_adv_select($this->name);
+		$q->request_function(WF_REQ_FCT_COUNT);
+		$this->wf->db->query($q);
+		$ret = current($q->get_result());
+		return isset($ret["COUNT(*)"]) ? intval($ret["COUNT(*)"]) : false;
+	}
+	
 	public function add_link($uid=null) {
 		/*if(($this->capable & OWF_DAO_ADD) != OWF_DAO_ADD)
 			return "";*/

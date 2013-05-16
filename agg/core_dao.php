@@ -170,8 +170,11 @@ class core_dao extends wf_agg {
 					$val["kind"] == OWF_DAO_LINK_MANY_TO_MANY
 					) {
 						$result[$key]["list"] = array();
+						
 						$datalist = is_array($val["dao"]) ? 
 							call_user_func($val["dao"]) : $val["dao"]->get();
+						
+						/* forge the list with a proper name to display */
 						foreach($datalist as $subdaoitem) {
 							if(isset($val["field-name"])) {
 								if(is_array($val["field-name"])) {
@@ -189,6 +192,17 @@ class core_dao extends wf_agg {
 								$var = isset($data[$key]) ? $data[$key] : null;
 								$result[$key]["list"] = call_user_func($val["field-callback"], $item, $var, $datalist);
 							}
+						}
+						
+						if($val["kind"] == OWF_DAO_LINK_MANY_TO_MANY && isset($data["id"])) {
+							$linkinfo = $val["link"];
+							$q = new core_db_select($linkinfo["table"], array(), array(
+								$linkinfo["primary"] => $data["id"]
+							));
+							$this->wf->db->query($q);
+							$result[$key]["value"] = array();
+							foreach($q->get_result() as $res)
+								$result[$key]["value"][] = $res[$linkinfo["secondary"]];
 						}
 				}
 				

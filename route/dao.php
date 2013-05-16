@@ -373,7 +373,8 @@ EOT;
 					if(!isset($v["list"]))
 						;// throw error
 					$inputs = '';
-					$v["value"] = isset($v["value"]) ? explode(",", $v["value"]) : array();
+					if($kind == OWF_DAO_CHECKBOX)
+						$v["value"] = isset($v["value"]) ? explode(",", $v["value"]) : array();
 					$disabled = $v["kind"] == OWF_DAO_CHECKBOX_READON ? "disabled='disabled'" : "";
 					
 					foreach($v["list"] as $key => $val) {
@@ -652,8 +653,11 @@ EOT;
 			
 			/* delayed query */
 			foreach($delayed_query as $links) {
-				$q = new core_db_delete($links["link"]["table"], array());
-				$this->wf->db->query($q);
+				if($id > 0) {
+					$q = new core_db_delete($links["link"]["table"], array($links["link"]["primary"] => $id));
+					$this->wf->db->query($q);
+				}
+				
 				$fields = array();
 				foreach($links["var"] as $data) {
 					$fields[] = array(
