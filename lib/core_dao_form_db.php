@@ -189,6 +189,24 @@ class core_dao_form_db {
 		$this->wf->db->query($q);
 		$res = $q->get_result();
 		
+		/* if any octopus field found, search for childs data */
+		foreach($this->struct["data"] as $key => $val) {
+			if(isset($val["kind"]) && $val["kind"] == OWF_DAO_OCTOPUS) {
+				foreach($res as $k => $result_row) {
+					$obj = $this->childs[$result_row[$key]];
+					$struct = $obj->get_struct();
+					$dbkey = isset($val["db-field"]) ? $val["db-field"] : "father_id";
+					$q = new core_db_select($this->name."_".$obj->get_name(), null, array($dbkey => $result_row["id"]));
+					$this->wf->db->query($q);
+					$moredata = current($q->get_result());
+					foreach($struct as $field => $infos)
+						if(isset($infos["cb_get"], $moredata[$field]))
+							$moredata[$field] = call_user_func($infos["cb_get"], $obj, $moredata[$field]);
+					$res[$k] = array_merge($res[$k], $moredata);
+				}
+			}
+		}
+		
 		$this->gcache->store($cache_line, $res);
 		
 		return $res;
