@@ -375,6 +375,9 @@ EOT;
 					$inputs = '';
 					if($kind == OWF_DAO_CHECKBOX)
 						$v["value"] = isset($v["value"]) ? explode(",", $v["value"]) : array();
+					elseif(!isset($v["value"]))
+						$v["value"] = array();
+					
 					$disabled = $v["kind"] == OWF_DAO_CHECKBOX_READON ? "disabled='disabled'" : "";
 					
 					foreach($v["list"] as $key => $val) {
@@ -658,16 +661,18 @@ EOT;
 					$this->wf->db->query($q);
 				}
 				
-				$fields = array();
-				foreach($links["var"] as $data) {
-					$fields[] = array(
-						$links["link"]["primary"] => $id,
-						$links["link"]["secondary"] => $data
-					);
+				if($links["var"]) {
+					$fields = array();
+					foreach($links["var"] as $data) {
+						$fields[] = array(
+							$links["link"]["primary"] => $id,
+							$links["link"]["secondary"] => $data
+						);
+					}
+					
+					$q = new core_db_insert_multiple($links["link"]["table"], $fields);
+					$this->wf->db->query($q);
 				}
-				
-				$q = new core_db_insert_multiple($links["link"]["table"], $fields);
-				$this->wf->db->query($q);
 			}
 			
 			if(count($error["msgs"]) == 0)
