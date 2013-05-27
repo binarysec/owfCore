@@ -570,10 +570,25 @@ class web_framework {
 		/* protocol if absolute linking */
 		$protocol = "";
 		$sitename = "";
-		if($absolute && isset($_SERVER["SERVER_NAME"])) {
-			$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ?
-				"https://" : "http://";
-			$sitename = $_SERVER["SERVER_NAME"];
+		if($absolute) {
+			/* gui */
+			if(isset($_SERVER["SERVER_NAME"])) {
+				$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ?
+					"https://" : "http://";
+				$sitename = $_SERVER["SERVER_NAME"];
+			}
+			/* cli */
+			else {
+				$sitename = isset($this->ini_arr['common']["site_name"]) ?
+					$this->ini_arr['common']["site_name"] :
+					"";
+				
+				$protocol =
+					isset($this->ini_arr['common']["admin_https"]) &&
+					$this->ini_arr['common']["admin_https"] ?
+						"https://" :
+						"http://";
+			}
 		}
 		
 		/* base */
