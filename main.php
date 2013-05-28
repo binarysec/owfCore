@@ -568,8 +568,7 @@ class web_framework {
 			$lang_code = $this->core_lang()->get_code();
 		
 		/* protocol if absolute linking */
-		$protocol = "";
-		$sitename = "";
+		$protocol = $sitename = "";
 		if($absolute) {
 			/* gui */
 			if(isset($_SERVER["SERVER_NAME"])) {
