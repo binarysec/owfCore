@@ -225,6 +225,9 @@ class core_dataset {
 							/* consider callback */
 							if(isset($conf['callback'])) {
 								$pvalue = call_user_func($conf['callback'], $value);
+								
+								if(!$pvalue)
+									continue;
 							}
 
 							$filter['options'][$value] = $pvalue;
