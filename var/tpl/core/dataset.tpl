@@ -35,42 +35,15 @@
 										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">&nbsp;</a>
 								%{/if}%
 								
-								%{if $nb_pages < 5}%
-									%{for $i = 1; $i <= $nb_pages; $i++}%
-										%{if $page_nb != $i}%
-											<a href="" data-role="button" data-theme="a"
-												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
-										%{else}%
-											<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
-										%{/if}%
-									%{/for}%
-								%{else}%
-									%{if $page_nb < 4}%
-										%{for $i = 1; $i <= $page_nb; $i++}%
-											%{if $page_nb != $i}%
-												<a href="" data-role="button" data-theme="a"
-													onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
-											%{else}%
-												<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
-											%{/if}%
-										%{/for}%
-									%{else}%
+								%{for $i = 1; $i <= $nb_pages; $i++}%
+									%{if $i == 1 || $i == $nb_pages }%
 										<a href="" data-role="button" data-theme="a"
-											onclick="var form = $(this).closest('form');form.find('.form_page').val(1);form.submit();return false;">1</a>
-										<a href="" data-role="button" data-theme="b"
-											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">%{$page_nb}%</a>
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
 									%{/if}%
-									
-									%{if $page_nb > $nb_pages-3}%
-										%{for $i = $page_nb + 1; $i <= $nb_pages; $i++}%
-											<a href="" data-role="button"
-												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
-										%{/for}%
-									%{else}%
-										<a href="" data-role="button" data-theme="a"
-											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$nb_pages}%);form.submit();return false;">%{$nb_pages}%</a>
+									%{if $i == $page_nb && $i != 1 && $i != $nb_pages }%
+										<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
 									%{/if}%
-								%{/if}%
+								%{/for}%
 								
 								%{if $page_nb < $nb_pages}%
 									<a href="" data-role="button" data-iconpos="right" data-icon="arrow-r" data-theme="a" data-transition="fade"
