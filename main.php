@@ -885,7 +885,7 @@ class web_framework {
 	 *
 	 * Locate a file with priority respect
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function locate_file($filename, $return_array=FALSE) {
+	public function locate_file($filename, $return_array=FALSE, $type = null) {
 		$file = NULL;
 		$modrev = array_reverse($this->modules);
 
@@ -893,22 +893,23 @@ class web_framework {
 			$tmp = $this->modules[$mod][0].
 				"/$filename";
 			if(file_exists($tmp)) {
-				if($return_array) {
-					$file = array(
-						$tmp,
-						&$this->modules[$mod][0],
-						$this->modules[$mod][1]
-					);
+				if(is_null($type) || ($type == "d" && is_dir($tmp)) || ($type == "f" && is_file($tmp))) {
+					if($return_array) {
+						$file = array(
+							$tmp,
+							&$this->modules[$mod][0],
+							$this->modules[$mod][1]
+						);
+					}
+					else
+						$file = $tmp;
+					
+					break;
 				}
-				else
-					$file = $tmp;
-				
-				break;
 			}
 		}
-		if(!$file)
-			return(NULL);
-		return($file);
+		
+		return $file ? $file : null;
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

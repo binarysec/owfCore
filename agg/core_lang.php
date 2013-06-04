@@ -187,7 +187,7 @@ class core_lang extends wf_agg {
 			return($this->contexts[$full]);
 			
 		/* locate file */
-		$file = $this->wf->locate_file($full);
+		$file = $this->wf->locate_file($full, false, "f");
 		
 		/* if file exists try to unserialize it*/
 		if($file) {
