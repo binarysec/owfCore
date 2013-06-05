@@ -35,7 +35,6 @@ class core_smtp extends wf_agg {
 					"perm" => array("core:smtp"),
 					"name" => $this->lang->ts("Server IP or Hostname"),
 					"kind" => OWF_DAO_INPUT,
-					"filter_cb" => array($this->wf->core_utils(), "check_ip"),
 				),
 				"server_port" => array(
 					"type" => WF_INT,
