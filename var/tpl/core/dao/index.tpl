@@ -48,15 +48,15 @@
 	<iframe id="owf-dao-map-iframe-%{$name}%" class="owf-dao-map-iframe" src="%{link '/dao/gmap'}%?name=%{$name}%&text=%{$map['text']}%&lat=%{$map['latitude']}%&long=%{$map['longitude']}%" height="320px" width="480px"></iframe>
 	
 	<div class="ui-grid-a" style="margin-left: 3%; margin-top: 3%;">
-		<div class="ui-block-a"><label for="latitude">Latitude :</label></div>
+		<div class="ui-block-a"><label for="latitude">%{@ "Latitude"}% :</label></div>
 		<div class="ui-block-b"><input style="width: 95%;" type="text" id="owf-dao-map-cur-data-latitude-%{$name}%" class="owf-dao-map-input" value="%{$map['latitude']}%"  /></div>
 	</div>
 	<div class="ui-grid-a" style="margin-left: 2.5%;" >
-		<div class="ui-block-a"><label for="longitude">Longitude :</label></div>
+		<div class="ui-block-a"><label for="longitude">%{@ "Longitude"}% :</label></div>
 		<div class="ui-block-b"><input style="width: 95%;" type="text" id="owf-dao-map-cur-data-longitude-%{$name}%" class="owf-dao-map-input" value="%{$map['longitude']}%"  /></div>
 	</div>
 	<div class="ui-grid-solo">
-		<div class="ui-block-a"><a href="#" type="v" data-role="button" data-rel="back" data-theme="b">Valider</a></div>
+		<div class="ui-block-a"><a href="#" type="v" data-role="button" data-rel="back" data-theme="b">%{@ "Valider"}%</a></div>
 	</div>
 </div>
 %{/foreach}%
@@ -65,7 +65,7 @@
 <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="f">
 	<li data-role="list-divider">%{@ 'There are some problems into your form'}%</li>
 	%{foreach $error["msgs"] as $v}%
-	<li>%{$v}%</li>
+	<li>%{$v|entities}%</li>
 	%{/foreach}%
 </ul>
 %{elseif strlen($body) > 0}%
