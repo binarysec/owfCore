@@ -12,6 +12,18 @@
 		%{foreach $args as $k => $v}%
 			<input type="hidden" class="dataset_opt_%{$k}%" name="%{$k|entities}%" value="%{$v|entities}%" />
 		%{/foreach}%
+		%{if $filters}%
+			%{foreach $filters as $col => $filter}%
+				%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
+					<input type="hidden" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+				%{/if}%
+			%{/foreach}%
+		%{/if}%
+		%{if $orders}%
+			%{foreach $orders as $col => $order}%
+				<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+			%{/foreach}%
+		%{/if}%
 		
 		<div data-role="footer" data-theme="a" class="ui-bar ui-corner-all">
 			<div class="ui-grid-c">
@@ -68,24 +80,8 @@
 				
 				<div class="ui-block-d">
 					<div data-role="fieldcontain" style="text-align: center;">
-						%{if $filters}%
-						<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
-							%{foreach $filters as $col => $filter}%
-								%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
-									<label for="%{$name}%_head_filter_%{$col}%">%{$filter['label']}%&nbsp;:</label>
-									<select id="%{$name}%_head_filter_%{$col}%" name="%{$name}%_filter[%{$col}%]" data-native-menu="false" onchange="$(this).closest('form').submit();return false;">
-										%{if(trim($form_filter[$col]))}%
-											<option value=" ">%{@ "Remove filter"}%</option>
-										%{else}%
-											<option value=" " data-placeholder="true">%{$filter['label']}%</option>
-										%{/if}%
-										%{foreach $filter['options'] as $key => $value}%
-											<option value="%{$key}%"%{if $form_filter[$col] == $key}% selected="selected"%{/if}%>%{$value}%</option>
-										%{/foreach}%
-									</select>
-								%{/if}%
-							%{/foreach}%
-						</fieldset>
+						%{if($filters || $orders)}%
+							<a href="#%{$panelid}%" data-role="button" data-icon="gear">%{@ "Advanced filtering"}%</a>
 						%{/if}%
 					</div>
 				</div>
@@ -108,6 +104,11 @@
 					%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
 						<input type="hidden" class="form_page" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
 					%{/if}%
+				%{/foreach}%
+			%{/if}%
+			%{if $orders}%
+				%{foreach $orders as $col => $order}%
+					<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
 				%{/foreach}%
 			%{/if}%
 			
@@ -140,6 +141,18 @@
 		%{foreach $args as $k => $v}%
 			<input type="hidden" class="dataset_opt_%{$k}%" name="%{$k|entities}%" value="%{$v|entities}%" />
 		%{/foreach}%
+		%{if $filters}%
+			%{foreach $filters as $col => $filter}%
+				%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
+					<input type="hidden" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+				%{/if}%
+			%{/foreach}%
+		%{/if}%
+		%{if $orders}%
+			%{foreach $orders as $col => $order}%
+				<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+			%{/foreach}%
+		%{/if}%
 		
 		<div data-role="footer" data-theme="a" class="ui-bar ui-corner-all">
 			<div class="ui-grid-c">
@@ -196,24 +209,8 @@
 				
 				<div class="ui-block-d">
 					<div data-role="fieldcontain" style="text-align: center;">
-						%{if $filters}%
-						<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
-							%{foreach $filters as $col => $filter}%
-								%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
-									<label for="%{$name}%_head_filter_%{$col}%">%{$filter['label']}%&nbsp;:</label>
-									<select id="%{$name}%_head_filter_%{$col}%" name="%{$name}%_filter[%{$col}%]" data-native-menu="false" onchange="$(this).closest('form').submit();return false;">
-										%{if(trim($form_filter[$col]))}%
-											<option value=" ">%{@ "Remove filter"}%</option>
-										%{else}%
-											<option value=" " data-placeholder="true">%{$filter['label']}%</option>
-										%{/if}%
-										%{foreach $filter['options'] as $key => $value}%
-											<option value="%{$key}%"%{if $form_filter[$col] == $key}% selected="selected"%{/if}%>%{$value}%</option>
-										%{/foreach}%
-									</select>
-								%{/if}%
-							%{/foreach}%
-						</fieldset>
+						%{if($filters || $orders)}%
+							<a href="#%{$panelid}%" data-role="button" data-icon="gear">%{@ "Advanced filtering"}%</a>
 						%{/if}%
 					</div>
 				</div>

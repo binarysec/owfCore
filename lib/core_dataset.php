@@ -86,27 +86,24 @@ class core_dataset {
 
 	public function auto_order() {
 		$order = $this->wf->get_var($this->dsrc->get_name().'_order');
-		if(!is_array($order) || !$order) {
+		if(!$order || !is_array($order))
 			return;
-		}
+		
 		$orders = array();
 		foreach($order as $col => $way) {
-			if($way) {
+			if(!empty($way) && ($way == 'D' || $way == 'A')) {
 				$this->set_order(array($col => ($way == 'D') ? WF_DESC : WF_ASC));
 			}
 		}
 	}
-
+	
 	public function set_order($order) {
-		$this->order = array();
 		$struct = $this->dsrc->get_struct();
 		foreach($order as $col => $way) {
-// 			if(isset($this->cols[$col]['orderable']) && $this->cols[$col]['orderable']) {
+			if(isset($this->cols[$col]['orderable']) && $this->cols[$col]['orderable']) {
 				$this->order[$col] = $way;
-// 			}
-		
+			}
 		}
-		
 	}
 
 	public function set_conds($conds) {
@@ -240,6 +237,14 @@ class core_dataset {
 		}
 
 		return($filters);
+	}
+	
+	public function get_orderable_cols() {
+		$cols = array();
+		foreach($this->cols as $id => $col)
+			if(isset($col["orderable"]) && $col["orderable"])
+				$cols[$id] = $col;
+		return $cols;
 	}
 
 	public function get_rows() {
