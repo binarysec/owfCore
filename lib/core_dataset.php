@@ -199,12 +199,12 @@ class core_dataset {
 		/* consider filters */
 		if(is_array($this->filters)) {
 			foreach($this->filters as $col => $conf) {
-				if(isset($struct[$col])) {
+				//if(isset($struct[$col])) {
 					$filter = array(
 						'type'  => $conf['type'],
 						'label' => $conf['label'],
 					);
-
+					
 					/* select filter */
 					if(isset($conf['type']) && $conf['type'] = WF_CORE_DATASET_SELECT) {
 						/* get uniq list values */
@@ -232,7 +232,7 @@ class core_dataset {
 					}
 
 					$filters[$col] = $filter;
-				}
+				
 			}
 		}
 

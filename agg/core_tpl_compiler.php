@@ -599,7 +599,12 @@ class core_tpl_compiler extends wf_agg {
 		
 		return('echo $t->wf->core_utils()->number_format('.$params.');');
 	}
-
+	
+	/* use to sanatize inputs for id attribute */
+	public function func_id(core_tpl_compiler $tpl_compiler, $argv) {
+		return 'echo str_replace(\'.\', \'_\', '.$argv[0].');';
+	}
+	
 	private function parse_tpl_var($var) {
 		return(trim($var, '"\' '));
 	}

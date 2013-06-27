@@ -85,13 +85,20 @@ class core_datasource_query extends core_datasource {
 		$this->wf->db->query($q);
 		return($q->get_result());
 	}
-
+	
 	public function get_options($field) {
 		$q = clone $this->query;
 		$q->fields("distinct($field)");
-		$q->order(array($field => WF_ASC));
+		$q->do_comp($field, "!!");
+		foreach($this->preconds as $cond) {
+			$q->do_comp($cond[0], $cond[1], $cond[2]);
+			$q->do_and();
+		}
 		$this->wf->db->query($q);
-		return($q->get_result());
+		$ret = array();
+		foreach($q->get_result() as $res)
+			$ret[] = array($field => $res["distinct($field)"]);
+		return($ret);
 	}
 
 	public function get_num_rows($conds, $ignore_preconds = false) {

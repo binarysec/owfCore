@@ -13,8 +13,8 @@
 			%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
 				<div data-role="fieldcontain" style="text-align: center;">
 					<fieldset data-role="controlgroup" data-mini="true">
-						<label for="%{$name}%_head_filter_%{$col}%">%{$filter['label']}%&nbsp;:</label>
-						<select id="%{$name}%_head_filter_%{$col}%" name="%{$name}%_filter[%{$col}%]" data-native-menu="false">
+						<label for="%{$name}%_head_filter_%{id $col}%">%{$filter['label']}%&nbsp;:</label>
+						<select id="%{$name}%_head_filter_%{id $col}%" name="%{$name}%_filter[%{$col}%]" data-native-menu="false">
 							%{if(trim($form_filter[$col]))}%
 								<option value=" ">%{@ "Remove filter"}%</option>
 							%{else}%
@@ -37,8 +37,8 @@
 		%{foreach $orders as $id => $col}%
 			<div data-role="fieldcontain" style="text-align: center;">
 				<fieldset data-role="controlgroup" data-mini="true">
-					<label for="owf-core-dataset-order-%{$id}%">%{$col["name"]}%</label>
-					<select id="owf-core-dataset-order-%{$id}%" name="%{$name}%_order[%{$id}%]" data-native-menu="false">
+					<label for="owf-core-dataset-order-%{id $id}%">%{$col["name"]}%</label>
+					<select id="owf-core-dataset-order-%{id $id}%" name="%{$name}%_order[%{$id}%]" data-native-menu="false">
 						<option value=" " data-placeholder="true">%{$col['name']}%</option>
 						%{if(trim($form_order[$id]))}%
 							<option value=" ">%{@ "Remove ordering"}%</option>
