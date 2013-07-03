@@ -141,7 +141,7 @@ class core_html extends wf_agg {
 			'html_title' => $this->title,
 			'html_meta' => $this->get_meta(),
 			'html_css' => $this->css,
-			'html_js' => $this->js,
+			'html_js' => array_merge($this->js, $this->jsend),
 			'html_body_attribs' => ''
 		));
 		$this->_core_request->send_headers();
@@ -173,12 +173,22 @@ class core_html extends wf_agg {
 	 * Gestion des javascript
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var $js = array();
+	var $jsend = array();
 	public function add_js($link, $absolute = false, $lang_code = null) {
 		$reallink = $this->wf->linker($link, $absolute, $lang_code);
 		/* test if link already exists */
 		if(array_search($reallink, $this->js) !== false) return;
+		if(array_search($reallink, $this->jsend) !== false) return;
 		/* FILO */
 		$this->js[] = $reallink;
+	}
+	public function append_js($link, $absolute = false, $lang_code = null) {
+		$reallink = $this->wf->linker($link, $absolute, $lang_code);
+		/* test if link already exists */
+		if(array_search($reallink, $this->js) !== false) return;
+		if(array_search($reallink, $this->jsend) !== false) return;
+		/* FILO */
+		$this->jsend[] = $reallink;
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
