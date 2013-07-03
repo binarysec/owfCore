@@ -115,6 +115,9 @@ class core_dao extends wf_agg {
 				elseif(array_key_exists("value", $val))
 					$result[$key]["value"] = htmlspecialchars($val["value"]);
 				
+				if(isset($val["allow-empty"]))
+					$result[$key]["allow-empty"] = $val["allow-empty"];
+				
 				/* ... */
 				if(	$val["kind"] == OWF_DAO_SELECT ||
 					$val["kind"] == OWF_DAO_RADIO ||

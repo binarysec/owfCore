@@ -287,8 +287,8 @@ EOT;
 				$select = "<select data-native-menu='false' name='$name' id='$name' $octo_js>";
 				
 				/* if select and no values, add an empty entry */
-				if($kind != OWF_DAO_OCTOPUS && !isset($v["list"][$v["value"]]))
-					$select .= "<option value=''>&nbsp;</option>";
+				if($kind != OWF_DAO_OCTOPUS && !isset($v["list"][$v["value"]]) || (isset($v["allow-empty"]) && $v["allow-empty"]))
+					$select .= "<option value=' '>&nbsp;</option>";
 				
 				foreach($v["list"] as $lkey => $lval) {
 					$selected = $v["value"] == $lkey ? "selected='selected'" : "";
