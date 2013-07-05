@@ -817,6 +817,9 @@ class core_db_pdo_mysql extends core_db {
 				$ret .= "LONGBLOB";break;
 		}
 		
+		if($item & WF_UNIQUE)
+			$ret .= " UNIQUE";
+		
 		if($item & WF_AUTOINC)
 			$ret .= " AUTO_INCREMENT";
 		
