@@ -89,14 +89,13 @@
 		</div>
 	</form>
 %{/if}%
-	
+
 <!-- RESULTS -->
 <ul data-role="%{$data_role}%" data-inset="%{$data_inset}%" data-theme="d" data-divider-theme="d" data-mini="%{$data_mini}%">
 %{if $searchi > 0 && ($total_num_rows > $rows_per_page || !empty($search))}%
 	<li>
 		<!-- search form -->
 		<form method="get" action="%{$here}%">
-			<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
 			<input type="hidden" class="form_page" name="%{$name}%_page" value="%{$page_nb}%" />
 			<input type="hidden" class="form_page" name="%{$name}%_rows_per_page" value="%{$rows_per_page}%" />
 			%{if $filters}%
