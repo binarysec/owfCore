@@ -28,7 +28,7 @@
 		<div data-role="footer" data-theme="a" class="ui-bar ui-corner-all">
 			<div class="ui-grid-c">
 				<div class="ui-block-a">
-					<div data-role="fieldcontain" style="text-align: center;padding-top: 6px;">
+					<div data-role="fieldcontain" style="text-align: center;padding-top: 10px;font-size: 0.85em;">
 						%{if $display_dataset_select_bar == 1 && $total_num_rows > $rows_per_page}%
 							%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
 							%{@ 'sur'}% %{$total_num_rows}%
@@ -38,12 +38,12 @@
 					</div>
 				</div>
 				
-				<div class="ui-block-b">
+				<div class="ui-block-b" style="width: 35%;">
 					<div data-role="fieldcontain" style="text-align: center;">
 						%{if($total_num_rows > $rows_per_page)}%
 							<div data-role="controlgroup" data-type="horizontal">
 								%{if $page_nb > 1}%
-									<a href="" data-role="button" data-icon="arrow-l" data-theme="a"
+									<a href="" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a"
 										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">&nbsp;</a>
 								%{/if}%
 								
@@ -58,7 +58,7 @@
 								%{/for}%
 								
 								%{if $page_nb < $nb_pages}%
-									<a href="" data-role="button" data-iconpos="right" data-icon="arrow-r" data-theme="a" data-transition="fade"
+									<a href="" data-role="button" data-iconpos="notext right" data-icon="arrow-r" data-theme="a" data-transition="fade"
 										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb + 1}%);form.submit();return false;">&nbsp;</a>
 								%{/if}%
 							</div>
@@ -78,10 +78,10 @@
 					</div>
 				</div>
 				
-				<div class="ui-block-d">
+				<div class="ui-block-d" style="width: 15%;">
 					<div data-role="fieldcontain" style="text-align: center;">
 						%{if($filters || $orders)}%
-							<a href="#%{$panelid}%" data-role="button" data-icon="gear">%{@ "Advanced filtering"}%</a>
+							<a href="#%{$panelid}%" data-role="button" data-icon="gear">%{@ "Filtering"}%</a>
 						%{/if}%
 					</div>
 				</div>
@@ -156,7 +156,7 @@
 		<div data-role="footer" data-theme="a" class="ui-bar ui-corner-all">
 			<div class="ui-grid-c">
 				<div class="ui-block-a">
-					<div data-role="fieldcontain" style="text-align: center;padding-top: 6px;">
+					<div data-role="fieldcontain" style="text-align: center;padding-top: 10px;font-size: 0.85em;">
 						%{if $display_dataset_select_bar == 1 && $total_num_rows > $rows_per_page}%
 							%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
 							%{@ 'sur'}% %{$total_num_rows}%
@@ -166,12 +166,12 @@
 					</div>
 				</div>
 				
-				<div class="ui-block-b">
+				<div class="ui-block-b" style="width: 35%;">
 					<div data-role="fieldcontain" style="text-align: center;">
 						%{if($total_num_rows > $rows_per_page)}%
 							<div data-role="controlgroup" data-type="horizontal">
 								%{if $page_nb > 1}%
-									<a href="" data-role="button" data-icon="arrow-l" data-theme="a"
+									<a href="" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a"
 										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">&nbsp;</a>
 								%{/if}%
 								
@@ -186,7 +186,7 @@
 								%{/for}%
 								
 								%{if $page_nb < $nb_pages}%
-									<a href="" data-role="button" data-iconpos="right" data-icon="arrow-r" data-theme="a" data-transition="fade"
+									<a href="" data-role="button" data-iconpos="notext right" data-icon="arrow-r" data-theme="a" data-transition="fade"
 										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb + 1}%);form.submit();return false;">&nbsp;</a>
 								%{/if}%
 							</div>
@@ -206,10 +206,10 @@
 					</div>
 				</div>
 				
-				<div class="ui-block-d">
+				<div class="ui-block-d" style="width: 15%;">
 					<div data-role="fieldcontain" style="text-align: center;">
 						%{if($filters || $orders)}%
-							<a href="#%{$panelid}%" data-role="button" data-icon="gear">%{@ "Advanced filtering"}%</a>
+							<a href="#%{$panelid}%" data-role="button" data-icon="gear">%{@ "Filtering"}%</a>
 						%{/if}%
 					</div>
 				</div>
