@@ -7,7 +7,9 @@
 	<form method="get" action="%{$here}%">
 		
 		<!-- hidden inputs -->
-		<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
+		%{if($search)}%
+			<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
+		%{/if}%
 		<input type="hidden" class="form_page" name="%{$name}%_page" value="%{$page_nb}%" />
 		%{foreach $args as $k => $v}%
 			<input type="hidden" class="dataset_opt_%{$k}%" name="%{$k|entities}%" value="%{$v|entities}%" />
@@ -15,13 +17,17 @@
 		%{if $filters}%
 			%{foreach $filters as $col => $filter}%
 				%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
-					<input type="hidden" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+					%{if($form_filter[$col])}%
+						<input type="hidden" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+					%{/if}%
 				%{/if}%
 			%{/foreach}%
 		%{/if}%
 		%{if $orders}%
 			%{foreach $orders as $col => $order}%
-				<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+				%{if($form_order[$col])}%
+					<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+				%{/if}%
 			%{/foreach}%
 		%{/if}%
 		
@@ -96,26 +102,29 @@
 	<li>
 		<!-- search form -->
 		<form method="get" action="%{$here}%">
+			<input type="search" name="%{$name}%_search" value="%{$search}%" data-mini="true" placeholder="%{@ 'Search...'}%" />
 			<input type="hidden" class="form_page" name="%{$name}%_page" value="%{$page_nb}%" />
 			<input type="hidden" class="form_page" name="%{$name}%_rows_per_page" value="%{$rows_per_page}%" />
 			%{if $filters}%
 				%{foreach $filters as $col => $filter}%
 					%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
-						<input type="hidden" class="form_page" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+						%{if($form_filter[$col])}%
+							<input type="hidden" class="form_page" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+						%{/if}%
 					%{/if}%
 				%{/foreach}%
 			%{/if}%
 			%{if $orders}%
 				%{foreach $orders as $col => $order}%
-					<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+					%{if($form_order[$col])}%
+						<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+					%{/if}%
 				%{/foreach}%
 			%{/if}%
 			
 			%{foreach $args as $k => $v}%
 				<input type="hidden" class="dataset_opt_%{$k}%" name="%{$k|entities}%" value="%{$v|entities}%" />
 			%{/foreach}%
-			
-			<input type="search" name="%{$name}%_search" value="%{$search}%" data-mini="true" placeholder="%{@ 'Search...'}%" />
 		</form>
 	</li>
 %{/if}%
@@ -135,7 +144,9 @@
 	<form method="get" action="%{$here}%">
 		
 		<!-- hidden inputs -->
-		<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
+		%{if($search)}%
+			<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
+		%{/if}%
 		<input type="hidden" class="form_page" name="%{$name}%_page" value="%{$page_nb}%" />
 		%{foreach $args as $k => $v}%
 			<input type="hidden" class="dataset_opt_%{$k}%" name="%{$k|entities}%" value="%{$v|entities}%" />
@@ -143,13 +154,17 @@
 		%{if $filters}%
 			%{foreach $filters as $col => $filter}%
 				%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
-					<input type="hidden" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+					%{if($form_filter[$col])}%
+						<input type="hidden" name="%{$name}%_filter[%{$col}%]" value="%{$form_filter[$col]|entities}%" />
+					%{/if}%
 				%{/if}%
 			%{/foreach}%
 		%{/if}%
 		%{if $orders}%
 			%{foreach $orders as $col => $order}%
-				<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+				%{if($form_order[$col])}%
+					<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
+				%{/if}%
 			%{/foreach}%
 		%{/if}%
 		

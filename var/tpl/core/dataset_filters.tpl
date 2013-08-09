@@ -1,14 +1,16 @@
 <form method="get" action="%{$here}%">
-	<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
+	%{if($search)}%
+		<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
+	%{/if}%
 	<input type="hidden" class="form_page" name="%{$name}%_page" value="%{$page_nb}%" />
 	<input type="hidden" class="form_page" name="%{$name}%_rows_per_page" value="%{$rows_per_page}%" />
 	
 	%{foreach $args as $k => $v}%
 		<input type="hidden" class="dataset_opt_%{$k}%" name="%{$k|entities}%" value="%{$v|entities}%" />
 	%{/foreach}%
-
 	
 	%{if $filters}%
+		<center><h4>%{@ "Filters"}%</h4></center>
 		%{foreach $filters as $col => $filter}%
 			%{if $filter['type'] == WF_CORE_DATASET_SELECT}%
 				<div data-role="fieldcontain" style="text-align: center;">
@@ -34,6 +36,7 @@
 		%{if $filters}%
 		<hr/>
 		%{/if}%
+		<center><h4>%{@ "Ordering"}%</h4></center>
 		%{foreach $orders as $id => $col}%
 			<div data-role="fieldcontain" style="text-align: center;">
 				<fieldset data-role="controlgroup" data-mini="true">
@@ -55,6 +58,24 @@
 	<!-- validate -->
 	<hr/>
 	<div data-role="fieldcontain" style="text-align: center;">
-		<input type="submit" value="%{@ 'Validate'}%" data-mini="true" data-icon="check" />
+		<input type="submit" value="%{@ 'Validate'}%" data-mini="true" data-icon="check" data-theme="b" />
 	</div>
 </form>
+
+<form method="get" action="%{$here}%">
+	%{if($search)}%
+		<input type="hidden" name="%{$name}%_search" value="%{$search}%" />
+	%{/if}%
+	<input type="hidden" class="form_page" name="%{$name}%_page" value="%{$page_nb}%" />
+	<input type="hidden" class="form_page" name="%{$name}%_rows_per_page" value="%{$rows_per_page}%" />
+	
+	%{foreach $args as $k => $v}%
+		<input type="hidden" class="dataset_opt_%{$k}%" name="%{$k|entities}%" value="%{$v|entities}%" />
+	%{/foreach}%
+	
+	<!-- clear -->
+	<div data-role="fieldcontain" style="text-align: center;">
+		<input type="submit" value="%{@ 'Clear all'}%" data-mini="true" data-icon="delete" data-theme="f" />
+	</div>
+</form>
+	
