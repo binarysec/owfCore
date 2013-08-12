@@ -505,7 +505,7 @@ EOT;
 				}
 				
 				if($val["kind"] == OWF_DAO_NUMBER)
-					$var = floatval($var);
+					$var = floatval(str_replace(",", ".", $var));
 				
 				if($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
 					if(strlen($var) > 0) {
