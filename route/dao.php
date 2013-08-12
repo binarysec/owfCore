@@ -236,7 +236,6 @@ class wfr_core_dao extends wf_route_request {
 			case OWF_DAO_INPUT:
 			case OWF_DAO_NUMBER:
 			case OWF_DAO_UPLOAD:
-			case OWF_DAO_DATE:
 			
 				$value = isset($v["value"]) ? $v["value"] : "";
 				$readonly =
@@ -254,19 +253,28 @@ class wfr_core_dao extends wf_route_request {
 				$class = "";
 				$octo_css = "";
 				if($parentkind == OWF_DAO_OCTOPUS) {
-					$class = "class='$parentdata[name] $parentdata[name]-$parentdata[id]'";
+					$class = "class='$parentdata[name] $parentdata[name]-$parentdata[id]' ";
 					if($parentdata["dft_val"] != $parentdata["id"])
 						$octo_css = "style='display: none;'";
 				}
 				
-				return	"<div data-role='fieldcontain' $class $octo_css>".
-							"<label for='$name'>"."$v[text] : </label>".
+				return	"<div data-role='fieldcontain' $class$octo_css>".
+							"<label for='$name'>$v[text] : </label>".
 							"<input type='$type' name='$name' id='$name' value='$value' $readonly />".
 						"</div>\n";
 			
 			case OWF_DAO_HIDDEN:
 				$value = isset($v["value"]) ? $v["value"] : "";
 				return "<input type='hidden' name='$name' id='$name' value='$value' />\n";
+			
+			case OWF_DAO_DATE:
+				//doc : http://dev.jtsage.com/jQM-DateBox2/demos/mode/calbox.html
+				$value = isset($v["value"]) && $v["numeric_value"] > 0 ? $v["value"] : "";
+				return	"<div data-role='fieldcontain'>".
+							"<label for='$name'>$v[text] : </label>".
+							"<input type='date' name='$name' id='$name' data-role='datebox' value='$value'
+								data-options='{\"mode\": \"calbox\", \"overrideCalStartDay\": 1, \"overrideDateFormat\": \"%d/%m/%y\"}' />".
+						"</div>\n";
 			
 			case OWF_DAO_SELECT:
 			case OWF_DAO_OCTOPUS:

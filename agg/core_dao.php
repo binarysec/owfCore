@@ -137,6 +137,7 @@ class core_dao extends wf_agg {
 					$val["kind"] == OWF_DAO_DATE_READON) &&
 					$val["type"] == WF_INT
 					) {
+						$result[$key]["numeric_value"] = $result[$key]["value"];
 						$result[$key]["value"] = date("d/m/y", intval($result[$key]["value"]));
 				}
 				elseif($val["kind"] == OWF_DAO_OCTOPUS) {
