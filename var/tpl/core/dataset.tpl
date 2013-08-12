@@ -48,24 +48,47 @@
 					<div data-role="fieldcontain" style="text-align: center;">
 						%{if($total_num_rows > $rows_per_page)}%
 							<div data-role="controlgroup" data-type="horizontal">
-								%{if $page_nb > 1}%
-									<a href="" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a"
-										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">&nbsp;</a>
-								%{/if}%
 								
-								%{for $i = 1; $i <= $nb_pages; $i++}%
-									%{if $i == 1 || $i == $nb_pages }%
+								%{if $nb_pages < 6}%
+									<!-- Only 5 pages to display, so display them all -->
+									%{for $i = 1; $i <= $nb_pages; $i++}%
+										%{if $page_nb != $i}%
+											<a href="" data-role="button" data-theme="a"
+												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
+										%{else}%
+											<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
+										%{/if}%
+									%{/for}%
+								%{else}%
+									<!-- Otherwise display pagination -->
+									%{if $page_nb > 1}%
+										<a href="" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a"
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">&nbsp;</a>
+									%{/if}%
+									
+									%{if $page_nb > 2}%
 										<a href="" data-role="button" data-theme="a"
-											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(1);form.submit();return false;">1</a>
 									%{/if}%
-									%{if $i == $page_nb && $i != 1 && $i != $nb_pages }%
-										<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
+									
+									%{for $i = $page_nb - 1; $i < $page_nb + 2; $i++}%
+										%{if $i == $page_nb}%
+											<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
+										%{elseif $i > 0 && $i < $nb_pages}%
+											<a href="" data-role="button" data-theme="a"
+												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
+										%{/if}%
+									%{/for}%
+									
+									%{if $page_nb < $nb_pages}%
+										<a href="" data-role="button" data-theme="a"
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$nb_pages}%);form.submit();return false;">%{$nb_pages}%</a>
 									%{/if}%
-								%{/for}%
-								
-								%{if $page_nb < $nb_pages}%
-									<a href="" data-role="button" data-iconpos="notext right" data-icon="arrow-r" data-theme="a" data-transition="fade"
-										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb + 1}%);form.submit();return false;">&nbsp;</a>
+									
+									%{if $page_nb < $nb_pages}%
+										<a href="" data-role="button" data-iconpos="notext right" data-icon="arrow-r" data-theme="a" data-transition="fade"
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb + 1}%);form.submit();return false;">&nbsp;</a>
+									%{/if}%
 								%{/if}%
 							</div>
 						%{/if}%
@@ -185,24 +208,46 @@
 					<div data-role="fieldcontain" style="text-align: center;">
 						%{if($total_num_rows > $rows_per_page)}%
 							<div data-role="controlgroup" data-type="horizontal">
-								%{if $page_nb > 1}%
-									<a href="" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a"
-										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">&nbsp;</a>
-								%{/if}%
-								
-								%{for $i = 1; $i <= $nb_pages; $i++}%
-									%{if $i == 1 || $i == $nb_pages }%
+								%{if $nb_pages < 6}%
+									<!-- Only 5 pages to display, so display them all -->
+									%{for $i = 1; $i <= $nb_pages; $i++}%
+										%{if $page_nb != $i}%
+											<a href="" data-role="button" data-theme="a"
+												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
+										%{else}%
+											<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
+										%{/if}%
+									%{/for}%
+								%{else}%
+									<!-- Otherwise display pagination -->
+									%{if $page_nb > 1}%
+										<a href="" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a"
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb - 1}%);form.submit();return false;">&nbsp;</a>
+									%{/if}%
+									
+									%{if $page_nb > 2}%
 										<a href="" data-role="button" data-theme="a"
-											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(1);form.submit();return false;">1</a>
 									%{/if}%
-									%{if $i == $page_nb && $i != 1 && $i != $nb_pages }%
-										<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
+									
+									%{for $i = $page_nb - 1; $i < $page_nb + 2; $i++}%
+										%{if $i == $page_nb}%
+											<a href="" data-role="button" data-theme="b" onclick="return false;">%{$i}%</a>
+										%{elseif $i > 0 && $i < $nb_pages}%
+											<a href="" data-role="button" data-theme="a"
+												onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$i}%);form.submit();return false;">%{$i}%</a>
+										%{/if}%
+									%{/for}%
+									
+									%{if $page_nb < $nb_pages}%
+										<a href="" data-role="button" data-theme="a"
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$nb_pages}%);form.submit();return false;">%{$nb_pages}%</a>
 									%{/if}%
-								%{/for}%
-								
-								%{if $page_nb < $nb_pages}%
-									<a href="" data-role="button" data-iconpos="notext right" data-icon="arrow-r" data-theme="a" data-transition="fade"
-										onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb + 1}%);form.submit();return false;">&nbsp;</a>
+									
+									%{if $page_nb < $nb_pages}%
+										<a href="" data-role="button" data-iconpos="notext right" data-icon="arrow-r" data-theme="a" data-transition="fade"
+											onclick="var form = $(this).closest('form');form.find('.form_page').val(%{$page_nb + 1}%);form.submit();return false;">&nbsp;</a>
+									%{/if}%
 								%{/if}%
 							</div>
 						%{/if}%
