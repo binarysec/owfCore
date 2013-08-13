@@ -88,6 +88,7 @@ class core_datasource_query extends core_datasource {
 	
 	public function get_options($field) {
 		$q = clone $this->query;
+		$q->fields = array();
 		$q->fields("distinct($field)");
 		$q->do_comp($field, "!!");
 		foreach($this->preconds as $cond) {
