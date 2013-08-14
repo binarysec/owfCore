@@ -43,15 +43,14 @@
 					<label for="owf-core-dataset-order-%{id $id}%">%{$col["name"]}%</label>
 					<select id="owf-core-dataset-order-%{id $id}%" name="%{$name}%_order[%{$id}%]" data-native-menu="false">
 						<option value=" " data-placeholder="true">%{$col['name']}%</option>
-						%{if(trim($form_order[$id]))}%
+						%{if(isset($form_order[$id]) && trim($form_order[$id]))}%
 							<option value=" ">%{@ "Remove ordering"}%</option>
 						%{/if}%
-						<option value="A"%{if $form_order[$id] == 'A'}% selected="selected"%{/if}%>%{@ "ASC"}%</option>
-						<option value="D"%{if $form_order[$id] == 'D'}% selected="selected"%{/if}%>%{@ "DESC"}%</option>
+						<option value="A"%{if isset($form_order[$id]) && $form_order[$id] == 'A'}% selected="selected"%{/if}%>%{@ "ASC"}%</option>
+						<option value="D"%{if isset($form_order[$id]) && $form_order[$id] == 'D'}% selected="selected"%{/if}%>%{@ "DESC"}%</option>
 					</select>
 				</fieldset>
 			</div>
-			<!--<input type="hidden" id="form_%{$name}%_order_%{$id}%" name="%{$name}%_order[%{$id}%]" value="%{$form_order[$id]}%" />-->
 		%{/foreach}%
 	%{/if}%
 	

@@ -25,7 +25,7 @@
 		%{/if}%
 		%{if $orders}%
 			%{foreach $orders as $col => $order}%
-				%{if($form_order[$col])}%
+				%{if(isset($form_order[$col]) && $form_order[$col])}%
 					<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
 				%{/if}%
 			%{/foreach}%
@@ -185,7 +185,7 @@
 		%{/if}%
 		%{if $orders}%
 			%{foreach $orders as $col => $order}%
-				%{if($form_order[$col])}%
+				%{if(isset($form_order[$col]) && $form_order[$col])}%
 					<input type="hidden" name="%{$name}%_order[%{$col}%]" value="%{$form_order[$col]|entities}%" />
 				%{/if}%
 			%{/foreach}%

@@ -101,7 +101,6 @@ class core_dataview {
 		$tpl->set('total_num_rows_filterless', $this->dset->get_total_num_rows($this->total_ignore_conds, $this->total_ignore_preconds));
 		$tpl->set('form_order',     $this->wf->get_var($this->dset->get_name().'_order'));
 		$tpl->set('form_filter',    $this->wf->get_var($this->dset->get_name().'_filter'));
-		
 		$tpl->set('data_role', $this->data_role);
 		$tpl->set('data_inset', $this->data_inset);
 		$tpl->set('data_mini', $this->data_mini);

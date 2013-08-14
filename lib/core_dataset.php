@@ -84,19 +84,10 @@ class core_dataset {
 		return $this->display_select_bar;
 	}
 
-	public function auto_order() {
-		$order = $this->wf->get_var($this->dsrc->get_name().'_order');
-		if(!$order || !is_array($order))
-			return;
-		
-		$orders = array();
-		foreach($order as $col => $way) {
-			if(!empty($way) && ($way == 'D' || $way == 'A')) {
-				$this->set_order(array($col => ($way == 'D') ? WF_DESC : WF_ASC));
-			}
-		}
-	}
-	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Orders
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function set_order($order) {
 		$struct = $this->dsrc->get_struct();
 		foreach($order as $col => $way) {
@@ -105,16 +96,50 @@ class core_dataset {
 			}
 		}
 	}
-
-	public function set_conds($conds) {
+	
+	public function auto_order() {
+		$order = $this->wf->get_var($this->dsrc->get_name().'_order');
+		if(!$order || !is_array($order) || empty($order)) {
+			foreach($this->cols as $col => $data) {
+				if(isset($data['order-default'])) {
+					$o = $data['order-default'];
+					if($o == WF_ASC || $o == WF_DESC) {
+						$this->set_order(array($col => $o));
+						$var = $this->wf->get_var($this->dsrc->get_name().'_order');
+						$var[$col] = ($o == WF_ASC ? 'A' : 'D');
+						$this->wf->set_var($this->dsrc->get_name().'_order', $var);
+					}
+				}
+			}
+		}
+		else {
+			foreach($order as $col => $way) {
+				if(!empty($way) && ($way == 'D' || $way == 'A')) {
+					$this->set_order(array($col => ($way == 'D') ? WF_DESC : WF_ASC));
+				}
+			}
+		}
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Filters
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function set_conds($conds, $defaults = false) {
 		$pconds = array();
 		if(is_array($this->filters)) {
 			foreach($this->filters as $col => $conf) {
-				if(isset($conds[$col])) {
-					if($conf['type'] == WF_CORE_DATASET_SELECT) {
+				if($conf['type'] == WF_CORE_DATASET_SELECT) {
+					if(isset($conds[$col])) {
 						$data = trim($conds[$col]);
 						if(is_numeric($data) || $data)
 							$pconds[] = array($col, '~=', $conds[$col]);
+					}
+					elseif($defaults && isset($conf['default'])) {
+						$pconds[] = array($col, '~=', $conf['default']);
+						$var = $this->wf->get_var($this->dsrc->get_name().'_filter');
+						$var[$col] = $conf['default'];
+						$this->wf->set_var($this->dsrc->get_name().'_filter', $var);
 					}
 				}
 			}
@@ -125,8 +150,9 @@ class core_dataset {
 	public function auto_conds() {
 		/* retrieve conds */
 		$conds = $this->wf->get_var($this->dsrc->get_name().'_filter');
+		
 		/* compute datasource conds */
-		$this->set_conds($conds);
+		$this->set_conds($conds, empty($conds));
 	}
 
 	public function set_rows_per_page($nb) {
@@ -231,6 +257,9 @@ class core_dataset {
 
 							$filter['options'][$value] = $pvalue;
 						}
+						
+						if(isset($conf['default']) && isset($option[$conf['default']]))
+							$filter['default'] = $conf['default'];
 					}
 
 					$filters[$col] = $filter;
