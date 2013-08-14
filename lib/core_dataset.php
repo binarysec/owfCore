@@ -225,7 +225,7 @@ class core_dataset {
 							if(isset($conf['callback'])) {
 								$pvalue = call_user_func($conf['callback'], $value);
 								
-								if($pvalue === null)
+								if($pvalue === null || $pvalue === false)
 									continue;
 							}
 
