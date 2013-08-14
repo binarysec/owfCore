@@ -111,8 +111,10 @@ class core_dataset {
 		if(is_array($this->filters)) {
 			foreach($this->filters as $col => $conf) {
 				if(isset($conds[$col])) {
-					if($conf['type'] == WF_CORE_DATASET_SELECT && trim($conds[$col])) {
-						$pconds[] = array($col, '~=', $conds[$col]);
+					if($conf['type'] == WF_CORE_DATASET_SELECT) {
+						$data = trim($conds[$col]);
+						if(is_numeric($data) || $data)
+							$pconds[] = array($col, '~=', $conds[$col]);
 					}
 				}
 			}
@@ -216,14 +218,14 @@ class core_dataset {
 							continue;
 						
 						foreach($options as $option) {
-							$value  = $option[$col];
+							$value = $option[$col];
 							$pvalue = $value;
-
+							
 							/* consider callback */
 							if(isset($conf['callback'])) {
 								$pvalue = call_user_func($conf['callback'], $value);
 								
-								if(!$pvalue)
+								if($pvalue === null)
 									continue;
 							}
 
@@ -232,7 +234,6 @@ class core_dataset {
 					}
 
 					$filters[$col] = $filter;
-				
 			}
 		}
 

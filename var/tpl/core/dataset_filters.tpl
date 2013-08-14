@@ -17,13 +17,13 @@
 					<fieldset data-role="controlgroup" data-mini="true">
 						<label for="%{$name}%_head_filter_%{id $col}%">%{$filter['label']}%&nbsp;:</label>
 						<select id="%{$name}%_head_filter_%{id $col}%" name="%{$name}%_filter[%{$col}%]" data-native-menu="false">
-							%{if(trim($form_filter[$col]))}%
+							%{if(is_numeric($form_filter[$col]) || trim($form_filter[$col]))}%
 								<option value=" ">%{@ "Remove filter"}%</option>
 							%{else}%
 								<option value=" " data-placeholder="true">%{$filter['label']}%</option>
 							%{/if}%
 							%{foreach $filter['options'] as $key => $value}%
-								<option value="%{$key}%"%{if $form_filter[$col] == $key}% selected="selected"%{/if}%>%{$value}%</option>
+								<option value="%{$key}%"%{if $form_filter[$col] === strval($key)}% selected="selected"%{/if}%>%{$value}%</option>
 							%{/foreach}%
 						</select>
 					</fieldset>
