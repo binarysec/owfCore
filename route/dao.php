@@ -66,7 +66,9 @@ class wfr_core_dao extends wf_route_request {
 		$title = '';
 		$body = '';
 		
-		if($this->uid > 0) {
+		$this->editing = (is_numeric($this->uid) && $this->uid > 0) || !empty($this->uid);
+		
+		if($this->editing) {
 			$ret = $item->get(array("id" => $this->uid));
 			if(!array_key_exists(0, $ret))
 				$this->wf->display_error(500, "Parameter uid is missing", true);
@@ -182,7 +184,7 @@ class wfr_core_dao extends wf_route_request {
 // 		$forms .= '<input type="hidden" name="title" value="'.$this->cipher->encode($this->title).'"/>';
 		$forms .= '<input type="hidden" name="action" value="process"/>';
 		
-		if($this->uid > 0) 
+		if($this->editing) 
 			$forms .= '<input type="hidden" name="uid" value="'.$this->uid.'"/>';
 		
 		foreach($elements as $k => $v)
@@ -190,9 +192,9 @@ class wfr_core_dao extends wf_route_request {
 		
 		$can_add = false;
 		if(!is_null($item))
-			$can_add = ($this->uid > 0) ? ($item->capable & OWF_DAO_EDIT) :
+			$can_add = ($this->editing) ? ($item->capable & OWF_DAO_EDIT) :
 				($item->capable & OWF_DAO_ADD);
-		$can_del = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE && $this->uid > 0;
+		$can_del = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE && $this->editing > 0;
 		$add_txt = "<button type='submit' data-theme='b'>Submit</button>";
 		$del_txt =
 			'<a href="#owf-core-dao-delete" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-theme="f" style="width: 100%;">'.$this->lang->ts("Delete").'</a>'.
@@ -229,7 +231,7 @@ class wfr_core_dao extends wf_route_request {
 			case OWF_DAO_INPUT_READON:
 			case OWF_DAO_NUMBER_READON:
 			case OWF_DAO_DATE_READON:
-				if($this->uid < 1)
+				if(!$this->editing)
 					return "";
 			
 			case OWF_DAO_INPUT:
@@ -311,7 +313,7 @@ EOT;
 					foreach($item->childs as $child) {
 						
 						$dft_val = "";
-						if($this->uid > 0 && $child->get_id() == intval($v["value"])) {
+						if($this->editing && $child->get_id() == intval($v["value"])) {
 							$key = isset($v["db-field"]) ? $v["db-field"] : "father_id";
 							$q = new core_db_select(
 								$item->name."_".$child->get_name(),
@@ -346,7 +348,7 @@ EOT;
 						"</div>\n";
 			
 			case OWF_DAO_RADIO_READON:
-				if($this->uid < 1)
+				if(!$this->editing)
 					return "";
 				
 			case OWF_DAO_RADIO:
@@ -372,7 +374,7 @@ EOT;
 						"</div>\n";
 				
 			case OWF_DAO_CHECKBOX_READON:
-				if($this->uid < 1)
+				if(!$this->editing)
 					return "";
 				
 			case OWF_DAO_CHECKBOX:
