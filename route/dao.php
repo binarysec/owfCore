@@ -67,7 +67,7 @@ class wfr_core_dao extends wf_route_request {
 		$body = '';
 		
 		if($this->uid > 0) {
-			$ret = $item->get(array("id" => (int)$this->uid));
+			$ret = $item->get(array("id" => $this->uid));
 			if(!array_key_exists(0, $ret))
 				$this->wf->display_error(500, "Parameter uid is missing", true);
 				
