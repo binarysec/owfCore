@@ -3,7 +3,6 @@
 class wfr_core_dao extends wf_route_request {
 	public $wf;
 	
-	private $waf_site;
 	private $lang;
 	private $error = array();
 	
@@ -17,7 +16,7 @@ class wfr_core_dao extends wf_route_request {
 		$this->a_core_request = $this->wf->core_request();
 		$this->session = $this->wf->session();
 		$this->lang = $this->wf->core_lang()->get_context(
-			"waf/dao"
+			"core/dao"
 		);
 		$this->cipher = $this->wf->core_cipher();
 		$this->admin_html = $this->wf->admin_html();
