@@ -261,7 +261,7 @@ class wfr_core_dao extends wf_route_request {
 				
 				return	"<div data-role='fieldcontain' $class$octo_css>".
 							"<label for='$name'>$v[text] : </label>".
-							"<input type='$type' name='$name' id='$name' value='$value' $readonly />".
+							"<input type='$type' name='$name' id='$name' value=\"".$value."\" $readonly />".
 						"</div>\n";
 			
 			case OWF_DAO_HIDDEN:
