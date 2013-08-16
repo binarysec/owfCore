@@ -280,7 +280,7 @@ class wfr_core_data extends wf_route_request {
 		if(strlen($up_dir_link) > 0)
 			$ah->set_backlink($up_dir_link);
 		else
-			$ah->set_backlink($this->wf->linker('/'), "Home", "home");
+			$ah->set_backlink($this->wf->linker('/admin/system'), "Home", "home");
 			
 		$ah->rendering(
 			$tpl->fetch("core/data_index")
