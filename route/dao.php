@@ -274,7 +274,7 @@ class wfr_core_dao extends wf_route_request {
 				return	"<div data-role='fieldcontain'>".
 							"<label for='$name'>$v[text] : </label>".
 							"<input type='date' name='$name' id='$name' data-role='datebox' value='$value'
-								data-options='{\"mode\": \"calbox\", \"overrideCalStartDay\": 1, \"overrideDateFormat\": \"%d/%m/%y\"}' />".
+								data-options='{\"mode\": \"slidebox\", \"overrideCalStartDay\": 1, \"overrideDateFormat\": \"%d/%m/%y\"}' />".
 						"</div>\n";
 			
 			case OWF_DAO_SELECT:
