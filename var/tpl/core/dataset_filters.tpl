@@ -26,6 +26,13 @@
 								<option value="%{$key}%"%{if $form_filter[$col] === strval($key)}% selected="selected"%{/if}%>%{$value}%</option>
 							%{/foreach}%
 						</select>
+						<script>
+							$(document).on('pagehide', '#magic_cards_head_filter_edition-dialog', function() {
+								var panel = $('#owf-panel-%{$panelkey}%');
+								if(panel.length > 0)
+									panel.panel("open");
+							});
+						</script>
 					</fieldset>
 				</div>
 			%{/if}%

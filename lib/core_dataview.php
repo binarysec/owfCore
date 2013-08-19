@@ -107,12 +107,15 @@ class core_dataview {
 		
 		/* panel stuff */
 		if($filters || $orders) {
+			$key = $this->wf->admin_html()->seed.$this->dset->get_name();
+			$tpl->set('panelkey', $key);
 			$panelid = $this->wf->admin_html()->add_panel(
 				$tpl->fetch($tpl_panel),
 				array(
 					"data-position" => "left",
 					"data-display" => "overlay"
-				)
+				),
+				$key
 			);
 			$tpl->set('panelid', $panelid);
 		}
