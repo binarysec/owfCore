@@ -494,6 +494,7 @@ EOT;
 				
 				/* sanatize */
 				if($val["kind"] == OWF_DAO_SELECT) {
+					$var = trim($var);
 					if(strlen($var) > 0) {
 						/* check if in list */
 						if(!isset($val["list"][$var])) {
@@ -509,6 +510,7 @@ EOT;
 					$var = floatval(str_replace(",", ".", $var));
 				
 				if($val["kind"] == OWF_DAO_LINK_MANY_TO_ONE) {
+					$var = trim($var);
 					if(strlen($var) > 0) {
 						/* check if in list */
 						$ret = call_user_func($val["dao"], $val["field-id"], $var);

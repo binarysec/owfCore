@@ -85,13 +85,12 @@ abstract class wf_module {
 		$this->wf = $wf;
 	}
 	
-	
 	public function ts($text) {
 		if(!$this->lang) {
 			$ctxname = "module/".$this->get_name();
 			$this->lang = $this->wf->core_lang()->get_context($ctxname);
 		}
-		return($this->lang->ts($text));
+		return $this->lang->ts($text);
 	}
 	
 	abstract public function get_name();
