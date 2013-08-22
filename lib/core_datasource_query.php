@@ -30,7 +30,7 @@ class core_datasource_query extends core_datasource {
 		"input" => null
 	);
 	
-	public function __construct($wf, $query) {
+	public function __construct($wf, $name, $query) {
 		parent::__construct($wf, "");
 		$this->query = $query;
 	}
