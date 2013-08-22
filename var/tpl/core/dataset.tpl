@@ -39,16 +39,17 @@
 							%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
 							%{@ 'sur'}% %{$total_num_rows}%
 						%{else}%
-							%{@ 'Une seule page'}%
+							%{if($total_num_rows)}%
+								%{$total_num_rows}% %{@ 'r&eacute;sultats'}%
+							%{/if}%
 						%{/if}%
 					</div>
 				</div>
 				
 				<div class="ui-block-b" style="width: 35%;">
-					<div data-role="fieldcontain" style="text-align: center;">
-						%{if($total_num_rows > $rows_per_page)}%
+					%{if($total_num_rows > $rows_per_page)}%
+						<div data-role="fieldcontain" style="text-align: center;">
 							<div data-role="controlgroup" data-type="horizontal">
-								
 								%{if $nb_pages < 6}%
 									<!-- Only 5 pages to display, so display them all -->
 									%{for $i = 1; $i <= $nb_pages; $i++}%
@@ -91,7 +92,10 @@
 									%{/if}%
 								%{/if}%
 							</div>
-						%{/if}%
+					%{else}%
+						<div data-role="fieldcontain" style="text-align: center;padding-top: 10px;font-size: 0.85em;">
+						%{@ 'Une seule page'}%
+					%{/if}%
 					</div>
 				</div>
 					
@@ -199,14 +203,16 @@
 							%{$rows_per_page * ($page_nb - 1) + 1}% %{@ '&agrave;'}% %{$rows_per_page * ($page_nb - 1) + count($rows)}%
 							%{@ 'sur'}% %{$total_num_rows}%
 						%{else}%
-							%{@ 'Une seule page'}%
+							%{if($total_num_rows)}%
+								%{$total_num_rows}% %{@ 'r&eacute;sultats'}%
+							%{/if}%
 						%{/if}%
 					</div>
 				</div>
 				
 				<div class="ui-block-b" style="width: 35%;">
-					<div data-role="fieldcontain" style="text-align: center;">
-						%{if($total_num_rows > $rows_per_page)}%
+					%{if($total_num_rows > $rows_per_page)}%
+						<div data-role="fieldcontain" style="text-align: center;">
 							<div data-role="controlgroup" data-type="horizontal">
 								%{if $nb_pages < 6}%
 									<!-- Only 5 pages to display, so display them all -->
@@ -250,7 +256,10 @@
 									%{/if}%
 								%{/if}%
 							</div>
-						%{/if}%
+					%{else}%
+						<div data-role="fieldcontain" style="text-align: center;padding-top: 10px;font-size: 0.85em;">
+						%{@ 'Une seule page'}%
+					%{/if}%
 					</div>
 				</div>
 					
