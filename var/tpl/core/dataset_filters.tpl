@@ -27,7 +27,7 @@
 							%{/foreach}%
 						</select>
 						<script>
-							$(document).on('pagehide', '#magic_cards_head_filter_edition-dialog', function() {
+							$(document).on('pagehide', '#%{$name}%_head_filter_%{id $col}%-dialog', function() {
 								var panel = $('#owf-panel-%{$panelkey}%');
 								if(panel.length > 0)
 									panel.panel("open");
