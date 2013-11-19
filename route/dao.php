@@ -177,7 +177,17 @@ class wfr_core_dao extends wf_route_request {
 	
 
 	public function form_rendering($elements, $item = null) {
-		$forms = '<form action="?" method="post" class="ui-body ui-body-a ui-corner-all" style="width: 65%; margin: auto;">';
+		// Little javascript function to adapt forms width (65%) on PC, but not on mobile devices.
+		$forms = '<script type="text/javascript">';
+		$forms .= 'function adaptToDevice() {';
+		$forms .= 		'if( ! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {';
+		$forms .= 			'$(".adapt-width-style").attr("style","width: 65%; margin: auto;")';
+		$forms .= 		'}';
+		$forms .= '};';
+		$forms .= '$(document).ready(adaptToDevice);';
+		$forms .= '</script>';
+		
+		$forms .= '<form action="?" method="post" class="ui-body ui-body-a ui-corner-all adapt-width-style">';
 		
 		$forms .= '<input type="hidden" name="oid" value="'.$this->oid.'"/>';
 		$forms .= '<input type="hidden" name="back" value="'.$this->cipher->encode($this->back).'"/>';
@@ -195,22 +205,28 @@ class wfr_core_dao extends wf_route_request {
 			$can_add = ($this->editing) ? ($item->capable & OWF_DAO_EDIT) :
 				($item->capable & OWF_DAO_ADD);
 		$can_del = !is_null($item) && ($item->capable & OWF_DAO_REMOVE) == OWF_DAO_REMOVE && $this->editing > 0;
-		$add_txt = "<button type='submit' data-theme='b'>Submit</button>";
+		$add_txt = "<button type='submit' data-theme='f' data-icon='check'>".$this->lang->ts("Submit")."</button>";
 		$del_txt =
-			'<a href="#owf-core-dao-delete" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-theme="f" style="width: 100%;">'.$this->lang->ts("Delete").'</a>'.
+			'<a href="#owf-core-dao-delete" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-theme="e"  data-icon="delete" style="width: 98%;">'.$this->lang->ts("Delete").'</a>'.
 			'<div data-role="popup" id="owf-core-dao-delete" data-theme="f" class="ui-corner-all">'.
 				'<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">'.$this->lang->ts("Close").'</a>'.
 				'<div data-role="header" data-theme="a" class="ui-corner-top"><h1>'.$this->lang->ts("Delete this object ?").'</h1></div>'.
 				'<div data-role="content" data-theme="b" class="ui-corner-bottom ui-content">'.
 					'<h3 class="ui-title">'.$this->lang->ts("Are you sure you want to delete this object ?").'</h3>'.
-					'<p>'.$this->lang->ts("This action cannot be undone.").'</p>'.
-					'<a href="#" data-role="button" data-inline="true" data-rel="back" style="width: 40%;">'.$this->lang->ts("Cancel").'</a>'.
-					'<a href="'.$this->selector()->del_link($this->uid, TRUE).'" data-theme="f" data-role="button" data-inline="true" data-transition="flow" style="width: 40%;">'.$this->lang->ts("Delete").'</a>'.
+					'<p>'.$this->lang->ts("This action is irreversible.").'</p>'.
+					'<fieldset class="ui-grid-a">'.
+						'<div class="ui-block-a">'.
+							'<a href="#" data-role="button" data-inline="true" data-rel="back" data-icon="back" style="width: 95%;">'.$this->lang->ts("Cancel").'</a>'.
+						'</div>'.
+						'<div class="ui-block-b">'.
+							'<a href="'.$this->selector()->del_link($this->uid, TRUE).'" data-theme="f" data-role="button" data-inline="true" data-transition="flow" data-icon="delete" style="width: 95%;">'.$this->lang->ts("Delete").'</a>'.
+						'</div>'.
+					'</fieldset>'.
 				'</div>'.
 			'</div>';
 		
 		if($can_add && $can_del)
-			$forms .= "<fieldset class='ui-grid-a'><div class='ui-block-a'>$add_txt</div><div class='ui-block-b'>$del_txt</div></fieldset>";
+			$forms .= "<fieldset class='ui-grid-a'><div class='ui-block-a'>$del_txt</div><div class='ui-block-b'>$add_txt</div></fieldset>";
 		elseif($can_add)
 			$forms .= $add_txt;
 		elseif($can_del)
@@ -260,7 +276,7 @@ class wfr_core_dao extends wf_route_request {
 				}
 				
 				return	"<div data-role='fieldcontain' $class$octo_css>".
-							"<label for='$name'>$v[text] : </label>".
+							"<label for='$name'>$v[text]</label>".
 							"<input type='$type' name='$name' id='$name' value=\"".$value."\" $readonly />".
 						"</div>\n";
 			
@@ -272,7 +288,7 @@ class wfr_core_dao extends wf_route_request {
 				//doc : http://dev.jtsage.com/jQM-DateBox2/demos/mode/calbox.html
 				$value = isset($v["value"]) && $v["numeric_value"] > 0 ? $v["value"] : "";
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$name'>$v[text] : </label>".
+							"<label for='$name'>$v[text]</label>".
 							"<input type='date' name='$name' id='$name' data-role='datebox' value='$value'
 								data-options='{\"mode\": \"slidebox\", \"overrideCalStartDay\": 1, \"overrideDateFormat\": \"%d/%m/%y\"}' />".
 						"</div>\n";
@@ -341,7 +357,7 @@ EOT;
 				}
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$name'>$v[text] : </label>".
+							"<label for='$name'>$v[text]</label>".
 								(($v["kind"] != OWF_DAO_LINK_MANY_TO_ONE || count($v["list"])) ?
 									$select :
 									"<input type='text' name='$name' id='$name' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />").
@@ -397,7 +413,7 @@ EOT;
 					
 					return	"<div data-role='fieldcontain'>".
 								"<fieldset data-role='controlgroup' data-type='horizontal'>".
-									"<legend>$v[text] : </legend>".
+									"<legend>$v[text]</legend>".
 									(($v["kind"] == OWF_DAO_LINK_MANY_TO_MANY && empty($v["list"])) ?
 										"<input type='text' name='$name' id='$name' disabled=disabled value='".$this->lang->ts('Aucun élément existant')."' />" :
 										$inputs).
@@ -411,7 +427,7 @@ EOT;
 				$on = $value ? "selected='selected'" : "";
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$name'>$v[text] : </label>".
+							"<label for='$name'>$v[text]</label>".
 							"<select name='$name' id='$name' data-role='slider'>".
 								"<option value='0'>$textoff</option>".
 								"<option value='1' $on>$texton</option>".
@@ -430,7 +446,7 @@ EOT;
 				$value = max(min($value, $max), $min);
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$name'>$v[text] : </label>".
+							"<label for='$name'>$v[text]</label>".
 							"<input type='range' name='$name' id='$name' value='$value' min='$min' max='$max' step='$step' data-highlight='true' />\n".
 						"</div>\n";
 			
@@ -445,7 +461,7 @@ EOT;
 				);
 				
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$name' class='ui-select'>$v[text] :</label>".
+							"<label for='$name' class='ui-select'>$v[text]</label>".
 							"<a id='$name' style='width: 75%;' data-rel='popup' data-role='button' data-theme='a' data-inline='true' href='#owf-dao-map-popup-$name'>".
 								"Changer les coordonnées".
 							"</a>".
@@ -457,7 +473,7 @@ EOT;
 				$value = isset($v["value"]) ? $v["value"] : "";
 				$insert = "<textarea name='$name' id='$name'/>$value</textarea>";
 				return	"<div data-role='fieldcontain'>".
-							"<label for='$name'>"."$v[text] : </label>".
+							"<label for='$name'>"."$v[text]</label>".
 							$insert.
 						"</div>\n";
 			

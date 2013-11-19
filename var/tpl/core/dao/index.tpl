@@ -62,7 +62,7 @@
 %{/foreach}%
 
 %{if array_key_exists("msgs", $error) && count($error["msgs"]) > 0}%
-<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="f">
+<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="e">
 	<li data-role="list-divider">%{@ 'There are some problems into your form'}%</li>
 	%{foreach $error["msgs"] as $v}%
 	<li>%{$v|entities}%</li>
@@ -71,5 +71,14 @@
 %{elseif strlen($body) > 0}%
 <p>%{$body}%</p>
 %{/if}%
+
+<script type="text/javascript">
+function adaptToDevice() {
+	if( ! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+		$(".not-a-mobile").attr("style","width: 65%; margin: auto;")
+	}
+};
+$(document).ready(adaptToDevice);
+</script>
 
 %{$forms}%
