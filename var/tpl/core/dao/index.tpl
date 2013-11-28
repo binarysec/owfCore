@@ -62,7 +62,7 @@
 %{/foreach}%
 
 %{if array_key_exists("msgs", $error) && count($error["msgs"]) > 0}%
-<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="e">
+<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="e" class='adapt-width-style'>
 	<li data-role="list-divider">%{@ 'There are some problems into your form'}%</li>
 	%{foreach $error["msgs"] as $v}%
 	<li>%{$v|entities}%</li>
