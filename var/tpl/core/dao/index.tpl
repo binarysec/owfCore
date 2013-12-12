@@ -75,7 +75,7 @@
 <script type="text/javascript">
 function adaptToDevice() {
 	if( ! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-		$(".adapt-width-style").attr("style","width: 65%; margin: auto;")
+		$(".adapt-width-style").attr("style","width: 65%; margin: auto; margin-bottom: 1%;")
 	}
 };
 $(document).ready(adaptToDevice);

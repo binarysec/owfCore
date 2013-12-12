@@ -181,7 +181,7 @@ class wfr_core_dao extends wf_route_request {
 		$forms = '<script type="text/javascript">';
 		$forms .= 'function adaptToDevice() {';
 		$forms .= 		'if( ! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {';
-		$forms .= 			'$(".adapt-width-style").attr("style","width: 65%; margin: auto;")';
+		$forms .= 			'$(".adapt-width-style").attr("style","width: 65%; margin:auto; margin-bottom: 1%;")';
 		$forms .= 		'}';
 		$forms .= '};';
 		$forms .= '$(document).ready(adaptToDevice);';
@@ -614,7 +614,7 @@ EOT;
 					if(isset($val["filter_cb"])) {
 						$ret = call_user_func($val["filter_cb"], $item, $var, $id);
 						if(is_string($ret))
-							$error["msgs"][$key] = $ret;
+							$error["msgs"][$key] = "$val[name] : ".$ret;
 					}
 					
 					if(empty($error["msgs"][$key])) {
