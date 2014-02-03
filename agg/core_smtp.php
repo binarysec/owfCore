@@ -141,11 +141,11 @@ class core_smtp extends wf_agg {
 				$atom = 3;
 			}
 			else if($atom == 3) {
-				$buf = "DATA\r\n".
-					$content.
-					"\r\n\r\n.\r\n"
-				;
-				fwrite($fd, $buf);
+				fwrite($fd, "DATA\r\n");
+				$mline = explode("\r\n", $content);
+				foreach($mline as $line) 
+					fwrite($fd, $line."\r\n");
+				fwrite($fd, "\r\n\r\n.\r\n");
 				$atom = 4;
 			}
 // 			else if($atom == 4)

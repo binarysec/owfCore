@@ -133,6 +133,7 @@ class core_mail {
 			$this->render .= "\r\n".$boundary."--\r\n";
 		}
 		
+		
 		return $this->render;
 	}
 
