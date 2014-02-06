@@ -142,6 +142,7 @@ class core_smtp extends wf_agg {
 			}
 			else if($atom == 3) {
 				fwrite($fd, "DATA\r\n");
+				fflush($fd);
 				$mline = explode("\r\n", $content);
 				foreach($mline as $line) {
 					fwrite($fd, $line."\r\n");
