@@ -93,7 +93,7 @@ class core_smtp extends wf_agg {
 	function fwrite_stream($fp, $string) {
 		for ($written = 0; $written < strlen($string); $written += $fwrite) {
 			$fwrite = fwrite($fp, substr($string, $written));
-			fflush($fd);
+			fflush($fp);
 			if ($fwrite === false)
 				return $fwrite;
 		}
