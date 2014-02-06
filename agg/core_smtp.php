@@ -152,7 +152,11 @@ class core_smtp extends wf_agg {
 					fwrite($fd, $line."\r\n");
 					fflush($fd);
 				}
-				fwrite($fd, "\r\n\r\n.\r\n");
+				fwrite($fd, "\r\n");
+				fflush($fd);
+				fwrite($fd, "\r\n");
+				fflush($fd);
+				fwrite($fd, ".\r\n");
 				fflush($fd);
 				$atom = 4;
 			}
