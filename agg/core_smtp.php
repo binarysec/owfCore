@@ -119,11 +119,13 @@ class core_smtp extends wf_agg {
 			/* 220 */
 			if($atom == 0) {
 				fwrite($fd, "HELO www.owf.re\r\n");
+				fflush($fd);
 				$atom = 1;
 			}
 			else if($atom == 1) {
 				$buf = "MAIL FROM:<".$mailfrom.">\r\n";
 				fwrite($fd, $buf);
+				fflush($fd);
 				$atom = 2;
 			}
 			else if($atom == 2) {
@@ -131,11 +133,13 @@ class core_smtp extends wf_agg {
 					foreach($rcpt as $val) {
 						$buf = "RCPT TO:<$val>\r\n";
 						fwrite($fd, $buf);
+						fflush($fd);
 					}
 				}
 				else {
 					$buf = "RCPT TO:<$rcpt>\r\n";
 					fwrite($fd, $buf);
+					fflush($fd);
 				}
 				
 				$atom = 3;
