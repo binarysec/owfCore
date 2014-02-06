@@ -90,6 +90,16 @@ class core_smtp extends wf_agg {
 		);
 	}
 	
+	function fwrite_stream($fp, $string) {
+		for ($written = 0; $written < strlen($string); $written += $fwrite) {
+			$fwrite = fwrite($fp, substr($string, $written));
+			fflush($fd);
+			if ($fwrite === false)
+				return $fwrite;
+		}
+		return $written;
+	}
+
 	public function sendmail($mailfrom, $rcpt, $content, $sid=-1) {
 		$queue = NULL;
 		/* select best server */
@@ -118,46 +128,37 @@ class core_smtp extends wf_agg {
 
 			/* 220 */
 			if($atom == 0) {
-				fwrite($fd, "HELO www.owf.re\r\n");
-				fflush($fd);
+				$this->fwrite_stream($fd, "HELO www.owf.re\r\n");
 				$atom = 1;
 			}
 			else if($atom == 1) {
 				$buf = "MAIL FROM:<".$mailfrom.">\r\n";
-				fwrite($fd, $buf);
-				fflush($fd);
+				$this->fwrite_stream($fd, $buf);
 				$atom = 2;
 			}
 			else if($atom == 2) {
 				if(is_array($rcpt)) {
 					foreach($rcpt as $val) {
 						$buf = "RCPT TO:<$val>\r\n";
-						fwrite($fd, $buf);
-						fflush($fd);
+						$this->fwrite_stream($fd, $buf);
 					}
 				}
 				else {
 					$buf = "RCPT TO:<$rcpt>\r\n";
-					fwrite($fd, $buf);
-					fflush($fd);
+					$this->fwrite_stream($fd, $buf);
 				}
 				
 				$atom = 3;
 			}
 			else if($atom == 3) {
-				fwrite($fd, "DATA\r\n");
-				fflush($fd);
+				$this->fwrite_stream($fd, "DATA\r\n");
 				$mline = explode("\r\n", $content);
 				foreach($mline as $line) {
-					fwrite($fd, $line."\r\n");
-					fflush($fd);
+					$this->fwrite_stream($fd, $line."\r\n");
 				}
-				fwrite($fd, "\r\n");
-				fflush($fd);
-				fwrite($fd, "\r\n");
-				fflush($fd);
-				fwrite($fd, ".\r\n");
-				fflush($fd);
+				$this->fwrite_stream($fd, "\r\n");
+				$this->fwrite_stream($fd, "\r\n");
+				$this->fwrite_stream($fd, ".\r\n");
 				$atom = 4;
 			}
 // 			else if($atom == 4)
