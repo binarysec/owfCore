@@ -17,9 +17,11 @@ define("OWF_DAO_DATE",				14);
 define("OWF_DAO_DATE_READON",		15);
 define("OWF_DAO_MAP",				16);
 define("OWF_DAO_OCTOPUS",			17);
-define("OWF_DAO_LINK_MANY_TO_ONE",		20);
-define("OWF_DAO_LINK_MANY_TO_MANY",		21);
+define("OWF_DAO_LINK_MANY_TO_ONE",	20);
+define("OWF_DAO_LINK_MANY_TO_MANY",	21);
 define("OWF_DAO_TEXT",				30);
+define("OWF_DAO_DATETIME",			31);
+define("OWF_DAO_DATETIME_READON",	32);
 
 // Not ported yet
 //define("OWF_DAO_STARS",          18);
@@ -135,10 +137,22 @@ class core_dao extends wf_agg {
 					isset($result[$key]["value"]) &&
 					($val["kind"] == OWF_DAO_DATE ||
 					$val["kind"] == OWF_DAO_DATE_READON) &&
-					$val["type"] == WF_INT
+					($val["type"] == WF_INT || $val["type"] == WF_BIGINT)
 					) {
 						$result[$key]["numeric_value"] = $result[$key]["value"];
 						$result[$key]["value"] = date("d/m/y", intval($result[$key]["value"]));
+				}
+				elseif(
+					isset($result[$key]["value"]) &&
+					($val["kind"] == OWF_DAO_DATETIME ||
+					$val["kind"] == OWF_DAO_DATETIME_READON) &&
+					($val["type"] == WF_INT || $val["type"] == WF_BIGINT)
+					) {
+						$result[$key]["value_date"] = date("d/m/y", intval($result[$key]["value"]));
+						$expl = explode('/', $result[$key]["value_date"]);
+						$result[$key]["ts_date"] = mktime(0, 0, 0, $expl[1], $expl[0], $expl[2]);
+						$result[$key]["ts_time"] = $result[$key]["value"] - $result[$key]["ts_date"];
+						$result[$key]["value_time"] = date("H:i:s", intval($result[$key]["ts_time"]));
 				}
 				elseif($val["kind"] == OWF_DAO_OCTOPUS) {
 					$result[$key]["list"] = array();

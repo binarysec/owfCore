@@ -293,6 +293,22 @@ class wfr_core_dao extends wf_route_request {
 								data-options='{\"mode\": \"slidebox\", \"overrideCalStartDay\": 1, \"overrideDateFormat\": \"%d/%m/%y\"}' />".
 						"</div>\n";
 			
+			case OWF_DAO_DATETIME:
+				return	"<div data-role='fieldcontain'>".
+							"<div class='ui-grid-a'>".
+								"<div class='ui-block-a' style='padding: 5px;'>".
+									"<label for='".$name."_date'>$v[text] (Date)</label>".
+									"<input type='date' name='".$name."_date' id='".$name."_date' data-role='datebox' value='$v[value_date]'
+										data-options='{\"mode\": \"slidebox\", \"overrideCalStartDay\": 1, \"overrideDateFormat\": \"%d/%m/%y\"}' />".
+								"</div>".
+								"<div class='ui-block-b' style='padding: 5px;'>".
+									"<label for='".$name."_time'>$v[text] (Time)</label>".
+									"<input type='date' name='".$name."_time' id='".$name."_time' data-role='datebox' value='$v[value_time]'
+										data-options='{\"mode\": \"durationbox\", \"overrideDurationOrder\": [\"h\",\"i\",\"s\"],  \"overrideDurationFormat\": \"%Dl:%DM:%DS\"}' />".
+								"</div>".
+							"</div>".
+						"</div>\n";
+			
 			case OWF_DAO_SELECT:
 			case OWF_DAO_OCTOPUS:
 			case OWF_DAO_LINK_MANY_TO_ONE:
@@ -529,7 +545,9 @@ EOT;
 					$var = trim($var);
 					if(strlen($var) > 0) {
 						/* check if in list */
-						$ret = call_user_func($val["dao"], $val["field-id"], $var);
+						$ret = is_array($val["dao"]) ?
+							call_user_func($val["dao"], $val["field-id"], $var) :
+							call_user_func(array($val["dao"], "get"), $val["field-id"], $var);
 						
 						if(empty($ret)) {
 							$error["msgs"][$key] = $this->lang->ts("Value")." \"".htmlspecialchars($var)."\" ".
@@ -550,7 +568,7 @@ EOT;
 				elseif($val["kind"] == OWF_DAO_FLIP) {
 					$insert[$key] = (bool) intval($var);
 				}
-				elseif($val["kind"] == OWF_DAO_DATE && $val["type"] == WF_INT) {
+				elseif($val["kind"] == OWF_DAO_DATE && ($val["type"] == WF_INT || $val["type"] == WF_BIGINT)) {
 					$date = explode("/", $var);
 					
 					if(	count($date) == 3 &&
@@ -562,6 +580,30 @@ EOT;
 					}
 					else
 						$error["msgs"][$key] = $this->lang->ts("Malformed date ").htmlspecialchars($var).$this->lang->ts(" for field ")."\"$val[name]\"";
+				}
+				elseif($val["kind"] == OWF_DAO_DATETIME && ($val["type"] == WF_INT || $val["type"] == WF_BIGINT)) {
+					$datevar = $this->wf->get_var($key."_date");
+					$timevar = $this->wf->get_var($key."_time");
+					$date = explode("/", $datevar);
+					$time = explode(":", $timevar);
+					
+					if(	count($date) == 3 &&
+						strlen($date[0]) == 2 &&
+						strlen($date[1]) == 2 &&
+						strlen($date[2]) == 2
+						) {
+							if(	count($time) == 3 &&
+								$time[0] < 24 && $time[0] >= 0 &&
+								$time[1] < 60 && $time[1] >= 0 &&
+								$time[2] < 60 && $time[2] >= 0
+								) {
+									$insert[$key] = mktime($time[0], $time[1], $time[2], $date[1], $date[0], $date[2]);
+							}
+							else
+								$error["msgs"][$key] = $this->lang->ts("Malformed time ").htmlspecialchars($timevar).$this->lang->ts(" for field ")."\"$val[name]\"";
+					}
+					else
+						$error["msgs"][$key] = $this->lang->ts("Malformed date ").htmlspecialchars($datevar).$this->lang->ts(" for field ")."\"$val[name]\"";
 				}
 				elseif($val["kind"] == OWF_DAO_MAP) {
 					$lat = floatval($this->wf->get_var($key."_latitude"));
