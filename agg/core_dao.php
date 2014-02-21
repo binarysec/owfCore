@@ -134,20 +134,22 @@ class core_dao extends wf_agg {
 					$result[$key]["list"] = $list;
 				}
 				elseif(
-					isset($result[$key]["value"]) &&
 					($val["kind"] == OWF_DAO_DATE ||
 					$val["kind"] == OWF_DAO_DATE_READON) &&
 					($val["type"] == WF_INT || $val["type"] == WF_BIGINT)
 					) {
+						if(!isset($result[$key]["value"]))
+							$result[$key]["value"] = time();
 						$result[$key]["numeric_value"] = $result[$key]["value"];
 						$result[$key]["value"] = date("d/m/y", intval($result[$key]["value"]));
 				}
 				elseif(
-					isset($result[$key]["value"]) &&
 					($val["kind"] == OWF_DAO_DATETIME ||
 					$val["kind"] == OWF_DAO_DATETIME_READON) &&
 					($val["type"] == WF_INT || $val["type"] == WF_BIGINT)
 					) {
+						if(!isset($result[$key]["value"]))
+							$result[$key]["value"] = time();
 						$result[$key]["value_date"] = date("d/m/y", intval($result[$key]["value"]));
 						$expl = explode('/', $result[$key]["value_date"]);
 						$result[$key]["ts_date"] = mktime(0, 0, 0, $expl[1], $expl[0], $expl[2]);

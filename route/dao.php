@@ -578,8 +578,11 @@ EOT;
 						) {
 							$insert[$key] = mktime(0, 0, 0, $date[1], $date[0], $date[2]);
 					}
+					elseif(isset($val['allow-empty']) && $val['allow-empty'])
+						$insert[$key] = 0;
 					else
 						$error["msgs"][$key] = $this->lang->ts("Malformed date ").htmlspecialchars($var).$this->lang->ts(" for field ")."\"$val[name]\"";
+						
 				}
 				elseif($val["kind"] == OWF_DAO_DATETIME && ($val["type"] == WF_INT || $val["type"] == WF_BIGINT)) {
 					$datevar = $this->wf->get_var($key."_date");
@@ -599,9 +602,13 @@ EOT;
 								) {
 									$insert[$key] = mktime($time[0], $time[1], $time[2], $date[1], $date[0], $date[2]);
 							}
+							elseif(isset($val['allow-empty']) && $val['allow-empty'])
+								$insert[$key] = 0;
 							else
 								$error["msgs"][$key] = $this->lang->ts("Malformed time ").htmlspecialchars($timevar).$this->lang->ts(" for field ")."\"$val[name]\"";
 					}
+					elseif(isset($val['allow-empty']) && $val['allow-empty'])
+						$insert[$key] = 0;
 					else
 						$error["msgs"][$key] = $this->lang->ts("Malformed date ").htmlspecialchars($datevar).$this->lang->ts(" for field ")."\"$val[name]\"";
 				}
