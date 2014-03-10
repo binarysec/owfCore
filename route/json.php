@@ -62,7 +62,7 @@ class wfr_core_json extends wf_route_request {
 		$this->session->check_session();
 		
 		/* check permission */
-		$ret = $this->session->check_permission($permissions);
+		$ret = $this->session->check_permission($permissions, false);
 		if(!$ret) 
 			$this->return_json(NULL, 5, "Permission denied");
 			
