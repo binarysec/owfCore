@@ -96,6 +96,8 @@ class core_smtp extends wf_agg {
 			fflush($fp);
 			if ($fwrite === false)
 				return $fwrite;
+			elseif($fwrite <= 0)
+				return false;
 		}
 		return $written;
 	}
@@ -118,7 +120,7 @@ class core_smtp extends wf_agg {
 		
 		if(!$fd)
 			return -1;
-
+		
 		$atom = 0;
 		$log = array(date(DATE_RFC822));
 		while(1) {
@@ -128,37 +130,46 @@ class core_smtp extends wf_agg {
 
 			/* 220 */
 			if($atom == 0) {
-				$this->fwrite_stream($fd, "HELO www.owf.re\r\n");
+				if(!$this->fwrite_stream($fd, "HELO www.owf.re\r\n"))
+					break;
 				$atom = 1;
 			}
 			else if($atom == 1) {
 				$buf = "MAIL FROM:<".$mailfrom.">\r\n";
-				$this->fwrite_stream($fd, $buf);
+				if(!$this->fwrite_stream($fd, $buf))
+					break;
 				$atom = 2;
 			}
 			else if($atom == 2) {
 				if(is_array($rcpt)) {
 					foreach($rcpt as $val) {
 						$buf = "RCPT TO:<$val>\r\n";
-						$this->fwrite_stream($fd, $buf);
+						if(!$this->fwrite_stream($fd, $buf))
+							break;
 					}
 				}
 				else {
 					$buf = "RCPT TO:<$rcpt>\r\n";
-					$this->fwrite_stream($fd, $buf);
+					if(!$this->fwrite_stream($fd, $buf))
+						break;
 				}
 				
 				$atom = 3;
 			}
 			else if($atom == 3) {
-				$this->fwrite_stream($fd, "DATA\r\n");
+				if(!$this->fwrite_stream($fd, "DATA\r\n"))
+					break;
 				$mline = explode("\r\n", $content);
 				foreach($mline as $line) {
-					$this->fwrite_stream($fd, $line."\r\n");
+					if(!$this->fwrite_stream($fd, $line."\r\n"))
+						break;
 				}
-				$this->fwrite_stream($fd, "\r\n");
-				$this->fwrite_stream($fd, "\r\n");
-				$this->fwrite_stream($fd, ".\r\n");
+				if(!$this->fwrite_stream($fd, "\r\n"))
+					break;
+				if(!$this->fwrite_stream($fd, "\r\n"))
+					break;
+				if(!$this->fwrite_stream($fd, ".\r\n"))
+					break;
 				$atom = 4;
 			}
 // 			else if($atom == 4)
