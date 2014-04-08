@@ -131,11 +131,21 @@ class wfr_core_data extends wf_route_request {
 				"Cache-Control",
 				"max-age=3600"
 			);
+			$this->a_core_request->set_header(
+				"Expires",
+				date("D, d M Y H:i:s \G\M\T", time()+3600)
+			);
 			$this->a_core_request->send_headers();
 			exit(0);
 		}
 		
+		
 		/* prepare les type de fichier */
+		$this->a_core_request->set_header(
+			"Expires",
+			date("D, d M Y H:i:s \G\M\T", time()+3600)
+		);
+			
 		$this->a_core_request->set_header(
 			"Last-modified",
 			$file_time
