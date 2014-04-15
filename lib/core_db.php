@@ -85,6 +85,10 @@ define("WF_REQ_FCT_DISTINCT",	0x2);
 define("WF_REQ_FCT_SUM",		0x4);
 
 function core_gettype($value) {
+	
+	if(is_a($value, "core_db_adv_select"))
+		return false;
+	
 	$type = WF_T_INTEGER;
 	
 	for($a = 0; $a < strlen($value); $a++) {
@@ -182,7 +186,7 @@ abstract class core_db_query_adv extends core_db_query {
 					$var_exist = true;
 			
 			/* chech $val if alias is given */
-			if($val != null) {
+			if($val != null && !is_object($val)) {
 				$val_alias = current(explode(".", $val));
 				foreach($this->as as $als)
 					if(isset($als["A"]) && $als["A"] == $val_alias)

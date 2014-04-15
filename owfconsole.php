@@ -323,6 +323,14 @@ class wf_console extends web_framework {
 			$this->opts[$name] : in_array($name, $this->opts) || array_key_exists($name, $this->opts);
 	}
 	
+	public function get_argc() {
+		return $this->argc;
+	}
+	
+	public function get_args($i = -1) {
+		return isset($this->args[$i]) ? $this->args[$i] : $this->args;
+	}
+	
 }
 
 /* and now let's rock */

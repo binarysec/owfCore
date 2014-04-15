@@ -323,7 +323,7 @@ class core_db_pdo_mysql extends core_db {
 		return($res);
 	}
 	
-	public function query($query_obj) {
+	public function query($query_obj, $build_only = false) {
 		
 		/* general vars */
 		$prepare_value = array();
@@ -387,12 +387,14 @@ class core_db_pdo_mysql extends core_db {
 					for($a = 0; $a < count($query_obj->as); $a++) {
 						$alias = $query_obj->as[$a]["A"];
 						$tab = $query_obj->as[$a]["T"];
-						$sch = $this->schema[$tab];
-						foreach($sch as $k => $v) {
-							if(!empty($fields))
-								$fields .= ",";
-							$var = "$alias.$k";
-							$fields .= $var.' AS "'.$var.'"';
+						if(isset($this->schema[$tab])) {
+							$sch = $this->schema[$tab];
+							foreach($sch as $k => $v) {
+								if(!empty($fields))
+									$fields .= ",";
+								$var = "$alias.$k";
+								$fields .= $var.' AS "'.$var.'"';
+							}
 						}
 					}
 				}
@@ -576,47 +578,48 @@ class core_db_pdo_mysql extends core_db {
 		
 		/* Query */
 		if($query_obj->type == WF_SELECT) {
-			$res = $this->sql_query(
-				"SELECT $fields FROM $zone $where $group $order $limit $offset",
-				$prepare_value
-			);
+			$query = "SELECT $fields FROM $zone $where $group $order $limit $offset";
+			if($build_only)
+				return array($query, $prepare_value);
+			$res = $this->sql_query($query, $prepare_value);
 			$query_obj->result = $this->fetch_result($res);
 		}
 		elseif($query_obj->type == WF_SELECT_DISTINCT) {
-			$res = $this->sql_query(
-				"SELECT DISTINCT $fields FROM $zone $group $order $limit $offset"
-			);
+			$query = "SELECT DISTINCT $fields FROM $zone $group $order $limit $offset";
+			if($build_only)
+				return array($query);
+			$res = $this->sql_query($query);
 			$query_obj->result = $this->fetch_result($res);
 		}
 		elseif($query_obj->type == WF_UPDATE || $query_obj->type == WF_ADV_UPDATE) {
-			$this->sql_query(
-				"UPDATE $zone SET $fields $where",
-				$prepare_value
-			);
+			$query = "UPDATE $zone SET $fields $where";
+			if($build_only)
+				return array($query, $prepare_value);
+			$this->sql_query($query, $prepare_value);
 		}
 		elseif($query_obj->type == WF_DELETE || $query_obj->type == WF_ADV_DELETE) {
-			$this->sql_query(
-				"DELETE FROM $zone $where",
-				$prepare_value
-			);
+			$query = "DELETE FROM $zone $where";
+			if($build_only)
+				return array($query);
+			$this->sql_query($query, $prepare_value);
 		}
 		elseif($query_obj->type == WF_INSERT) {
-			$this->sql_query(
-				"INSERT INTO $zone ($key) VALUES ($val);",
-				$prepare_value
-			);
+			$query = "INSERT INTO $zone ($key) VALUES ($val);";
+			if($build_only)
+				return array($query);
+			$this->sql_query($query, $prepare_value);
 		}
 		elseif($query_obj->type == WF_INSERT_MULTIPLE) {
-			$this->sql_query(
-				"INSERT INTO $zone ($key) VALUES $val;",
-				$prepare_value
-			);
+			$query = "INSERT INTO $zone ($key) VALUES $val;";
+			if($build_only)
+				return array($query);
+			$this->sql_query($query, $prepare_value);
 		}
 		elseif($query_obj->type == WF_INSERT_ID) {
-			$this->sql_query(
-				"INSERT INTO $zone ($key) VALUES ($val);",
-				$prepare_value
-			);
+			$query = "INSERT INTO $zone ($key) VALUES ($val);";
+			if($build_only)
+				return array($query, $prepare_value);
+			$this->sql_query($query, $prepare_value);
 			
 			$id = $this->hdl->lastInsertId();
 			
@@ -657,11 +660,17 @@ class core_db_pdo_mysql extends core_db {
 			
 			$query = "$select $fields FROM $zone $where $group $order $limit $offset";
 			
+			if($build_only)
+				return array($query, $prepare_value);
+			
 			$res = $this->sql_query($query, $prepare_value);
 			$query_obj->result = $this->fetch_result($res);
 		}
 		elseif($query_obj->type == WF_MULTIPLE_INSERT_OR_UPDATE) {
-			$this->sql_query("INSERT INTO $zone ($key) VALUES $val $up", $prepare_value);
+			$query = "INSERT INTO $zone ($key) VALUES $val $up";
+			if($build_only)
+				return array($query, $prepare_value);
+			$this->sql_query($query, $prepare_value);
 		}
 	}
 	
@@ -790,6 +799,16 @@ class core_db_pdo_mysql extends core_db {
 				break;
 			case '!!':
 				$cond = "$var IS NOT NULL";
+				break;
+			case 'in':
+			case '!in':
+				if(!is_a($sval, "core_db_adv_select"))
+					throw new wf_exception(null, WF_EXC_PRIVATE,
+						"Trying to compare using 'in' on a non core_db_adv_select object"
+					);
+				$q = $this->query($sval, true);
+				$cond = "$var ".($sign[0] == '!' ? 'NOT ' : '')."IN (".$q[0].")";
+				$prepare_values = array_merge($prepare_values, $q[1]);
 				break;
 		}
 		
@@ -1124,7 +1143,7 @@ class core_db_pdo_mysql extends core_db {
 	}
 	
 	private function safe_input($i) {
-		return(stripslashes($i));
+		return is_a($i, "core_db_adv_select") ? $i : stripslashes($i);
 	}
 	
 }
