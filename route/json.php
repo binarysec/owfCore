@@ -85,6 +85,11 @@ class wfr_core_json extends wf_route_request {
 			),
 			"result" => $data
 		);
+		
+		
+		if(isset($this->wf->ini_arr["common"]["access_control_allow_origin"]))
+			header("Access-Control-Allow-Origin: ".$this->wf->ini_arr["common"]["access_control_allow_origin"]);
+		
 		header("Content-Type: text/javascript");
 		echo json_encode($ret);
 		exit(0);
