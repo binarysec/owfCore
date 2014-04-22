@@ -175,7 +175,7 @@ class core_lang extends wf_agg {
 	public $contexts = array();
 	public function get_context($name, $lang=NULL, $create=TRUE) {
 		if($lang == NULL)
-			$lang = $this->current["code"];
+			$lang = $this->find_lang();
 			
 		/* get the full context path */
 		$full = "var/lang/ctx/".
@@ -294,8 +294,76 @@ class core_lang extends wf_agg {
 			return($this->ini[$lang]);
 		return(FALSE);
 	}
-
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Locate the proper language to use for the interface
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function find_lang() {
+		$lang = "";
+		
+		/* check if user is loggued on and use his language preference */
+		if(isset($this->wf->session()->session_me["lang"])) {
+			$lang = $this->resolv($this->wf->session()->session_me["lang"]);
+			if($lang)
+				$lang = $lang["code"];
+		}
+		
+		/* if did not found any, use from http headers */
+		if(!$lang && isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+			$languages = array();
+			$accepts = explode(",", $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+			
+			/* parse each language of headers to organize them */
+			foreach($accepts as $a) {
+				$quality = 1;
+				$final_lang = "";
+				
+				/* split lang & quality */
+				if(strchr($a, ";")) {
+					$expl = explode(";", $a);
+					$a = $expl[0];
+					$expl = explode("=", $expl[1]);
+					$quality = $expl[1];
+				}
+				
+				/* split langs */
+				if(strchr($a, "-")) {
+					$expl = explode("-", $a);
+					$a = $this->resolv($expl[0]);
+					$b = $this->resolv($expl[1]);
+					if($a)
+						$final_lang = $a["code"];
+					elseif($b)
+						$final_lang = $b["code"];
+				}
+				else {
+					$a = $this->resolv($a);
+					if($a)
+						$final_lang = $a["code"];
+				}
+				
+				/* add to array */
+				if($final_lang && (!isset($languages[$final_lang]) || $quality > $languages[$final_lang]))
+					$languages[$final_lang] = $quality;
+			}
+			
+			/* parse languages and find the better one we have */
+			arsort($languages);
+			foreach($languages as $lang => $q) {
+				$lang = $this->resolv($lang);
+				if($lang) {
+					$lang = $lang["code"];
+					break;
+				}
+			}
+		}
+		
+		/* finally, use current code */
+		if(!$lang)
+			$lang = $this->current["code"];
+		
+		return $lang;
+	}
 	
 }
-
-// svn merge -r83:81
