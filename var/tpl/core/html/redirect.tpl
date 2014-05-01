@@ -12,10 +12,14 @@
 <title>Redirection</title>
 </head>
 
+%{if $onload}%
+<body onload='document.location.href="%{$url}%";'>
+%{else}%
 <body>
 	<script type="text/javascript">
 		document.location.href="%{$url}%";
 	</script>
+%{/if}%
 
 	<div data-role="content">
 		<a href="%{$url|html}%" data-role="button">%{@ "Click here if nothing happen"}%</a>

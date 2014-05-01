@@ -726,9 +726,10 @@ class web_framework {
 		
 	}
 	
-	public function redirector($url) {
+	public function redirector($url, $onload = false) {
 		$tpl = new core_tpl($this);
 		$tpl->set("url", $url);
+		$tpl->set("onload", $onload);
 		echo $tpl->fetch("core/html/redirect");
 		exit(0);
 	}
