@@ -228,7 +228,7 @@ class core_db_insert_multiple extends core_db_query_simple {
 		parent::__construct(WF_INSERT_MULTIPLE, $zone, $arr);
 	}
 	
-	public function insert(array $insert) {
+	public function insert($insert) {
 		$firsttime = true;
 		$struct = array();
 		foreach($insert as $v) {
