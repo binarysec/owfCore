@@ -125,9 +125,16 @@ class core_smtp extends wf_agg {
 		$log = array(date(DATE_RFC822));
 		while(1) {
 			$data = fread($fd, 1024);
-
+			
 			$log[] = trim($data);
-
+			
+			$expl = explode(" ", $data);
+			$code = intval(current($expl));
+			if($code >= 500 && $code < 600) {
+				error_log("core_smtp: SMTP Server replied ".$data);
+				break;
+			}
+			
 			/* 220 */
 			if($atom == 0) {
 				if(!$this->fwrite_stream($fd, "HELO www.owf.re\r\n"))
