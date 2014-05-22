@@ -212,9 +212,14 @@ class core_dao_form_db {
 		return $res;
 	}
 	
-	public function count() {
+	public function count(array $where = array()) {
 		$q = new core_db_adv_select($this->name);
 		$q->request_function(WF_REQ_FCT_COUNT);
+		if(!empty($where)) {
+			foreach($where as $field => $value) {
+				$q->do_comp($field, "=", $value);
+			}
+		}
 		$this->wf->db->query($q);
 		$ret = current($q->get_result());
 		return isset($ret["COUNT(*)"]) ? intval($ret["COUNT(*)"]) : false;
