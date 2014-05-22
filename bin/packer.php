@@ -9,26 +9,32 @@ define("CORE_PACKER_DIRECTORY_STABLE", "stable");
 class core_packer extends wf_cli_command {
 	
 	public function help() {
-		$this->wf->msg("Usage: core packer --modules <core,admin,session,...> [--server] [-b] [-s]");
-		$this->wf->msg("-server : automatically send the package to this location");
+		//$this->wf->msg("Usage: core packer --modules <core,admin,session,...> [--server] [-b] [-s]");
+		$this->wf->msg("Usage: core packer --modules <core,admin,session,...> [-b] [--name]");
+		//$this->wf->msg("-server : automatically send the package to this location");
 		$this->wf->msg("-b : pick directory '".CORE_PACKER_DIRECTORY_BRANCHES."' instead of '".CORE_PACKER_DIRECTORY_STABLE."'");
+		$this->wf->msg("--name : change the default package name owf-package.tar.gz");
 		//$this->wf->msg("-s : send only to server, does not build the package and assume it's here");
 	}
 	
 	public function process() {
 		
 		/* get options */
-		$package_name = "owf-package.tar.gz";
 		$server = $this->wf->get_opt('server', true);
-		$sendonly = $this->wf->get_opt('s');
 		
-		if(!$sendonly)
+		$name = $this->wf->get_opt('name', true);
+		if(!$name)
+			$name = "owf-package.tar.gz";
+		$this->name = $name;
+		//$sendonly = $this->wf->get_opt('s');
+		
+		//if(!$sendonly)
 			$this->build();
 		
 		/* send to server */
-		if($server && file_exists($package_name))
-			system("scp $package_name $server");
-			//copy($package_name, $server);
+		//if($server && file_exists($this->name))
+			//system("scp $this->name $server");
+			//copy($this->name, $server);
 		
 		return true;
 	}
@@ -36,7 +42,6 @@ class core_packer extends wf_cli_command {
 	private function build() {
 		
 		/* get options */
-		$package_name = "owf-package.tar.gz";
 		$branches = $this->wf->get_opt('b');
 		$modules = explode(",", $this->wf->get_opt('modules', true));
 		$modules = array_filter($modules);
@@ -93,7 +98,7 @@ class core_packer extends wf_cli_command {
 		
 		/* copy modules */
 		foreach($modules_full as $name => $path)
-			system("cp -a $path $fname/$name");
+			system("cp -a $path $fname/".$name);
 		
 		/* remove .svn files */
 		system('find '.$fname.' -name "\.svn" -print0 | xargs -0 rm -r 2>/dev/null');
@@ -101,11 +106,11 @@ class core_packer extends wf_cli_command {
 		/* build archive */
 		$pwd = getcwd();
 		chdir($fname);
-		system("tar zcvf $package_name *");
+		system("tar zcvf ".$this->name." *");
 		chdir($pwd);
-		if(file_exists($package_name))
-			unlink($package_name);
-		system("mv $fname/$package_name .");
+		if(file_exists($this->name))
+			unlink($this->name);
+		system("mv $fname/".$this->name." .");
 		
 		/* remove temporary directory */
 		system("rm -r $fname/*");
