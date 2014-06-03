@@ -55,10 +55,14 @@ class core_packer extends wf_cli_command {
 		/* lookup modules path */
 		$modules_full = array();
 		foreach($modules as $module) {
+			
+			/* check module in ini file */
 			if(!isset($this->wf->modules[$module])) {
 				$this->wf->msg("Fatal: module $module not found");
 				return false;
 			}
+			
+			/* build module wanted path */
 			$path = $this->wf->modules[$module][0];
 			$newpath = "";
 			$exist = true;
@@ -66,10 +70,14 @@ class core_packer extends wf_cli_command {
 			$atom = 0;
 			foreach($rail as $k => $dir) {
 				$add = $dir;
-				if($atom == 1) {
+				
+				/* for svn directory structure, use stable or branches */
+				if($dir == "branches" || $dir == "stable") {
 					$add = $branches ? CORE_PACKER_DIRECTORY_BRANCHES : CORE_PACKER_DIRECTORY_STABLE;
 					$atom = 2;
 				}
+				
+				/* retrieve the last version only */
 				elseif($atom == 2) {
 					if(!file_exists($newpath)) {
 						$exist = false;
@@ -77,19 +85,22 @@ class core_packer extends wf_cli_command {
 					}
 					$versions = array();
 					$lookup = scandir($newpath);
-					foreach($lookup as $v) {
+					foreach($lookup as $v)
 						$versions[$v] = intval(str_replace("_", "", $v));
-					}
 					arsort($versions);
 					$add = key($versions);
 				}
-				elseif($dir == $module) {
-					$atom = 1;
-				}
+				
+				/* add rail element */
 				$newpath .= "$add/";
 			}
-			if($exist)
-				$modules_full[$module] = $newpath;
+			
+			if(!$exist) {
+				$this->wf->msg("Fatal: path $newpath not found");
+				return false;
+			}
+			
+			$modules_full[$module] = $newpath;
 		}
 		
 		/* create temporary directory */
@@ -102,6 +113,7 @@ class core_packer extends wf_cli_command {
 		
 		/* remove .svn files */
 		system('find '.$fname.' -name "\.svn" -print0 | xargs -0 rm -r 2>/dev/null');
+		system('find '.$fname.' -name "\.git" -print0 | xargs -0 rm -r 2>/dev/null');
 		
 		/* build archive */
 		$pwd = getcwd();
