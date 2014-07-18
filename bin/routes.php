@@ -32,7 +32,7 @@ class core_routes extends wf_cli_command {
 		$this->inception($routes, "");
 		
 		foreach($this->routes as $route)
-			if(substr($route["route"], 0, strlen($filter)) == $filter)
+			if(!$filter || strstr($route["route"], $filter))
 				$this->wf->msg(
 					"$route[action] $route[route] [$route[perm]]",
 					true

@@ -26,13 +26,17 @@ require($core_link);
 /* let's prepare the battle field */
 define("OWFCONSOLE", "okay");
 
-class wf_cli_command {
+abstract class wf_cli_command {
+	
 	public function __construct($wf, $args, $opts) {
 		$this->wf = $wf;
 		$this->args = $args;
 		$this->argc = count($args);
 		$this->opts = $opts;
 	}
+	
+	public abstract function process();
+	
 }
 
 class wf_console extends web_framework {
@@ -136,7 +140,7 @@ class wf_console extends web_framework {
 						$obj = $this->getscript($module, $script, "$path");
 						$obj->args = array_values($this->args);
 						$obj->opts = $this->opts;
-						$obj->process();
+						return $this->run_command($obj);
 					}
 					else
 						$this->msg("Script $script not found. Use \"$module show\" to display available ones.");
@@ -152,11 +156,59 @@ class wf_console extends web_framework {
 			$obj = $this->getscript(end($lscript), $module, reset($lscript));
 			$obj->args = array_values($this->args);
 			$obj->opts = $this->opts;
-			$obj->process();
+			return $this->run_command($obj);
 		}
-		else
-			$this->msg("Module or script $module not found");
+		else {
+			switch($this->args[0]) {
+				/* built in commands */
+				case "modules" :
+				case "help" :
+				case "clear" :
+					$method = "cmd_".$this->args[0];
+					return $this->$method();
+				case "exit" : case "quit" : case "leave" :
+					return $this->msg("<(^o^<) (>^o^<) (>^o^)> Let's dance !");
+				default:
+					$this->msg("Module or script $module not found");
+			}
+		}
 		
+	}
+	
+	private function run_command(wf_cli_command &$obj) {
+		
+		$session = $this->session();
+		
+		if(method_exists($obj, "perms")) {
+			if(!$session)
+				$this->msg("This command require authentication but the session module is not installed.");
+			
+			$this->msg("This command require authentication. Please login.");
+			
+			/* sanatize perms */
+			$require = $obj->perms();
+			if(!is_array($require))
+				$require = array($require);
+			
+			/* identify */
+			$u = $this->get_opt("owfUsername", true);
+			$p = $this->get_opt("owfPassword", true);
+			
+			if(!$u)
+				$u = $this->ask("Username : ");
+			if(!$p)
+				$p = $this->ask("Password : ");
+			
+			if(!$session->identify($u, $p))
+				return $this->msg("Authentication failed. Wrong credentials.");
+			
+			$session->check_session();
+			
+			if(!$session->check_permission($require))
+				return $this->msg("You don't have enough privileges to run this command.");
+		}
+		
+		return $obj->process();
 	}
 	
 	private function getscript($module, $script, $path) {
@@ -245,6 +297,23 @@ class wf_console extends web_framework {
 	 *
 	 * private methods
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	
+	/* ask question */
+	public function ask($title) {
+		if(function_exists("readline")) {
+			$line = readline("~# $title");
+			if(!empty($line))
+				readline_add_history($line);
+		}
+		else {
+			echo "~# $title";
+			$stdin = fopen("php://stdin", 'r');
+			$line = trim(fgets($stdin));
+			fclose($stdin);
+		}
+		
+		return $line;
+	}
 	
 	/* read the line */
 	private function read() {
