@@ -183,8 +183,6 @@ class wf_console extends web_framework {
 			if(!$session)
 				$this->msg("This command require authentication but the session module is not installed.");
 			
-			$this->msg("This command require authentication. Please login.");
-			
 			/* sanatize perms */
 			$require = $obj->perms();
 			if(!is_array($require))
@@ -193,6 +191,9 @@ class wf_console extends web_framework {
 			/* identify */
 			$u = $this->get_opt("owfUsername", true);
 			$p = $this->get_opt("owfPassword", true);
+			
+			if(!$u || !$p)
+				$this->msg("This command require authentication. Please login.");
 			
 			if(!$u)
 				$u = $this->ask("Username : ");
