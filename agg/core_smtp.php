@@ -179,8 +179,8 @@ class core_smtp extends wf_agg {
 					break;
 				$atom = 4;
 			}
-// 			else if($atom == 4)
-// 				$atom = 5;
+ 			else if($atom == 4)
+ 				$atom = 5;
 			else {
 				$e = explode(" ", $data);
 				$queue = $e[count($e)-1];
