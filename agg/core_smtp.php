@@ -103,7 +103,7 @@ class core_smtp extends wf_agg {
 	}
 
 	public function sendmail($mailfrom, $rcpt, $content, $sid=-1) {
-		$queue = NULL;
+		$queue = -1;
 		/* select best server */
 		$this->select_server($sid);
 		
@@ -113,7 +113,7 @@ class core_smtp extends wf_agg {
 			return -1;
 		
 		/* open connection */
-		$fd = fsockopen(
+		$fd = @fsockopen(
 			$this->server["server_ip"], 
 			$this->server["server_port"]
 		);

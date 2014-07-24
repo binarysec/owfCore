@@ -42,23 +42,30 @@ class core_mail_spooler extends wf_cli_command {
 			}
 			
 			/* send mails */
-			for($i = 0, $maxloop = min(10, $count); $i < $maxloop; $i++) {
+			for($i = 0, $maxloop = min(10, $count); $i < $maxloop; $i += $count) {
 				$q = new core_db_adv_select("core_mail_spool");
-				$q->do_comp("queue", $retry ? "<=" : "=", 0);
+				$q->do_comp("send_time", $retry ? "<=" : "=", 0);
 				$q->limit($count, $i * $count);
 				$this->wf->db->query($q);
 				$tosend = $q->get_result();
 				
 				if($verbose)
-					$this->wf->msg("Processing ".($i + 1)." to ".(($i + 1) * $count)." mails.");
+					$this->wf->msg("Processing $maxloop from $count mails.");
 				
 				foreach($tosend as $mail) {
 					
 					if($verbose)
 						$this->wf->msg("Sending mail from $mail[source] to $mail[recipient].");
 					
+					/* send */
 					$queue = $core_smtp->sendmail($mail["source"], $mail["recipient"], $mail["content"]);
-					$core_mail_spool->dao->modify(array("id" => $mail["id"]), array("queue" => $queue));
+					$sent = is_string($queue) && $queue > 0;
+					
+					/* update database */
+					$core_mail_spool->dao->modify(
+						array("id" => $mail["id"]),
+						array("queue" => $queue, "send_time" => $sent ? time() : -1)
+					);
 				}
 			}
 			
