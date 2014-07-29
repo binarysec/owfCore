@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?php
 
+// INSTALL php5-readline for command history
+
 /* some display funcs */
 function owf_msg($msg, $status = 1) { echo "$msg\n"; exit($status); }
 function owf_error($msg, $status = 1) { echo "Error: $msg\n"; exit($status); }
@@ -209,7 +211,12 @@ class wf_console extends web_framework {
 				return $this->msg("You don't have enough privileges to run this command.");
 		}
 		
-		return $obj->process();
+		$ret = $obj->process();
+		
+		if(method_exists($obj, "post_process"))
+			$obj->post_process();
+		
+		return $ret;
 	}
 	
 	private function getscript($module, $script, $path) {
