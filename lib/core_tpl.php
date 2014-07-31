@@ -84,7 +84,7 @@ class core_tpl {
 	
 	public function locate($tpl_name, $lang=false) {
 		if($lang) {
-			$l = $this->core_lang->find_lang();
+			$l = is_string($lang) ? $lang : $this->core_lang->find_lang();
 			$sdir = "/var/lang/tpl/$l/";
 			$tpl_name_cache = $l."_$tpl_name";
 		}
@@ -165,7 +165,7 @@ class core_tpl {
 
 	public function fetch($tpl_name, $no_manage=FALSE, $lang = false) {
 		ob_start();
-		$this->get_template($tpl_name, $no_manage);
+		$this->get_template($tpl_name, $no_manage, $lang);
 		$content = ob_get_clean();
  		return($content);
 	}
