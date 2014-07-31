@@ -115,9 +115,9 @@ class core_tpl {
 		return(false);
 	}
 
-	public function get_template($tpl_name, $no_manage=FALSE) {
+	public function get_template($tpl_name, $no_manage=FALSE, $lang = false) {
 		/* locate the template */
-		$found = $this->locate($tpl_name);
+		$found = $this->locate($tpl_name, $lang);
 
 		/* if template doesn't exist */
 		if(!$this->tpl_file) {
@@ -163,7 +163,7 @@ class core_tpl {
 		require($this->cache_file);
 	}
 
-	public function fetch($tpl_name, $no_manage=FALSE) {
+	public function fetch($tpl_name, $no_manage=FALSE, $lang = false) {
 		ob_start();
 		$this->get_template($tpl_name, $no_manage);
 		$content = ob_get_clean();
