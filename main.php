@@ -223,6 +223,15 @@ class web_framework {
 		}
 		chdir($save);
 		
+		$safe = isset($this->ini_arr["common"]["safe_mode"]);
+		if($safe && count($this->ini_arr["modules"]) != count($this->modules))
+			throw new wf_exception(
+				$this,
+				WF_EXC_PRIVATE,
+				"Safe mode stopped request : ".
+				"Not all modules from the .ini file were loaded"
+			);
+		
 		/* check depends */
 		foreach($this->modules as $name => $data) {
 			if(isset($data[7]) && is_array($data[7]) && !empty($data[7])) {
