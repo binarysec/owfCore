@@ -565,7 +565,7 @@ class core_db_pdo_mysql extends core_db {
 		/* group by */
 		if($query_obj->type & WF_QUERY_GROUP && $query_obj->group != NULL) {
 			foreach($query_obj->group as $k)
-				$group = empty($group) ?
+				$group .= empty($group) ?
 					"GROUP BY `$k`" :
 					", `$k`";
 		}
