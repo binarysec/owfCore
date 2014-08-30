@@ -217,7 +217,10 @@ class core_dao_form_db {
 		$q->request_function(WF_REQ_FCT_COUNT);
 		if(!empty($where)) {
 			foreach($where as $field => $value) {
-				$q->do_comp($field, "=", $value);
+				if(is_array($value) && count($value) == 3)
+					$q->do_comp($value[0], $value[1], $value[2]);
+				else
+					$q->do_comp($field, "=", $value);
 			}
 		}
 		$this->wf->db->query($q);

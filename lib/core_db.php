@@ -65,7 +65,7 @@ define("WF_SELECT_DISTINCT",			0x300 | WF_QUERY_ORDER | WF_QUERY_GROUP | WF_QUER
 define("WF_INSERT",						0x400);
 define("WF_INSERT_ID",					0x500);
 define("WF_UPDATE",						0x600 | WF_QUERY_WHERE);
-define("WF_ADV_UPDATE",					0x700 | WF_QUERY_ADV_WHERE);
+define("WF_ADV_UPDATE",					0x700 | WF_QUERY_AS | WF_QUERY_ADV_WHERE);
 define("WF_DELETE",						0x800 | WF_QUERY_WHERE);
 define("WF_ADV_DELETE",					0x900 | WF_QUERY_ADV_WHERE);
 define("WF_MULTIPLE_INSERT_OR_UPDATE",	0xA00);
@@ -330,12 +330,20 @@ class core_db_multiple_insert_or_update extends core_db_query {
 
 class core_db_adv_update extends core_db_query_adv {
 	var $arr = null;
+	var $as = array();
 
-	public function __construct($zone) {
+	public function __construct($zone = null) {
 		parent::__construct(WF_ADV_UPDATE, $zone);
 	}
 	public function insert($insert) {
 		$this->arr = $insert;
+	}
+	public function alias($alias, $tab) {
+		$insert = array(
+			"A" => $alias,
+			"T" => $tab
+		);
+		array_push($this->as, $insert);
 	}
 }
 

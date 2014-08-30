@@ -136,7 +136,15 @@ class core_mail {
 		
 		return $this->render;
 	}
-
+	
+	public function get_mail_from() {
+		return $this->mail_from;
+	}
+	
+	public function get_rcpt_to() {
+		return $this->rcpt_to;
+	}
+	
 	public function send() {
 		if($this->render == null)
 			return false;

@@ -84,9 +84,9 @@ class core_tpl {
 	
 	public function locate($tpl_name, $lang=false) {
 		if($lang) {
-			$l = $this->core_lang->get();
-			$sdir = "/var/lang/tpl/$l[code]/";
-			$tpl_name_cache = "$l[code]_$tpl_name";
+			$l = is_string($lang) ? $lang : $this->core_lang->find_lang();
+			$sdir = "/var/lang/tpl/$l/";
+			$tpl_name_cache = $l."_$tpl_name";
 		}
 		else {
 			$r = $this->locate($tpl_name, true);
@@ -115,9 +115,9 @@ class core_tpl {
 		return(false);
 	}
 
-	public function get_template($tpl_name, $no_manage=FALSE) {
+	public function get_template($tpl_name, $no_manage=FALSE, $lang = false) {
 		/* locate the template */
-		$found = $this->locate($tpl_name);
+		$found = $this->locate($tpl_name, $lang);
 
 		/* if template doesn't exist */
 		if(!$this->tpl_file) {
@@ -163,9 +163,9 @@ class core_tpl {
 		require($this->cache_file);
 	}
 
-	public function fetch($tpl_name, $no_manage=FALSE) {
+	public function fetch($tpl_name, $no_manage=FALSE, $lang = false) {
 		ob_start();
-		$this->get_template($tpl_name, $no_manage);
+		$this->get_template($tpl_name, $no_manage, $lang);
 		$content = ob_get_clean();
  		return($content);
 	}

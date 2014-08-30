@@ -362,7 +362,8 @@ class core_db_pdo_mysql extends core_db {
 		}
 		elseif($query_obj->type == WF_UPDATE || $query_obj->type == WF_ADV_UPDATE) {
 			foreach($query_obj->arr as $k => $v) {
-				$fields .= empty($fields) ? "`$k` = ?" : ", `$k` = ?";
+				$qt = ($query_obj->type & WF_QUERY_AS && count($query_obj->as) > 0) ? '' : '`';
+				$fields .= empty($fields) ? "$qt$k$qt = ?" : ", `$k` = ?";
 				array_push($prepare_value, $v);
 			}
 		}
@@ -564,7 +565,7 @@ class core_db_pdo_mysql extends core_db {
 		/* group by */
 		if($query_obj->type & WF_QUERY_GROUP && $query_obj->group != NULL) {
 			foreach($query_obj->group as $k)
-				$group = empty($group) ?
+				$group .= empty($group) ?
 					"GROUP BY `$k`" :
 					", `$k`";
 		}
