@@ -820,16 +820,19 @@ class core_db_pdo_mysql extends core_db {
 	*/
 	private function get_struct_type($item) {
 		$ret = "";
+		
+		$unsigned = $item & WF_UNSIGNED ? " UNSIGNED" : "";
+		
 		switch($item & 0xF0) {
 			case WF_VARCHAR :
 				$ret .= "VARCHAR(255) NULL";break;
 			case WF_SMALLINT :
-				$ret .= "SMALLINT NULL";break;
+				$ret .= "SMALLINT$unsigned NULL";break;
 			case WF_INT :
 			case WF_TIME :
-				$ret .= "INT NULL";break;
+				$ret .= "INT$unsigned NULL";break;
 			case WF_BIGINT :
-				$ret .= "BIGINT NULL";break;
+				$ret .= "BIGINT$unsigned NULL";break;
 			case WF_FLOAT :
 				$ret .= "FLOAT NULL";break;
 			case WF_DATA :

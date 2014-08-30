@@ -26,7 +26,7 @@
 define("WF_AUTOINC",	0x01);
 define("WF_PRIMARY",	0x02);
 define("WF_UNIQUE",		0x04);
-define("WF_RES2",		0x08);
+define("WF_UNSIGNED",	0x08);
 
 /* core_db types */
 define("WF_VARCHAR",	0x10);
