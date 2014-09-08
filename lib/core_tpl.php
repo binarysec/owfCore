@@ -118,7 +118,10 @@ class core_tpl {
 	public function get_template($tpl_name, $no_manage=FALSE, $lang = false) {
 		/* locate the template */
 		$found = $this->locate($tpl_name, $lang);
-
+		
+		if(is_string($lang) && !$found)
+			$found = $this->locate($tpl_name, false);
+		
 		/* if template doesn't exist */
 		if(!$this->tpl_file) {
 			throw new wf_exception(
