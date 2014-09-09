@@ -23,6 +23,16 @@ class wfm_core extends wf_module {
 	public function get_actions() {
 		return(array(
 			
+			/* url shortener */
+			"/short" => array(
+				WF_ROUTE_ACTION,
+				"url_shortener",
+				"redirect",
+				"",
+				WF_ROUTE_HIDE,
+				array("session:ranon")
+			),
+			
 			/* SMTP */
 			"/admin/system/smtp" => array(
 				WF_ROUTE_ACTION,
