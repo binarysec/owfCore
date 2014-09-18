@@ -67,5 +67,3 @@ class core_mime extends wf_agg {
 	
 	
 }
-
-?>
