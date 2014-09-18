@@ -49,7 +49,7 @@ class core_deploy extends wf_cli_command {
 		$this->wf->msg(" | Creating backups", true);
 		
 		$modules = array_filter(scandir($this->dir_tmp_deploy), function($f) { return $f[0] != '.'; });
-		system("cp -a ".$this->dir_main." ".$this->dir_backup);
+		system("mkdir ".$this->dir_backup);
 		foreach($modules as $mod) {
 			system("cp -a ".$this->dir_main."/".$mod." ".$this->dir_backup.$mod." 2>/dev/null");
 			if(!is_dir($this->dir_backup.$mod))
