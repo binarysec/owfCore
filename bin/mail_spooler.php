@@ -18,6 +18,11 @@ class core_mail_spooler extends wf_cli_command {
 		$this->wf->msg("-h / --help    : Show this message");
 	}
 	
+	public function verb($msg, $raw = false) {
+		if($this->verbose)
+			return $this->wf->msg($msg, $raw);
+	}
+	
 	public function process() {
 		
 		/* aggs */
@@ -36,7 +41,7 @@ class core_mail_spooler extends wf_cli_command {
 			return $this->help();
 		
 		/* options */
-		$verbose = $this->wf->get_opt("v") || $this->wf->get_opt("verbose");
+		$this->verbose = $verbose = $this->wf->get_opt("v") || $this->wf->get_opt("verbose");
 		$retry = $this->wf->get_opt("r") || $this->wf->get_opt("retry");
 		$count = intval($this->wf->get_opt("count", true));
 		$timeout = $this->wf->get_opt("timeout", true);
@@ -44,7 +49,7 @@ class core_mail_spooler extends wf_cli_command {
 		$this->clean = $this->wf->get_opt("clean", true);
 		$this->fclean = $this->wf->get_opt("fclean", true);
 		if(!$count)
-			$count = $core_mail_spool->dao->count(array(array("queue", ($retry ? "<=" : "="), 0)));
+			$count = $core_mail_spool->dao->count(array(array("send_time", ($retry ? "<=" : "="), 0)));
 		
 		/* sanatize */
 		$count = is_numeric($count) ? intval($count) : false;
@@ -54,8 +59,7 @@ class core_mail_spooler extends wf_cli_command {
 		$this->fclean = is_numeric($this->fclean) ? intval($this->fclean) : false;
 		
 		if($count) {
-			if($verbose)
-				$this->wf->msg("Sending a total of $count mails.");
+			$this->verb("Sending a total of $count mails.");
 			
 			if($timeout) {
 				$old_timeout = ini_get("default_socket_timeout");
@@ -63,24 +67,35 @@ class core_mail_spooler extends wf_cli_command {
 			}
 			
 			/* send mails */
-			for($i = 0, $maxloop = min(10, $count); $i < $maxloop; $i += $count) {
+			$done = 0;
+			$max_per_loop = min(10, $count);
+			do {
 				$q = new core_db_adv_select("core_mail_spool");
 				$q->do_comp("send_time", $retry ? "<=" : "=", 0);
-				$q->limit($count, $i * $count);
+				$q->limit($max_per_loop);
 				$this->wf->db->query($q);
 				$tosend = $q->get_result();
 				
-				if($verbose)
-					$this->wf->msg("Processing $maxloop from $count mails.");
+				$total = count($tosend);
+				$this->verb("Processing $done to ".($done + $total)." from $count mails.");
+				$done += $total;
 				
 				foreach($tosend as $mail) {
 					
-					if($verbose)
-						$this->wf->msg("Sending mail from $mail[source] to $mail[recipient].");
+					if(strlen($mail["queue"]) > 0) {
+						$this->verb("Mail from $mail[source] to $mail[recipient] was already sent, fixing.");
+						$core_mail_spool->dao->modify(
+							array("id" => $mail["id"]),
+							array("send_time" => $mail["create_time"])
+						);
+						continue;
+					}
+					
+					$this->verb("Sending mail from $mail[source] to $mail[recipient].");
 					
 					/* send */
 					$queue = $core_smtp->sendmail($mail["source"], $mail["recipient"], $mail["content"]);
-					$sent = is_string($queue) && $queue > 0;
+					$sent = is_string($queue) && strlen($queue) > 0;
 					
 					/* update database */
 					if(!$sent && $block && $mail["create_time"] < (time() - $block)) {
@@ -95,17 +110,15 @@ class core_mail_spooler extends wf_cli_command {
 							array("queue" => $queue, "send_time" => $sent ? time() : -1)
 						);
 				}
-			}
+			} while($total && $total == $max_per_loop);
 			
 			if($timeout)
 				ini_set("default_socket_timeout", $old_timeout);
 			
-			if($verbose)
-				$this->wf->msg("Done sending mails.");
+			$this->verb("Done sending mails.");
 		}
 		else {
-			if($verbose)
-				$this->wf->msg("No mails to send.");
+			$this->verb("No mails to send.");
 		}
 		
 		$this->clean();
