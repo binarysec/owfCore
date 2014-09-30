@@ -147,8 +147,10 @@ class core_packer extends wf_cli_command {
 		
 		$this->wf->msg(" | Copying modules to temporary directory", true);
 		@mkdir($fname, 0777, true);
-		foreach($modules_full as $name => $path)
-			system("cp -a $path $fname/".$name);
+		foreach($modules_full as $name => $path) {
+			@mkdir("$fname/".$name."/", 0777, true);
+			system("cp -a $path/* $fname/".$name."/.");
+		}
 		
 		$this->wf->msg(" | Removing .svn and .git directories", true);
 		system('find '.$fname.' -name "\.svn" -print0 | xargs -0 rm -r 2>/dev/null');
