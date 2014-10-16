@@ -827,6 +827,8 @@ class core_db_pdo_mysql extends core_db {
 		switch($item & 0xF0) {
 			case WF_VARCHAR :
 				$ret .= "VARCHAR(255) NULL";break;
+			case WF_TINYINT :
+				$ret .= "TINYINT$unsigned NULL";break;
 			case WF_SMALLINT :
 				$ret .= "SMALLINT$unsigned NULL";break;
 			case WF_INT :

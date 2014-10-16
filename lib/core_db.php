@@ -36,6 +36,7 @@ define("WF_FLOAT",		0x40);
 define("WF_TIME",		0x50);
 define("WF_DATA",		0x60);
 define("WF_BIGINT",		0x70);
+define("WF_TINYINT",	0x80);
 
 define("WF_PRI",		WF_INT | WF_AUTOINC | WF_PRIMARY);
 define("WF_VARCHAR_PRI",WF_VARCHAR | WF_PRIMARY);
