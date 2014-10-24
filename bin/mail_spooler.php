@@ -82,7 +82,7 @@ class core_mail_spooler extends wf_cli_command {
 				
 				foreach($tosend as $mail) {
 					
-					if(strlen($mail["queue"]) > 0) {
+					if(strlen($mail["queue"]) > 1) {
 						$this->verb("Mail from $mail[source] to $mail[recipient] was already sent, fixing.");
 						$core_mail_spool->dao->modify(
 							array("id" => $mail["id"]),
