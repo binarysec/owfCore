@@ -290,9 +290,10 @@ class core_lang extends wf_agg {
 	 * Resolv information in relation with the language
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public function resolv($lang) {
-		if(isset($this->ini[$lang]))
-			return($this->ini[$lang]);
-		return(FALSE);
+		if(!isset($this->available[$lang]) || !isset($this->ini[$lang]))
+			return false;
+		
+		return $this->ini[$lang];
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
