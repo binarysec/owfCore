@@ -522,8 +522,10 @@ class core_tpl_compiler extends wf_agg {
 		foreach($argv as $v)
 			$buf_args .= $v.',';
 		$buf_args .= ')';
-		
-		return $this->tsescape ?
+		$escape = $this->tsescape;
+		if($escape)
+			$this->tsescape = false;
+		return $escape ?
 			'echo htmlentities($_lang->ts('.$buf_args.'));' :
 			'echo $_lang->ts('.$buf_args.');';
 	}
