@@ -516,14 +516,24 @@ class core_tpl_compiler extends wf_agg {
 	}
 
 	/* translate */
+	private $tsescape = false;
 	public function func_lang(core_tpl_compiler $tpl_compiler, $argv) {
 		$buf_args = 'array(';
 		foreach($argv as $v)
 			$buf_args .= $v.',';
 		$buf_args .= ')';
-		return('echo $_lang->ts('.$buf_args.');');
+		
+		return $this->tsescape ?
+			'echo htmlentities($_lang->ts('.$buf_args.'));' :
+			'echo $_lang->ts('.$buf_args.');';
 	}
-
+	
+	/* use this function with %{tsescape}%, just before translating something with @, to ensure entities are processed after ts */
+	public function func_tsescape(core_tpl_compiler $tpl_compiler, $argv) {
+		$this->tsescape = true;
+		return "";
+	}
+	
 	/* alternating text */
 	public function func_alt(core_tpl_compiler $tpl_compiler, $argv) {
 		if(isset($argv[1])) {
