@@ -94,6 +94,8 @@ class core_tpl_compiler extends wf_agg {
 		'count'        => 'count',
 		'b64_encode'   => 'base64_encode',
 		'b64_dcode'    => 'base64_decode',
+		'json_encode'  => 'json_encode',
+		'json_decode'  => 'json_decode',
 		'escxml'       => 'htmlspecialchars',
 		'utf8_decode'  => 'utf8_decode',
 		'strlen'       => 'strlen'
