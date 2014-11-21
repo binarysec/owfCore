@@ -173,7 +173,7 @@ class core_dao_form_db {
 		return(TRUE);
 	}
 	
-	public function get($where=NULL, $order=NULL, $limit = -1, $offset = -1) {
+	public function get($where=NULL, $order=NULL, $limit = -1, $offset = -1, $fields = null) {
 		$cache_line = $this->name."_get";
 		if(is_array($where))
 			foreach($where as $k => $v)
@@ -182,7 +182,7 @@ class core_dao_form_db {
 		if(($cache = $this->gcache->get($cache_line)))
 			return($cache);
 		
-		$q = new core_db_select($this->name, null, $where);
+		$q = new core_db_select($this->name, $fields, $where);
 		$q->limit($limit, $offset);
 		if(!is_null($order))
 			$q->order($order);
