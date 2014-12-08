@@ -72,12 +72,14 @@ class core_pref_context {
 		if(isset($this->variables[$var]))
 			return($this->variables[$var]["value"]);
 		
+		$description = base64_encode($description);
+		
 		$data = $this->db_find($var);
 		if(!$data) {
 			$insert = array(
 				"create_time" => time(),
 				"variable" => $var,
-				"description" => base64_encode($description),
+				"description" => $description,
 				"group_id" => $this->id
 			);
 
@@ -137,7 +139,7 @@ class core_pref_context {
 			$where["group_id"] = $this->id;
 			
 			$insert = array(
-				"description" => base64_encode($description)
+				"description" => $description
 			);
 
 			$q->where($where);
@@ -293,13 +295,15 @@ class core_pref extends wf_agg {
 	 *
 	 * Register a new group of vars and return the object
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function register_group($name, $description=NULL) {
+	public function register_group($name, $description = null) {
 		$cvar = "core_pref_RG_$name";
 		
 		/* local and short cache */
 		if(array_key_exists($name,$this->contexts) && is_object($this->contexts[$name]))
 			return($this->contexts[$name]);
-			
+		
+		$description = base64_encode($description);
+		
 		/* look at the long cache */
 		$cache = $this->_core_cacher->get($cvar);
 		if(is_object($cache)) {
@@ -313,7 +317,7 @@ class core_pref extends wf_agg {
 			$insert = array(
 				"create_time" => time(),
 				"name" => $name,
-				"description" => base64_encode($description),
+				"description" => $description,
 			);
 		
 			$q = new core_db_insert_id("core_pref_group", "id", $insert);
@@ -335,13 +339,13 @@ class core_pref extends wf_agg {
 			
 		}
 		else {
-			if($description) {
+			if($description && $description != $data[0]["description"]) {
 				$q = new core_db_update("core_pref_group");
 				$where = array();
 				$where["name"] = $name;
 				$insert = array();
 			
-				$insert["description"] = base64_encode($description);
+				$insert["description"] = $description;
 				$q->where($where);
 				$q->insert($insert);
 				$this->wf->db->query($q);
