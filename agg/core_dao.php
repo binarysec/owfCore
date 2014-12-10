@@ -136,7 +136,7 @@ class core_dao extends wf_agg {
 				elseif(
 					($val["kind"] == OWF_DAO_DATE ||
 					$val["kind"] == OWF_DAO_DATE_READON) &&
-					($val["type"] == WF_INT || $val["type"] == WF_BIGINT)
+					($val["type"] & WF_INT || $val["type"] & WF_BIGINT)
 					) {
 						if(!isset($result[$key]["value"]))
 							$result[$key]["value"] = time();
@@ -146,7 +146,7 @@ class core_dao extends wf_agg {
 				elseif(
 					($val["kind"] == OWF_DAO_DATETIME ||
 					$val["kind"] == OWF_DAO_DATETIME_READON) &&
-					($val["type"] == WF_INT || $val["type"] == WF_BIGINT)
+					($val["type"] & WF_INT || $val["type"] & WF_BIGINT)
 					) {
 						if(!isset($result[$key]["value"]))
 							$result[$key]["value"] = time();

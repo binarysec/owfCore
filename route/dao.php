@@ -584,7 +584,7 @@ EOT;
 						$error["msgs"][$key] = $this->lang->ts("Malformed date ").htmlspecialchars($var).$this->lang->ts(" for field ")."\"$val[name]\"";
 						
 				}
-				elseif($val["kind"] == OWF_DAO_DATETIME && ($val["type"] == WF_INT || $val["type"] == WF_BIGINT)) {
+				elseif($val["kind"] == OWF_DAO_DATETIME && ($val["type"] & WF_INT || $val["type"] & WF_BIGINT)) {
 					$datevar = $this->wf->get_var($key."_date");
 					$timevar = $this->wf->get_var($key."_time");
 					$date = explode("/", $datevar);
