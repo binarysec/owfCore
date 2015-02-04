@@ -115,7 +115,6 @@ class core_tpl_compiler extends wf_agg {
 	// Loader
 
 	public function loader($wf) {
-		
 		$this->allowed_in_var  = array_merge($this->vartype, $this->op);
 		$this->allowed_in_expr = array_merge($this->vartype, $this->assign_op, $this->op);
 		$this->allowed_in_foreach = array_merge($this->vartype, array(T_AS, T_DOUBLE_ARROW));
@@ -379,6 +378,10 @@ class core_tpl_compiler extends wf_agg {
 		$tok = explode('|',$expr);
 		$res = $this->parse_final(array_shift($tok), $this->allowed_in_var);
 		
+		return($this->parse_func_calls($res, $tok));
+	}
+	
+	private function parse_func_calls($res, $tok) {
 		foreach($tok as $modifier) {
 			if(!preg_match('/^(\w+)(?:\:(.*))?$/', $modifier, $m)){
 				throw new wf_exception(
@@ -419,7 +422,7 @@ class core_tpl_compiler extends wf_agg {
 		
 		return($res);
 	}
-
+	
 	private function parse_final($string, $allowed=array()) {
 		$result = '';
 		$bracketcount = 0;
@@ -520,6 +523,17 @@ class core_tpl_compiler extends wf_agg {
 	/* translate */
 	private $tsescape = false;
 	public function func_lang(core_tpl_compiler $tpl_compiler, $argv) {
+		$func_calls = false;
+		if(strpos($argv[0], "'") === false && strpos($argv[0], '"') === false) {
+			$func_calls = array();
+			for($i = 0 ; $i < count($argv) ; $i++) {
+				if(strpos($argv[$i], "'") !== false || strpos($argv[$i], '"') !== false)
+					break;
+				$func_calls[] = trim($argv[$i]);
+				unset($argv[$i]);
+			}
+		}
+		
 		$buf_args = 'array(';
 		foreach($argv as $v)
 			$buf_args .= $v.',';
@@ -527,9 +541,14 @@ class core_tpl_compiler extends wf_agg {
 		$escape = $this->tsescape;
 		if($escape)
 			$this->tsescape = false;
-		return $escape ?
-			'echo htmlentities($_lang->ts('.$buf_args.'));' :
-			'echo $_lang->ts('.$buf_args.');';
+		$ret = '';
+		if($func_calls !== false)
+			$ret = $this->parse_func_calls('$_lang->ts('.$buf_args.')', $func_calls);
+		else
+			$ret = '$_lang->ts('.$buf_args.')';
+		if($escape)
+			$ret = 'htmlentities('.$ret.')';
+		return 'echo '.$ret.';';
 	}
 	
 	/* use this function with %{tsescape}%, just before translating something with @, to ensure entities are processed after ts */
