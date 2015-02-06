@@ -98,6 +98,15 @@ class wfm_core extends wf_module {
 		));
 	}
 	
+	public function json_module() {
+		return array(
+			array(
+				"agg" => "core_poller",
+				"method" => "poll",
+				"perm" => array("session:simple")
+			)
+		);
+	}
 	public function admin_partners() {
 		return(array(
 			array(
