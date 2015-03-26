@@ -52,14 +52,14 @@ class core_poller extends wf_agg {
 		$events = array();
 		
 		if($short) {
-			$ret = $this->dao->get(array("user_id" => $uid));
-			foreach($ret as $v)
+			$polled_events = $this->dao->get(array("user_id" => $uid));
+			foreach($polled_events as $v)
 				$events[] = unserialize($v["data"]);
 		}
 		else {
 			do {
-				$ret = $this->dao->get(array("user_id" => $uid));
-				foreach($ret as $v)
+				$polled_events = $this->dao->get(array("user_id" => $uid));
+				foreach($polled_events as $v)
 					$events[] = unserialize($v["data"]);
 				
 				$timeout--;
@@ -67,6 +67,9 @@ class core_poller extends wf_agg {
 					usleep($wait);
 			} while(empty($events) && $timeout);
 		}
+		
+		foreach($polled_events as $v)
+			$this->dao->remove(array("id" => $v["id"]));
 		
 		$moar = $this->wf->execute_hook("owf_core_poller");
 		

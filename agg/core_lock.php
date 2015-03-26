@@ -9,13 +9,14 @@ class core_lock extends wf_agg {
 		
 	}
 	
-	public function try_lock($group, $resource, $type) {
+	public function try_lock($group, $resource, $type, $verbose = true) {
 	
 		$lf = $this->lock_dir."/$group-$resource.lock";
 		
 		$fp = fopen($lf, 'a+');
 		if(!$fp) {
-			echo "Can not open $lf\n";
+			if($verbose)
+				echo "Can not open $lf\n";
 			return(false);
 		}
 		
@@ -37,10 +38,11 @@ class core_lock extends wf_agg {
 				/* control the pid if it is dead */
 				$pf = "/proc/$serial[pid]";
 				if(!file_exists($pf)) {
-					echo "*\n".
-						"* THE RESOURCE $serial[resource] UNDER GROUP $serial[group]\n".
-						"* IS ACTUALY LOCKED BY A DEAD PROCESS n°$serial[pid]\n".
-						"* Recreating lock\n";
+					if($verbose)
+						echo "*\n".
+							"* THE RESOURCE $serial[resource] UNDER GROUP $serial[group]\n".
+							"* IS ACTUALY LOCKED BY A DEAD PROCESS n°$serial[pid]\n".
+							"* Recreating lock\n";
 				}
 				else {
 					flock($fp, LOCK_UN);
