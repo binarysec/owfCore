@@ -1,7 +1,6 @@
 <?php
 
 class core_poller extends wf_agg {
-	private $dao = null;
 	
 	public function loader() {
 		$this->wf->core_dao();
