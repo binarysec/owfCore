@@ -4,7 +4,18 @@ define("CORE_POLLER_JSON",		0);
 define("CORE_POLLER_CALLBACK",	1);
 define("CORE_POLLER_RAW",		2);
 
+class core_poller_dao extends core_dao_form_db {
+	
+	public function add($data) {
+		$data["create_time"] = time();
+		return parent::add($data);
+	}
+	
+}
+
 class core_poller extends wf_agg {
+	
+	private $is_polling = false;
 	
 	public function loader() {
 		$this->wf->core_dao();
@@ -17,6 +28,12 @@ class core_poller extends wf_agg {
 					"type" => WF_INT | WF_AUTOINC | WF_PRIMARY | WF_UNSIGNED,
 					"perm" => array("session:admin"),
 					"name" => "ID",
+				),
+				"create_time" => array(
+					"type" => WF_INT | WF_UNSIGNED,
+					"perm" => array("session:admin"),
+					"name" => "Create date",
+					"kind" => OWF_DAO_DATETIME,
 				),
 				"user_id" => array(
 					"type" => WF_INT,
@@ -46,7 +63,7 @@ class core_poller extends wf_agg {
 			),
 		);
 		
-		$this->dao = new core_dao_form_db(
+		$this->dao = new core_poller_dao(
 			$this->wf,
 			"core_poller",
 			OWF_DAO_FORBIDDEN,
@@ -54,24 +71,63 @@ class core_poller extends wf_agg {
 			"core_poller",
 			"OWF Core poller events"
 		);
+		
+		/* initialize options */
+		$this->is_polling = $this->wf->get_var("owfCorePoller") ? true : false;
+		$this->is_short = $this->wf->get_var("owfCoreShortPoll");
+		$this->last_poll = intval($this->wf->get_var("owfCoreLastPoll"));
+		
+		$this->wait_time = intval($this->wf->get_var("owfCoreLongPollWait"));
+		$this->wait_time = 1000 * ($this->wait_time ?
+			1000 * min(max($this->wait_time, 500), 3000) : 1000);
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Clear old events
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function clear($old = 300) {
+		
+		$q = new core_db_adv_delete("core_poller");
+		$q->do_comp("create_time", "<=", time() - $old);
+		$this->wf->db->query($q);
+		
+	}
+	
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 *
+	 * Get events to display
+	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	public function get_events($uid = 0) {
+		
+		if(!$uid)
+			$uid = $this->session->session_me["id"];
+		
+		$q = new core_db_adv_select("core_poller");
+		$q->do_comp("user_id", "=", $uid);
+		$q->do_comp("create_time", ">", $this->last_poll);
+		$this->wf->db->query($q);
+		
+		return $q->get_result();
+		
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 *
 	 * The poll call done by the client to retrieve events
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-	public function poll() {
-		$short = $this->wf->get_var("owfcp_short") || $this->wf->get_var("owfcps");
-		$w = intval($this->wf->get_var("wait"));
+	public function poll($timeout = 30) {
 		
-		$timeout = 30;
-		$wait = $w ? 1000 * min(max($w, 500), 3000) : 1000;
-		$uid = $this->session->session_me["id"];
+		if(!$this->last_poll) {
+			echo json_encode(array("time" => time(), "events" => array()));
+			exit(0);
+		}
+		
 		$events = array();
 		
 		/* short polling : fetch events */
-		if($short) {
-			$polled_events = $this->dao->get(array("user_id" => $uid));
+		if($this->is_short) {
+			$polled_events = $this->get_events();
 			foreach($polled_events as $v)
 				$events[] = $v;
 		}
@@ -79,26 +135,26 @@ class core_poller extends wf_agg {
 		/* long polling : loop until events or timeout */
 		else {
 			do {
-				$polled_events = $this->dao->get(array("user_id" => $uid));
+				$polled_events = $this->get_events();
 				foreach($polled_events as $v)
 					$events[] = $v;
 				
 				$timeout--;
-				if($timeout)
-					usleep($wait);
+				if($timeout) {
+					usleep($this->wait_time);
+				}
+				
 			} while(empty($events) && $timeout);
 		}
 		
 		foreach($events as $k => $v) {
-			
-			/* remove event from database */
-			$this->dao->remove(array("id" => $v["id"]));
 			
 			/* process event */
 			switch($v["type"]) {
 				case CORE_POLLER_RAW :
 					$events[$k] = $v["data"];
 					break;
+				
 				case CORE_POLLER_CALLBACK :
 					$cb_info = unserialize($v["data"]);
 					if(is_array($cb_info)) {
@@ -116,6 +172,7 @@ class core_poller extends wf_agg {
 					}
 					
 					break;
+				
 				case CORE_POLLER_JSON :
 				default :
 					$events[$k] = unserialize($v["data"]);
@@ -129,7 +186,10 @@ class core_poller extends wf_agg {
 		foreach($moar as $result)
 			$events[] = $result;
 		
-		echo json_encode($events);
+		echo json_encode(array(
+			"time" => time(),
+			"events" => $events
+		));
 		exit(0);
 	}
 	
