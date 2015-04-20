@@ -190,6 +190,7 @@ class core_poller extends wf_agg {
 			"time" => time(),
 			"events" => $events
 		));
+		
 		exit(0);
 	}
 	
@@ -204,11 +205,13 @@ class core_poller extends wf_agg {
 		$data = $this->format_data($data, $type);
 		
 		if($data !== false) {
-			$this->dao->add(array(
-				"user_id"	=> $uid,
-				"data"		=> $data,
-				"type"		=> $type
-			));
+			if($this->session->is_online($uid)) {
+				$this->dao->add(array(
+					"user_id"	=> $uid,
+					"data"		=> $data,
+					"type"		=> $type
+				));
+			}
 		}
 	}
 	
@@ -221,12 +224,14 @@ class core_poller extends wf_agg {
 		switch($type) {
 			case CORE_POLLER_RAW :
 				return $data;
+			
 			case CORE_POLLER_CALLBACK :
 				if(	(is_string($data) && !function_exists($data)) ||
 					(is_array($data) && !method_exists($data[0], $data[1]))
 					) {
 						return false;
 				}
+			
 			case CORE_POLLER_JSON :
 			default :
 				return serialize($data);
