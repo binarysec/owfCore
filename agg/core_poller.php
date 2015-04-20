@@ -16,6 +16,7 @@ class core_poller_dao extends core_dao_form_db {
 class core_poller extends wf_agg {
 	
 	private $is_polling = false;
+	private $actions = array();
 	
 	public function loader() {
 		$this->wf->core_dao();
@@ -80,6 +81,23 @@ class core_poller extends wf_agg {
 		$this->wait_time = intval($this->wf->get_var("owfCoreLongPollWait"));
 		$this->wait_time = 1000 * ($this->wait_time ?
 			1000 * min(max($this->wait_time, 500), 3000) : 1000);
+		
+		/* callbacks */
+		$callback_actions = $this->wf->execute_hook("owf_core_poller_actions");
+		foreach($callback_actions as $actions) {
+			foreach($actions as $event => $action) {
+				if(	!array_key_exists("agg", $action) ||
+					!array_key_exists("method", $action)
+					) {
+						throw new wf_exception(null, WF_EXC_PRIVATE,
+							"Wrong core poller action : ".var_export($action, true)
+						);
+				}
+				
+				$this->actions[$event] = $action;
+			}
+		}
+		
 	}
 	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -119,8 +137,7 @@ class core_poller extends wf_agg {
 	public function poll($timeout = 30) {
 		
 		if(!$this->last_poll) {
-			echo json_encode(array("time" => time(), "events" => array()));
-			exit(0);
+			$this->wf->display_error(400, "Parameter is missing", true);
 		}
 		
 		$events = array();
@@ -156,15 +173,21 @@ class core_poller extends wf_agg {
 					break;
 				
 				case CORE_POLLER_CALLBACK :
+					$ret = false;
+					$fct = null;
+					$params = array();
 					$cb_info = unserialize($v["data"]);
+					
 					if(is_array($cb_info)) {
-						$class = array_shift($cb_info);
-						$method = array_shift($cb_info);
-						array_unshift($cb_info, $this->wf);
-						$ret = call_user_func_array(array($class, $method), $cb_info);
+						$fct = $this->actions[array_shift($cb_info)];
+						$params = $cb_info;
 					}
-					elseif(is_string($cb_info)) {
-						$ret = $cb_info($this->wf);
+					elseif(is_string($cb_info) && array_key_exists($cb_info, $this->actions)) {
+						$fct = $this->actions[$cb_info];
+					}
+					
+					if($fct) {
+						$ret = call_user_method_array($fct["method"], $this->wf->$fct["agg"](), $params);
 					}
 					
 					if($ret !== false) {
@@ -226,8 +249,8 @@ class core_poller extends wf_agg {
 				return $data;
 			
 			case CORE_POLLER_CALLBACK :
-				if(	(is_string($data) && !function_exists($data)) ||
-					(is_array($data) && !method_exists($data[0], $data[1]))
+				if(	(is_string($data) && !array_key_exists($data, $this->actions)) ||
+					(is_array($data) && !array_key_exists($data[0], $this->actions))
 					) {
 						return false;
 				}
