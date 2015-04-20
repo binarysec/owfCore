@@ -77,6 +77,7 @@ class core_poller extends wf_agg {
 		$this->is_polling = $this->wf->get_var("owfCorePoller") ? true : false;
 		$this->is_short = $this->wf->get_var("owfCoreShortPoll");
 		$this->last_poll = intval($this->wf->get_var("owfCoreLastPoll"));
+		$this->route = $this->wf->get_var("owfCorePollerReferer");
 		
 		$this->wait_time = intval($this->wf->get_var("owfCoreLongPollWait"));
 		$this->wait_time = 1000 * ($this->wait_time ?
@@ -140,13 +141,13 @@ class core_poller extends wf_agg {
 			$this->wf->display_error(400, "Parameter is missing", true);
 		}
 		
-		$events = array();
+		$events = $events_to_process = array();
 		
 		/* short polling : fetch events */
 		if($this->is_short) {
 			$polled_events = $this->get_events();
 			foreach($polled_events as $v)
-				$events[] = $v;
+				$events_to_process[] = $v;
 		}
 		
 		/* long polling : loop until events or timeout */
@@ -154,17 +155,17 @@ class core_poller extends wf_agg {
 			do {
 				$polled_events = $this->get_events();
 				foreach($polled_events as $v)
-					$events[] = $v;
+					$events_to_process[] = $v;
 				
 				$timeout--;
 				if($timeout) {
 					usleep($this->wait_time);
 				}
 				
-			} while(empty($events) && $timeout);
+			} while(empty($events_to_process) && $timeout);
 		}
 		
-		foreach($events as $k => $v) {
+		foreach($events_to_process as $k => $v) {
 			
 			/* process event */
 			switch($v["type"]) {
@@ -187,11 +188,31 @@ class core_poller extends wf_agg {
 					}
 					
 					if($fct) {
-						$ret = call_user_method_array($fct["method"], $this->wf->$fct["agg"](), $params);
-					}
-					
-					if($ret !== false) {
-						$events[$k] = $ret;
+						$is_url_ok = true;
+						
+						if($this->route && array_key_exists("url", $fct)) {
+							
+							$is_url_ok = false;
+							
+							if(is_string($fct["url"])) {
+								$fct["url"] = array($fct["url"]);
+							}
+							
+							foreach($fct["url"] as $url) {
+								if(strstr($this->route, $url)) {
+									$is_url_ok = true;
+									break;
+								}
+							}
+						}
+						
+						if($is_url_ok) {
+							$ret = call_user_method_array($fct["method"], $this->wf->$fct["agg"](), $params);
+							
+							if($ret !== false) {
+								$events[$k] = $ret;
+							}
+						}
 					}
 					
 					break;
