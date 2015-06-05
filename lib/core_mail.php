@@ -179,7 +179,7 @@ class core_mail {
 		'~<div[^>]+>~si',
 		);
 		// remove newlines
-		$html = preg_replace('~(\r?\n)+~s',"",$html);
+		$html = preg_replace('~(\r?\n)+~s'," ",$html);
 		
 		// insert newlines
 		$html = preg_replace($tags,"\r\n",$html);
@@ -187,6 +187,9 @@ class core_mail {
 		// handle arrays & lists
 		$html = preg_replace('~<li[^>]*>~','* ',$html);
 		$html = preg_replace('~</t(d|h)>\s*<t(d|h)[^>]+>~si',' - ',$html);
+		
+		// handle links
+		$html = preg_replace('~<a\s.*?href=(["\'])([^\1]+)\1[^>]*>(.*?)</a>~si','\3 \2',$html);
 		
 		// clean all tags
 		$html = preg_replace('~<[^>]+>~s','',$html);
