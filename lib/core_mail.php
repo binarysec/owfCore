@@ -193,6 +193,7 @@ class core_mail {
 		
 		// clean all tags
 		$html = preg_replace('~<[^>]+>~s','',$html);
+		$html = html_entity_decode($html);
 		
 		// reduce spaces
 		$html = preg_replace('~ +~s',' ',$html);
